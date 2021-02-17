@@ -9,8 +9,14 @@
   "author": "gmlwo308@gmail.com",
   "license": "ISC",
   "dependencies": {
+    "immer": "^8.0.1",
+    "janus-gateway": "git://github.com/meetecho/janus-gateway.git",
     "next": "^9.5.5",
     "react": "^17.0.1",
-    "react-dom": "^17.0.1"
+    "react-dom": "^17.0.1",
+    "webrtc-adapter": "^7.7.0"
+  },
+  "devDependencies": {
+    "exports-loader": "^1.1.1"
   }
 }
