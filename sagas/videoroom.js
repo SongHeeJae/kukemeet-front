@@ -1,9 +1,12 @@
-import { all, fork, put, takeLatest, call } from "redux-saga/effects";
+import { all, fork, put, takeLatest, call, select } from "redux-saga/effects";
 import { Janus } from "janus-gateway";
 import {
+  CONNECT_FEED_FAILURE,
+  CONNECT_FEED_REQUEST,
   CONNECT_JANUS_FAILURE,
   CONNECT_JANUS_REQUEST,
   CONNECT_JANUS_SUCCESS,
+  JOIN_ROOM_REQUEST,
 } from "../reducers/videoroom";
 
 function connectJanusAPI(dispatch) {
@@ -44,7 +47,16 @@ function connectJanusAPI(dispatch) {
               );
             },
             webrtcState: (on) => {},
-            onmessage: (msg, jsep) => {},
+            onmessage: (msg, jsep) => {
+              console.log(msg);
+              let event = msg["videoroom"];
+              if (event) {
+                if (event == "joined") {
+                  if (msg["publishers"]) {
+                  }
+                }
+              }
+            },
             onlocalstream: (stream) => {},
             onremotestream: (stream) => {
               // empty
@@ -84,10 +96,36 @@ function* connectJanus(action) {
   }
 }
 
+function joinRoomAPI(sfu, { room, username, nickname }) {
+  sfu.send({
+    message: {
+      request: "join",
+      room,
+      ptype: "publisher",
+      display: `${nickname}(${username})`,
+    },
+  });
+}
+
+function* joinRoom(action) {
+  try {
+    const { sfu } = yield select((state) => state.videoroom);
+    yield call(joinRoomAPI, sfu, action.payload);
+  } catch (err) {
+    yield put({
+      type: CONNECT_FEED_FAILURE,
+    });
+  }
+}
+
 function* watchConnectJanus() {
   yield takeLatest(CONNECT_JANUS_REQUEST, connectJanus);
 }
 
+function* watchJoinRoom() {
+  yield takeLatest(JOIN_ROOM_REQUEST, joinRoom);
+}
+
 export default function* videoroomSaga() {
-  yield all([fork(watchConnectJanus)]);
+  yield all([fork(watchConnectJanus), fork(watchJoinRoom)]);
 }

@@ -4,6 +4,7 @@ export const initialState = {
   janus: null,
   sfu: null,
   opaqueId: null,
+  privateId: null,
   feeds: [],
   activeVideo: true,
   activeAudio: true,
@@ -11,24 +12,36 @@ export const initialState = {
   activeScreenSharing: false,
   chatData: [],
   connectJanusLoading: false,
-  coonectJanusDone: false,
+  connectJanusDone: false,
+  joinRoomLoading: false,
+  joinRoomDone: false,
 };
 
 export const CONNECT_JANUS_REQUEST = "CONNECT_JANUS_REQUEST";
 export const CONNECT_JANUS_SUCCESS = "CONNECT_JANUS_SUCCESS";
 export const CONNECT_JANUS_FAILURE = "CONNECT_JANUS_FAILURE";
 
+export const JOIN_ROOM_REQUEST = "JOIN_ROOM_REQUEST";
+export const JOIN_ROOM_SUCCESS = "JOIN_ROOM_SUCCESS";
+export const JOIN_ROOM_FAILURE = "JOIN_ROOM_FAILURE";
+
 export const CONNECT_FEED_REQUEST = "CONNECT_FEED_REQUEST";
 export const CONNECT_FEED_SUCCESS = "CONNECT_FEED_SUCCESS";
 export const CONNECT_FEED_FAILURE = "CONNECT_FEED_FAILURE";
 
-export const connectJanus = (dispatch) => ({
+export const connectJanus = (payload) => ({
   type: CONNECT_JANUS_REQUEST,
-  payload: dispatch,
+  payload,
 });
 
-export const connectFeed = () => ({
+export const joinRoom = (payload) => ({
+  type: JOIN_ROOM_REQUEST,
+  payload,
+});
+
+export const connectFeed = (payload) => ({
   type: CONNECT_FEED_REQUEST,
+  payload,
 });
 
 const reducer = (state = initialState, action) =>
@@ -38,7 +51,6 @@ const reducer = (state = initialState, action) =>
         draft.connectJanusLoading = true;
         break;
       case CONNECT_JANUS_SUCCESS:
-        console.log("성공요청");
         draft.connectJanusLoading = false;
         draft.connectJanusDone = true;
         draft.janus = action.payload.janus;
@@ -48,8 +60,21 @@ const reducer = (state = initialState, action) =>
       case CONNECT_JANUS_FAILURE:
         draft.connectJanusLoading = false;
         break;
-
+      case JOIN_ROOM_REQUEST:
+        draft.joinRoomLoading = true;
+        break;
+      case JOIN_ROOM_SUCCESS:
+        draft.joinRoomLoading = false;
+        draft.joinRoomDone = true;
+        break;
+      case JOIN_ROOM_FAILURE:
+        draft.joinRoomLoading = false;
+        break;
       case CONNECT_FEED_REQUEST:
+        break;
+      case CONNECT_FEED_SUCCESS:
+        break;
+      case CONNECT_JANUS_FAILURE:
         break;
       default:
         break;
