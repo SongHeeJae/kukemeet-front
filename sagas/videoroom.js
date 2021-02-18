@@ -20,7 +20,6 @@ import {
   leavingRemoteFeedFailure,
   leavingRemoteFeedSuccess,
 } from "../reducers/videoroom";
-import produce from "immer";
 
 function joinRoomAPI({ info, room, username, nickname }) {
   const { pluginHandle } = info;
