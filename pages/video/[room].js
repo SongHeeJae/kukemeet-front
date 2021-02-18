@@ -8,6 +8,8 @@ import {
   joinRoomSuccess,
   publishOwnFeedRequest,
   publishOwnFeedSuccess,
+  subscribeRemoteFeedRequest,
+  openDataChannelSuccess,
 } from "../../reducers/videoroom";
 import { useRouter } from "next/router";
 import { Janus } from "janus-gateway";
@@ -38,7 +40,7 @@ const connectJanus = () => {
         resolve(janus);
       },
       error: (error) => {
-        Janus.error(error);
+        reject(error);
       },
       destroyed: () => {
         console.log("destroyed");
@@ -59,9 +61,7 @@ const attachJanus = (dispatch, janus) => {
         info.janus = janus;
         resolve({ janus, pluginHandle, opaqueId });
       },
-      error: (cause) => {
-        console.log("error", cause);
-      },
+      error: (cause) => {},
       consentDialog: (on) => {
         Janus.debug("Consent dialog should be " + (on ? "on" : "off") + " now");
       },
@@ -69,16 +69,19 @@ const attachJanus = (dispatch, janus) => {
         Janus.log("ICE state changed to " + state);
       },
       mediaState: (medium, on) => {
+        console.log("mediaum스테이트", medium);
         Janus.log(
           "Janus " + (on ? "started" : "stopped") + " receiving our " + medium
         );
       },
-      webrtcState: (on) => {},
+      webrtcState: (on) => {
+        console.log("webrtcstate ===ㅇㅇ", on);
+      },
       onmessage: (msg, jsep) => {
         console.log(msg);
         let event = msg["videoroom"];
         if (event) {
-          if (event == "joined") {
+          if (event === "joined") {
             dispatch(
               joinRoomSuccess({
                 id: msg["id"],
@@ -90,8 +93,30 @@ const attachJanus = (dispatch, janus) => {
             dispatch(publishOwnFeedRequest({ info, useAudio: true }));
 
             if (msg["publishers"]) {
+              // 기존 접속자
             }
+          } else if (event === "event") {
+            if (msg["publishers"]) {
+              let list = msg["publishers"];
+              list.forEach(({ id, display, audio_codec, video_codec }) => {
+                dispatch(
+                  subscribeRemoteFeedRequest({
+                    info,
+                    id,
+                    display,
+                    audio_codec,
+                    video_codec,
+                    dispatch,
+                  })
+                );
+              });
+            }
+          } else if (event === "destroyed") {
+            alert("룸 제거");
           }
+        }
+        if (jsep) {
+          info.pluginHandle.handleRemoteJsep({ jsep: jsep });
         }
       },
       onlocalstream: (stream) => {
@@ -99,13 +124,15 @@ const attachJanus = (dispatch, janus) => {
       },
       onremotestream: (stream) => {},
       ondataopen: (data) => {
-        console.log("data channel opened");
+        dispatch(openDataChannelSuccess());
       },
       ondata: (data) => {
         // empty
-        console.log("내가받은메시지====\n", data);
+        console.log("내가 데이터 채널로 받은메시지====\n", data);
       },
-      oncleanup: () => {},
+      oncleanup: () => {
+        console.log("클린업ㅇㅇㅇ");
+      },
     });
   });
 };

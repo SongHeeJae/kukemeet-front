@@ -13,6 +13,7 @@ export const initialState = {
   connectJanusDone: false,
   joinRoomLoading: false,
   joinRoomDone: false,
+  openDataChannelDone: false,
 };
 
 export const CONNECT_JANUS_REQUEST = "CONNECT_JANUS_REQUEST";
@@ -26,6 +27,12 @@ export const JOIN_ROOM_FAILURE = "JOIN_ROOM_FAILURE";
 export const PUBLISH_OWN_FEED_REQUEST = "PUBLISH_OWN_FEED_REQUEST";
 export const PUBLISH_OWN_FEED_SUCCESS = "PUBLISH_OWN_FEED_SUCCESS";
 export const PUBLISH_OWN_FEED_FAILURE = "PUBLISH_OWN_FEED_FAILURE";
+
+export const SUBSCRIBE_REMOTE_FEED_REQUEST = "SUBSCRIBE_REMOTE_FEED_REQUEST";
+export const SUBSCRIBE_REMOTE_FEED_SUCCESS = "SUBSCRIBE_REMOTE_FEED_SUCCESS";
+export const SUBSCRIBE_REMOTE_FEED_FAILURE = "SUBSCRIBE_REMOTE_FEED_FAILURE";
+
+export const OPEN_DATA_CHANNEL_SUCCESS = "OPEN_DATA_CHANNEL_SUCCESS";
 
 export const connectJanusRequest = () => ({
   type: CONNECT_JANUS_REQUEST,
@@ -67,6 +74,24 @@ export const publishOwnFeedFailure = () => ({
   type: PUBLISH_OWN_FEED_FAILURE,
 });
 
+export const subscribeRemoteFeedRequest = (payload) => ({
+  type: SUBSCRIBE_REMOTE_FEED_REQUEST,
+  payload,
+});
+
+export const subscribeRemoteFeedSuccess = (payload) => ({
+  type: SUBSCRIBE_REMOTE_FEED_SUCCESS,
+  payload,
+});
+
+export const subscribeRemoteFeedFailure = () => ({
+  type: SUBSCRIBE_REMOTE_FEED_FAILURE,
+});
+
+export const openDataChannelSuccess = () => ({
+  type: OPEN_DATA_CHANNEL_SUCCESS,
+});
+
 const reducer = (state = initialState, action) =>
   produce(state, (draft) => {
     switch (action.type) {
@@ -100,6 +125,14 @@ const reducer = (state = initialState, action) =>
         break;
       case PUBLISH_OWN_FEED_FAILURE:
         break;
+      case SUBSCRIBE_REMOTE_FEED_REQUEST:
+        break;
+      case SUBSCRIBE_REMOTE_FEED_SUCCESS:
+        break;
+      case SUBSCRIBE_REMOTE_FEED_FAILURE:
+        break;
+      case OPEN_DATA_CHANNEL_SUCCESS:
+        draft.openDataChannelDone = true;
       default:
         break;
     }
