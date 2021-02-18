@@ -1,11 +1,9 @@
 import produce from "immer";
 
 export const initialState = {
-  janus: null,
-  sfu: null,
-  opaqueId: null,
-  privateId: null,
-  feeds: [],
+  room: -1,
+  myFeed: {},
+  remoteFeeds: [],
   activeVideo: true,
   activeAudio: true,
   activeSpeakerDetection: false,
@@ -25,23 +23,48 @@ export const JOIN_ROOM_REQUEST = "JOIN_ROOM_REQUEST";
 export const JOIN_ROOM_SUCCESS = "JOIN_ROOM_SUCCESS";
 export const JOIN_ROOM_FAILURE = "JOIN_ROOM_FAILURE";
 
-export const CONNECT_FEED_REQUEST = "CONNECT_FEED_REQUEST";
-export const CONNECT_FEED_SUCCESS = "CONNECT_FEED_SUCCESS";
-export const CONNECT_FEED_FAILURE = "CONNECT_FEED_FAILURE";
+export const PUBLISH_OWN_FEED_REQUEST = "PUBLISH_OWN_FEED_REQUEST";
+export const PUBLISH_OWN_FEED_SUCCESS = "PUBLISH_OWN_FEED_SUCCESS";
+export const PUBLISH_OWN_FEED_FAILURE = "PUBLISH_OWN_FEED_FAILURE";
 
-export const connectJanus = (payload) => ({
+export const connectJanusRequest = () => ({
   type: CONNECT_JANUS_REQUEST,
-  payload,
 });
 
-export const joinRoom = (payload) => ({
+export const connectJanusSuccess = () => ({
+  type: CONNECT_JANUS_SUCCESS,
+});
+
+export const connectJanusFailure = () => ({
+  type: CONNECT_JANUS_FAILURE,
+});
+
+export const joinRoomRequest = (payload) => ({
   type: JOIN_ROOM_REQUEST,
   payload,
 });
 
-export const connectFeed = (payload) => ({
-  type: CONNECT_FEED_REQUEST,
+export const joinRoomSuccess = (payload) => ({
+  type: JOIN_ROOM_SUCCESS,
   payload,
+});
+
+export const joinRoomFailure = () => ({
+  type: JOIN_ROOM_FAILURE,
+});
+
+export const publishOwnFeedRequest = (payload) => ({
+  type: PUBLISH_OWN_FEED_REQUEST,
+  payload,
+});
+
+export const publishOwnFeedSuccess = (payload) => ({
+  type: PUBLISH_OWN_FEED_SUCCESS,
+  payload,
+});
+
+export const publishOwnFeedFailure = () => ({
+  type: PUBLISH_OWN_FEED_FAILURE,
 });
 
 const reducer = (state = initialState, action) =>
@@ -53,9 +76,6 @@ const reducer = (state = initialState, action) =>
       case CONNECT_JANUS_SUCCESS:
         draft.connectJanusLoading = false;
         draft.connectJanusDone = true;
-        draft.janus = action.payload.janus;
-        draft.sfu = action.payload.sfu;
-        draft.opaqueId = action.payload.opaqueId;
         break;
       case CONNECT_JANUS_FAILURE:
         draft.connectJanusLoading = false;
@@ -66,15 +86,19 @@ const reducer = (state = initialState, action) =>
       case JOIN_ROOM_SUCCESS:
         draft.joinRoomLoading = false;
         draft.joinRoomDone = true;
+        draft.myFeed.id = action.payload.id;
+        draft.myFeed.privateId = action.payload.privateId;
+        draft.room = action.payload.room;
         break;
       case JOIN_ROOM_FAILURE:
         draft.joinRoomLoading = false;
         break;
-      case CONNECT_FEED_REQUEST:
+      case PUBLISH_OWN_FEED_REQUEST:
         break;
-      case CONNECT_FEED_SUCCESS:
+      case PUBLISH_OWN_FEED_SUCCESS:
+        draft.myFeed.stream = action.payload.stream;
         break;
-      case CONNECT_JANUS_FAILURE:
+      case PUBLISH_OWN_FEED_FAILURE:
         break;
       default:
         break;

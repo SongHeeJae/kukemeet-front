@@ -1,28 +1,154 @@
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect, useCallback, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { joinRoom, connectJanus } from "../../reducers/videoroom";
+import {
+  connectJanusRequest,
+  joinRoomRequest,
+  connectJanusSuccess,
+  connectJanusFailure,
+  joinRoomSuccess,
+  publishOwnFeedRequest,
+  publishOwnFeedSuccess,
+} from "../../reducers/videoroom";
 import { useRouter } from "next/router";
+import { Janus } from "janus-gateway";
+import VideoList from "../../components/VideoList";
+
+const initJanus = () => {
+  return new Promise((resolve, reject) => {
+    Janus.init({
+      debug: "all",
+      callback: () => {
+        resolve();
+      },
+      error: (error) => {
+        reject(error);
+      },
+      destroyed: () => {
+        console.log("destroyed");
+      },
+    });
+  });
+};
+
+const connectJanus = () => {
+  return new Promise((resolve, reject) => {
+    let janus = new Janus({
+      server: ["http://34.121.167.58:8088/janus", "ws://34.121.167.58:8188/"],
+      success: () => {
+        resolve(janus);
+      },
+      error: (error) => {
+        Janus.error(error);
+      },
+      destroyed: () => {
+        console.log("destroyed");
+      },
+    });
+  });
+};
+
+const attachJanus = (dispatch, janus) => {
+  return new Promise((resolve, reject) => {
+    const opaqueId = "videoroom-" + Janus.randomString(12);
+    const info = { opaqueId };
+    janus.attach({
+      plugin: "janus.plugin.videoroom",
+      opaqueId: opaqueId,
+      success: (pluginHandle) => {
+        info.pluginHandle = pluginHandle;
+        info.janus = janus;
+        resolve({ janus, pluginHandle, opaqueId });
+      },
+      error: (cause) => {
+        console.log("error", cause);
+      },
+      consentDialog: (on) => {
+        Janus.debug("Consent dialog should be " + (on ? "on" : "off") + " now");
+      },
+      iceState: (state) => {
+        Janus.log("ICE state changed to " + state);
+      },
+      mediaState: (medium, on) => {
+        Janus.log(
+          "Janus " + (on ? "started" : "stopped") + " receiving our " + medium
+        );
+      },
+      webrtcState: (on) => {},
+      onmessage: (msg, jsep) => {
+        console.log(msg);
+        let event = msg["videoroom"];
+        if (event) {
+          if (event == "joined") {
+            dispatch(
+              joinRoomSuccess({
+                id: msg["id"],
+                privateId: msg["private_id"],
+                room: msg["room"],
+              })
+            );
+
+            dispatch(publishOwnFeedRequest({ info, useAudio: true }));
+
+            if (msg["publishers"]) {
+            }
+          }
+        }
+      },
+      onlocalstream: (stream) => {
+        dispatch(publishOwnFeedSuccess({ stream }));
+      },
+      onremotestream: (stream) => {},
+      ondataopen: (data) => {
+        console.log("data channel opened");
+      },
+      ondata: (data) => {
+        // empty
+        console.log("내가받은메시지====\n", data);
+      },
+      oncleanup: () => {},
+    });
+  });
+};
 
 const Video = () => {
+  const info = useRef(null);
   const dispatch = useDispatch();
   const router = useRouter();
   const { room } = parseInt(router.query.room);
   const { connectJanusDone } = useSelector((state) => state.videoroom);
   const { username, nickname } = useSelector((state) => state.user);
   useEffect(() => {
-    dispatch(connectJanus(dispatch));
+    dispatch(connectJanusRequest());
+    initJanus()
+      .then(connectJanus)
+      .then((janus) => attachJanus(dispatch, janus))
+      .then((result) => {
+        info.current = result;
+        dispatch(connectJanusSuccess());
+      })
+      .catch((err) => {
+        console.log(err);
+        dispatch(connectJanusFailure());
+      });
   }, []);
 
   useEffect(() => {
     if (!connectJanusDone) return;
-    dispatch(joinRoom({ room: 1234, nickname, username }));
+    dispatch(
+      joinRoomRequest({ info: info.current, room: 1234, nickname, username })
+    );
     // 반환 426 코드면 룸 생성하면됨 테스트룸 1234
   }, [connectJanusDone]);
 
   if (!connectJanusDone) {
     return <div>연결중입니다..</div>;
   }
-  return <div>비디오페이지;ㅇㅇㅇ</div>;
+  return (
+    <div>
+      비디오페이지;ㅇㅇㅇ
+      <VideoList />
+    </div>
+  );
 };
 
 export default Video;
