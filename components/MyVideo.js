@@ -1,5 +1,11 @@
 import React, { useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
+import styled from "styled-components";
+
+const VideoWrapper = styled.video`
+  width: 100%;
+`;
+
 function MyVideo() {
   const videoRef = useRef();
   const { myFeed } = useSelector((state) => state.videoroom);
@@ -11,7 +17,11 @@ function MyVideo() {
   if (!myFeed.stream) {
     <div>내 비디오 로딩중..</div>;
   }
-  return <video ref={videoRef} autoPlay playsInline />;
+  return (
+    <>
+      <VideoWrapper ref={videoRef} autoPlay playsInline />
+    </>
+  );
 }
 
 export default MyVideo;

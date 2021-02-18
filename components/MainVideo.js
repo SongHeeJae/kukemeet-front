@@ -1,6 +1,11 @@
 import React, { useEffect, useRef, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { createGlobalStyle } from "styled-components";
+import styled from "styled-components";
+
+const VideoWrapper = styled.video`
+  width: 100%;
+`;
 
 const Global = createGlobalStyle`
 video::-webkit-media-controls-play-button {
@@ -50,7 +55,7 @@ const MainVideo = () => {
       <Global />
       {mainStream.stream ? (
         <>
-          <video
+          <VideoWrapper
             autoPlay
             playsInline
             ref={videoRef}
