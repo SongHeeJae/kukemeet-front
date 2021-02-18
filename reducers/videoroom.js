@@ -128,6 +128,11 @@ const reducer = (state = initialState, action) =>
       case SUBSCRIBE_REMOTE_FEED_REQUEST:
         break;
       case SUBSCRIBE_REMOTE_FEED_SUCCESS:
+        draft.remoteFeeds.push({
+          id: action.payload.id,
+          display: action.payload.display,
+          stream: action.payload.stream,
+        });
         break;
       case SUBSCRIBE_REMOTE_FEED_FAILURE:
         break;

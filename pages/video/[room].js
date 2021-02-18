@@ -15,6 +15,21 @@ import { useRouter } from "next/router";
 import { Janus } from "janus-gateway";
 import VideoList from "../../components/VideoList";
 
+const subscribeRemoteFeed = (list, info, dispatch) => {
+  list.forEach(({ id, display, audio_codec, video_codec }) => {
+    dispatch(
+      subscribeRemoteFeedRequest({
+        info,
+        id,
+        display,
+        audio_codec,
+        video_codec,
+        dispatch,
+      })
+    );
+  });
+};
+
 const initJanus = () => {
   return new Promise((resolve, reject) => {
     Janus.init({
@@ -94,22 +109,11 @@ const attachJanus = (dispatch, janus) => {
 
             if (msg["publishers"]) {
               // 기존 접속자
+              subscribeRemoteFeed(msg["publishers"], info, dispatch);
             }
           } else if (event === "event") {
             if (msg["publishers"]) {
-              let list = msg["publishers"];
-              list.forEach(({ id, display, audio_codec, video_codec }) => {
-                dispatch(
-                  subscribeRemoteFeedRequest({
-                    info,
-                    id,
-                    display,
-                    audio_codec,
-                    video_codec,
-                    dispatch,
-                  })
-                );
-              });
+              subscribeRemoteFeed(msg["publishers"], info, dispatch);
             }
           } else if (event === "destroyed") {
             alert("룸 제거");

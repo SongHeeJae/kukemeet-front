@@ -1,17 +1,16 @@
-import React, { useRef, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
-const VideoList = () => {
-  const { myFeed } = useSelector((state) => state.videoroom);
-  const videoRef = useRef();
+import VideoItem from "./VideoItem";
 
-  useEffect(() => {
-    if (!myFeed.stream) return;
-    videoRef.current.srcObject = myFeed.stream;
-  }, [myFeed.stream]);
+const VideoList = () => {
+  const { myFeed, remoteFeeds } = useSelector((state) => state.videoroom);
 
   return (
     <div>
-      <video ref={videoRef} autoPlay playsInline />
+      {myFeed.stream && <VideoItem stream={myFeed.stream} />}
+      {remoteFeeds.map((v) => (
+        <VideoItem stream={v.stream} key={v.id} />
+      ))}
     </div>
   );
 };
