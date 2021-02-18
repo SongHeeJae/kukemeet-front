@@ -8,7 +8,16 @@ export const initialState = {
   activeAudio: true,
   activeSpeakerDetection: false,
   activeScreenSharing: false,
-  chatData: [],
+  chatData: [
+    {
+      display: "테스트유저1",
+      text: "안녕하세요~~",
+    },
+    {
+      display: "테스트유저2",
+      text: "ㅎㅎ 안녕하세요~~",
+    },
+  ],
   connectJanusLoading: false,
   connectJanusDone: false,
   joinRoomLoading: false,
@@ -40,6 +49,12 @@ export const LEAVING_REMOTE_FEED_SUCCESS = "LEAVING_REMOTE_FEED_SUCCESS";
 export const LEAVING_REMOTE_FEED_FAILURE = "LEAVING_REMOTE_FEED_FAILURE";
 
 export const CHANGE_MAIN_STREAM = "CHANGE_MAIN_STREAM";
+
+export const SEND_CHAT_REQUEST = "SEND_CHAT_REQUEST";
+export const SEND_CHAT_SUCCESS = "SEND_CHAT_SUCCESS";
+export const SEND_CHAT_FAILURE = "SEND_CHAT_FAILURE";
+
+export const RECEIVE_CHAT_MESSAGE = "RECEIVE_CHAT_MESSAGE";
 
 export const connectJanusRequest = () => ({
   type: CONNECT_JANUS_REQUEST,
@@ -118,6 +133,25 @@ export const changeMainStream = (payload) => ({
   payload,
 });
 
+export const sendChatRequest = (payload) => ({
+  type: SEND_CHAT_REQUEST,
+  payload,
+});
+
+export const sendChatSuccess = (payload) => ({
+  type: SEND_CHAT_SUCCESS,
+  payload,
+});
+
+export const sendChatFailure = () => ({
+  type: SEND_CHAT_FAILURE,
+});
+
+export const receiveChatMessage = (payload) => ({
+  type: RECEIVE_CHAT_MESSAGE,
+  payload,
+});
+
 const reducer = (state = initialState, action) =>
   produce(state, (draft) => {
     switch (action.type) {
@@ -176,6 +210,22 @@ const reducer = (state = initialState, action) =>
       case CHANGE_MAIN_STREAM:
         draft.mainStream.stream = action.payload.stream;
         draft.mainStream.display = action.payload.display;
+        break;
+      case SEND_CHAT_REQUEST:
+        break;
+      case SEND_CHAT_SUCCESS:
+        draft.chatData.push({
+          display: action.payload.display,
+          text: action.payload.text,
+        });
+        break;
+      case SEND_CHAT_FAILURE:
+        break;
+      case RECEIVE_CHAT_MESSAGE:
+        draft.chatData.push({
+          display: action.payload.display,
+          text: action.payload.text,
+        });
       default:
         break;
     }

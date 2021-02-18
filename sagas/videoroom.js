@@ -19,6 +19,10 @@ import {
   LEAVING_REMOTE_FEED_REQUEST,
   leavingRemoteFeedFailure,
   leavingRemoteFeedSuccess,
+  SEND_CHAT_REQUEST,
+  sendChatSuccess,
+  receiveChatMessage,
+  sendChatFailure,
 } from "../reducers/videoroom";
 
 function joinRoomAPI({ info, room, username, nickname }) {
@@ -150,7 +154,18 @@ async function subscribeRemoteFeedAPI(
         console.log("다른 사용자 나감 ㅇㅇㅇ");
       },
       ondataopen: function () {},
-      ondata: function (data) {},
+      ondata: function (data) {
+        const json = JSON.parse(data);
+        const what = json["textroom"];
+        if (what === "message") {
+          dispatch(
+            receiveChatMessage({
+              display: json["display"],
+              text: json["text"],
+            })
+          );
+        }
+      },
     });
   });
 }
@@ -182,8 +197,36 @@ function* leavingRemoteFeed(action) {
     yield call(leavingRemoteAPI, action.payload.id);
     yield put(leavingRemoteFeedSuccess(action.payload));
   } catch (err) {
-    console.log(err);
     yield put(leavingRemoteFeedFailure());
+  }
+}
+
+function sendChatAPI(room, { dispatch, info, display, text }) {
+  const { pluginHandle } = info;
+  const message = {
+    textroom: "message",
+    room,
+    text,
+    display,
+  };
+  pluginHandle.data({
+    text: JSON.stringify(message),
+    error: (err) => {
+      console.log(err);
+    },
+    success: () => {
+      dispatch(sendChatSuccess({ display, text }));
+    },
+  });
+}
+
+function* sendChat(action) {
+  try {
+    const room = yield select((state) => state.room);
+    yield call(sendChatAPI, room, action.payload);
+  } catch (err) {
+    console.log(err);
+    yield put(sendChatFailure());
   }
 }
 
@@ -203,11 +246,16 @@ function* watchLeavingRemoteFeed() {
   yield takeEvery(LEAVING_REMOTE_FEED_REQUEST, leavingRemoteFeed);
 }
 
+function* watchSendChat() {
+  yield takeEvery(SEND_CHAT_REQUEST, sendChat);
+}
+
 export default function* videoroomSaga() {
   yield all([
     fork(watchJoinRoom),
     fork(watchPublishOwnFeed),
     fork(watchSubscribeRemoteFeed),
     fork(watchLeavingRemoteFeed),
+    fork(watchSendChat),
   ]);
 }

@@ -196,7 +196,7 @@ const Video = () => {
           <MainVideo />
         </Grid>
         <Grid item xs={3}>
-          <Chatting />
+          <Chatting info={info} />
         </Grid>
       </Grid>
       <VideoList />
