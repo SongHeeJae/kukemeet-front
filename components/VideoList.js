@@ -34,8 +34,8 @@ const VideoList = () => {
     <div className={classes.root}>
       <GridList className={classes.gridList} cols={4}>
         {remoteFeeds.map((v) => (
-          <GridListTile kee={v.id}>
-            <VideoItem stream={v.stream} />
+          <GridListTile key={v.id}>
+            <VideoItem stream={v.stream} display={v.display} />
             <GridListTileBar
               title={v.display}
               classes={{

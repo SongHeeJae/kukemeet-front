@@ -16,6 +16,10 @@ import { useRouter } from "next/router";
 import { Janus } from "janus-gateway";
 import VideoList from "../../components/VideoList";
 import MyVideo from "../../components/MyVideo";
+import UserList from "../../components/UserList";
+import Chatting from "../../components/Chatting";
+import { Grid } from "@material-ui/core";
+import MainVideo from "../../components/MainVideo";
 
 const subscribeRemoteFeed = (list, info, dispatch) => {
   list.forEach(({ id, display, audio_codec, video_codec }) => {
@@ -183,7 +187,18 @@ const Video = () => {
   }
   return (
     <div>
-      <MyVideo />
+      <Grid container spacing={3}>
+        <Grid item xs={3}>
+          <UserList />
+          <MyVideo />
+        </Grid>
+        <Grid item xs={6}>
+          <MainVideo />
+        </Grid>
+        <Grid item xs={3}>
+          <Chatting />
+        </Grid>
+      </Grid>
       <VideoList />
     </div>
   );

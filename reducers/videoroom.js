@@ -14,6 +14,7 @@ export const initialState = {
   joinRoomLoading: false,
   joinRoomDone: false,
   openDataChannelDone: false,
+  mainStream: { stream: null, display: null },
 };
 
 export const CONNECT_JANUS_REQUEST = "CONNECT_JANUS_REQUEST";
@@ -37,6 +38,8 @@ export const OPEN_DATA_CHANNEL_SUCCESS = "OPEN_DATA_CHANNEL_SUCCESS";
 export const LEAVING_REMOTE_FEED_REQUEST = "LEAVING_REMOTE_FEED_REQUEST";
 export const LEAVING_REMOTE_FEED_SUCCESS = "LEAVING_REMOTE_FEED_SUCCESS";
 export const LEAVING_REMOTE_FEED_FAILURE = "LEAVING_REMOTE_FEED_FAILURE";
+
+export const CHANGE_MAIN_STREAM = "CHANGE_MAIN_STREAM";
 
 export const connectJanusRequest = () => ({
   type: CONNECT_JANUS_REQUEST,
@@ -110,6 +113,11 @@ export const leavingRemoteFeedFailure = () => ({
   type: LEAVING_REMOTE_FEED_FAILURE,
 });
 
+export const changeMainStream = (payload) => ({
+  type: CHANGE_MAIN_STREAM,
+  payload,
+});
+
 const reducer = (state = initialState, action) =>
   produce(state, (draft) => {
     switch (action.type) {
@@ -165,6 +173,9 @@ const reducer = (state = initialState, action) =>
         break;
       case LEAVING_REMOTE_FEED_FAILURE:
         break;
+      case CHANGE_MAIN_STREAM:
+        draft.mainStream.stream = action.payload.stream;
+        draft.mainStream.display = action.payload.display;
       default:
         break;
     }
