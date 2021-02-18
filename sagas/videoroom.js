@@ -1,4 +1,12 @@
-import { all, fork, put, takeLatest, call, select } from "redux-saga/effects";
+import {
+  all,
+  fork,
+  put,
+  takeLatest,
+  call,
+  select,
+  takeEvery,
+} from "redux-saga/effects";
 import { Janus } from "janus-gateway";
 import {
   JOIN_ROOM_REQUEST,
@@ -8,6 +16,9 @@ import {
   SUBSCRIBE_REMOTE_FEED_REQUEST,
   subscribeRemoteFeedSuccess,
   subscribeRemoteFeedFailure,
+  LEAVING_REMOTE_FEED_REQUEST,
+  leavingRemoteFeedFailure,
+  leavingRemoteFeedSuccess,
 } from "../reducers/videoroom";
 import produce from "immer";
 
@@ -27,7 +38,6 @@ function* joinRoom(action) {
   try {
     yield call(joinRoomAPI, action.payload);
   } catch (err) {
-    console.log(err);
     yield put(joinRoomFailure());
   }
 }
@@ -68,6 +78,8 @@ function* publishOwnFeed(action) {
   }
 }
 
+// const remoteFeedsPluginHandle = [];
+
 async function subscribeRemoteFeedAPI(
   myFeed,
   room,
@@ -97,6 +109,7 @@ async function subscribeRemoteFeedAPI(
         Janus.error("  -- Error attaching plugin...", error);
       },
       onmessage: function (msg, jsep) {
+        console.log("remotefeed 메세지옴", msg);
         var event = msg["videoroom"];
         if (msg["error"]) {
           console.log(msg["error"]);
@@ -128,6 +141,10 @@ async function subscribeRemoteFeedAPI(
       onlocalstream: function (stream) {},
       onremotestream: function (stream) {
         remoteFeed.stream = stream;
+        // remoteFeedsPluginHandle.push({
+        //   id: remoteFeed.id,
+        //   pluginHandle: remotePluginHandle,
+        // });
         resolve(remoteFeed);
       },
       oncleanup: function () {
@@ -150,8 +167,24 @@ function* subscribeRemoteFeed(action) {
     );
     yield put(subscribeRemoteFeedSuccess(result));
   } catch (err) {
-    console.log(err);
     yield put(subscribeRemoteFeedFailure());
+  }
+}
+
+function leavingRemoteAPI(id) {
+  //   const idx = remoteFeedsPluginHandle.findIndex((v) => v.id === id);
+  //   const { pluginHandle } = remoteFeedsPluginHandle[idx];
+  //   pluginHandle.detach();
+  //   remoteFeedsPluginHandle.splice(idx, 1);
+}
+
+function* leavingRemoteFeed(action) {
+  try {
+    yield call(leavingRemoteAPI, action.payload.id);
+    yield put(leavingRemoteFeedSuccess(action.payload));
+  } catch (err) {
+    console.log(err);
+    yield put(leavingRemoteFeedFailure());
   }
 }
 
@@ -164,7 +197,11 @@ function* watchPublishOwnFeed() {
 }
 
 function* watchSubscribeRemoteFeed() {
-  yield takeLatest(SUBSCRIBE_REMOTE_FEED_REQUEST, subscribeRemoteFeed);
+  yield takeEvery(SUBSCRIBE_REMOTE_FEED_REQUEST, subscribeRemoteFeed);
+}
+
+function* watchLeavingRemoteFeed() {
+  yield takeEvery(LEAVING_REMOTE_FEED_REQUEST, leavingRemoteFeed);
 }
 
 export default function* videoroomSaga() {
@@ -172,5 +209,6 @@ export default function* videoroomSaga() {
     fork(watchJoinRoom),
     fork(watchPublishOwnFeed),
     fork(watchSubscribeRemoteFeed),
+    fork(watchLeavingRemoteFeed),
   ]);
 }

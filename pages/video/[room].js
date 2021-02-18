@@ -10,6 +10,7 @@ import {
   publishOwnFeedSuccess,
   subscribeRemoteFeedRequest,
   openDataChannelSuccess,
+  leavingRemoteFeedRequest,
 } from "../../reducers/videoroom";
 import { useRouter } from "next/router";
 import { Janus } from "janus-gateway";
@@ -113,7 +114,10 @@ const attachJanus = (dispatch, janus) => {
             }
           } else if (event === "event") {
             if (msg["publishers"]) {
+              // 새로운 접속자
               subscribeRemoteFeed(msg["publishers"], info, dispatch);
+            } else if (msg["leaving"]) {
+              dispatch(leavingRemoteFeedRequest({ id: msg["leaving"] }));
             }
           } else if (event === "destroyed") {
             alert("룸 제거");

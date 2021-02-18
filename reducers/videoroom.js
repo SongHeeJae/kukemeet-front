@@ -34,6 +34,10 @@ export const SUBSCRIBE_REMOTE_FEED_FAILURE = "SUBSCRIBE_REMOTE_FEED_FAILURE";
 
 export const OPEN_DATA_CHANNEL_SUCCESS = "OPEN_DATA_CHANNEL_SUCCESS";
 
+export const LEAVING_REMOTE_FEED_REQUEST = "LEAVING_REMOTE_FEED_REQUEST";
+export const LEAVING_REMOTE_FEED_SUCCESS = "LEAVING_REMOTE_FEED_SUCCESS";
+export const LEAVING_REMOTE_FEED_FAILURE = "LEAVING_REMOTE_FEED_FAILURE";
+
 export const connectJanusRequest = () => ({
   type: CONNECT_JANUS_REQUEST,
 });
@@ -92,6 +96,20 @@ export const openDataChannelSuccess = () => ({
   type: OPEN_DATA_CHANNEL_SUCCESS,
 });
 
+export const leavingRemoteFeedRequest = (payload) => ({
+  type: LEAVING_REMOTE_FEED_REQUEST,
+  payload,
+});
+
+export const leavingRemoteFeedSuccess = (payload) => ({
+  type: LEAVING_REMOTE_FEED_SUCCESS,
+  payload,
+});
+
+export const leavingRemoteFeedFailure = () => ({
+  type: LEAVING_REMOTE_FEED_FAILURE,
+});
+
 const reducer = (state = initialState, action) =>
   produce(state, (draft) => {
     switch (action.type) {
@@ -138,6 +156,15 @@ const reducer = (state = initialState, action) =>
         break;
       case OPEN_DATA_CHANNEL_SUCCESS:
         draft.openDataChannelDone = true;
+      case LEAVING_REMOTE_FEED_REQUEST:
+        break;
+      case LEAVING_REMOTE_FEED_SUCCESS:
+        draft.remoteFeeds = state.remoteFeeds.filter(
+          (v) => v.id !== action.payload.id
+        );
+        break;
+      case LEAVING_REMOTE_FEED_FAILURE:
+        break;
       default:
         break;
     }
