@@ -15,6 +15,7 @@ import {
 import { useRouter } from "next/router";
 import { Janus } from "janus-gateway";
 import VideoList from "../../components/VideoList";
+import MyVideo from "../../components/MyVideo";
 
 const subscribeRemoteFeed = (list, info, dispatch) => {
   list.forEach(({ id, display, audio_codec, video_codec }) => {
@@ -182,7 +183,7 @@ const Video = () => {
   }
   return (
     <div>
-      비디오페이지;ㅇㅇㅇ
+      <MyVideo />
       <VideoList />
     </div>
   );
