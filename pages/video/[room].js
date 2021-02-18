@@ -140,6 +140,8 @@ const Video = () => {
     // 반환 426 코드면 룸 생성하면됨 테스트룸 1234
   }, [connectJanusDone]);
 
+  useEffect(() => {});
+
   if (!connectJanusDone) {
     return <div>연결중입니다..</div>;
   }
