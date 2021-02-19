@@ -8,6 +8,7 @@ import {
   takeEvery,
 } from "redux-saga/effects";
 import { Janus } from "janus-gateway";
+import hark from "hark";
 import {
   JOIN_ROOM_REQUEST,
   PUBLISH_OWN_FEED_REQUEST,
@@ -48,6 +49,7 @@ import {
   inactiveScreenSharingSuccess,
   inactiveScreenSharingFailure,
   inactiveScreenSharingRequest,
+  changeMainStream,
 } from "../reducers/videoroom";
 
 function joinRoomAPI({ info, room, username, nickname }) {
@@ -169,6 +171,7 @@ async function subscribeRemoteFeedAPI(
       onlocalstream: function (stream) {},
       onremotestream: function (stream) {
         remoteFeed.stream = stream;
+        remoteFeed.hark = hark(stream, {}); // 보이스 추적
         // remoteFeedsPluginHandle.push({
         //   id: remoteFeed.id,
         //   pluginHandle: remotePluginHandle,
@@ -210,16 +213,19 @@ function* subscribeRemoteFeed(action) {
   }
 }
 
-function leavingRemoteAPI(id) {
+function leavingRemoteAPI(remoteFeeds, id) {
   //   const idx = remoteFeedsPluginHandle.findIndex((v) => v.id === id);
   //   const { pluginHandle } = remoteFeedsPluginHandle[idx];
   //   pluginHandle.detach();
   //   remoteFeedsPluginHandle.splice(idx, 1);
+  const remoteFeed = remoteFeeds.find((v) => v.id === id);
+  if (remoteFeed.hark) remoteFeed.hark.off("speaking");
 }
 
 function* leavingRemoteFeed(action) {
   try {
-    yield call(leavingRemoteAPI, action.payload.id);
+    const { remoteFeeds } = yield select((state) => state.videoroom);
+    yield call(leavingRemoteAPI, remoteFeeds, action.payload.id);
     yield put(leavingRemoteFeedSuccess(action.payload));
   } catch (err) {
     yield put(leavingRemoteFeedFailure());
@@ -306,9 +312,41 @@ function* inactiveVideo(action) {
   }
 }
 
-function* activeSpeakerDetection(action) {}
+function activeSpeakerDetectionAPI(remoteFeeds, { dispatch }) {
+  remoteFeeds.forEach((v) => {
+    if (!v.hark) return;
+    v.hark.on("speaking", () => {
+      dispatch(changeMainStream({ display: v.display, stream: v.stream }));
+    });
+  });
+}
 
-function* inactiveSpeakerDetection(action) {}
+function* activeSpeakerDetection(action) {
+  try {
+    const { remoteFeeds } = yield select((state) => state.videoroom);
+    yield call(activeSpeakerDetectionAPI, remoteFeeds, action.payload);
+    yield put(activeSpeakerDetectionSuccess());
+  } catch (err) {
+    yield put(activeSpeakerDetectionFailure());
+  }
+}
+
+function inactiveSpeakerDetectionAPI(remoteFeeds) {
+  remoteFeeds.forEach((v) => {
+    if (!v.hark) return;
+    v.hark.off("speaking");
+  });
+}
+
+function* inactiveSpeakerDetection() {
+  try {
+    const { remoteFeeds } = yield select((state) => state.videoroom);
+    yield call(inactiveSpeakerDetectionAPI, remoteFeeds);
+    yield put(inactiveSpeakerDetectionSuccess());
+  } catch (err) {
+    yield put(inactiveSpeakerDetectionFailure());
+  }
+}
 
 function activeScreenSharingAPI({ info, dispatch }) {
   const { pluginHandle } = info;

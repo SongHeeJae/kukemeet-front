@@ -337,6 +337,7 @@ const reducer = (state = initialState, action) =>
           id: action.payload.id,
           display: action.payload.display,
           stream: action.payload.stream,
+          hark: action.payload.hark,
         });
         break;
       case SUBSCRIBE_REMOTE_FEED_FAILURE:

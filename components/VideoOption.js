@@ -30,9 +30,8 @@ const VideoOption = ({ info }) => {
     else dispatch(activeVideoRequest(info.current));
   }, [activeVideo]);
   const onClickActiveSpeakerDetection = useCallback(() => {
-    if (activeSpeakerDetection)
-      dispatch(inactiveSpeakerDetectionRequest(info.current));
-    else dispatch(activeSpeakerDetectionRequest(info.current));
+    if (activeSpeakerDetection) dispatch(inactiveSpeakerDetectionRequest());
+    else dispatch(activeSpeakerDetectionRequest({ dispatch }));
   }, [activeSpeakerDetection]);
   const onClickActiveScreenSharing = useCallback(() => {
     if (activeScreenSharing)
