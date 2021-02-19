@@ -56,6 +56,47 @@ export const SEND_CHAT_FAILURE = "SEND_CHAT_FAILURE";
 
 export const RECEIVE_CHAT_MESSAGE = "RECEIVE_CHAT_MESSAGE";
 
+export const ACTIVE_AUDIO_REQUEST = "ACTIVE_AUDIO_REQUEST";
+export const ACTIVE_AUDIO_SUCCESS = "ACTIVE_AUDIO_SUCCESS";
+export const ACTIVE_AUDIO_FAILURE = "ACTIVE_AUDIO_FAILURE";
+
+export const INACTIVE_AUDIO_REQUEST = "INACTIVE_AUDIO_REQUEST";
+export const INACTIVE_AUDIO_SUCCESS = "INACTIVE_AUDIO_SUCCESS";
+export const INACTIVE_AUDIO_FAILURE = "INACTIVE_AUDIO_FAILURE";
+
+export const ACTIVE_VIDEO_REQUEST = "ACTIVE_VIDEO_REQUEST";
+export const ACTIVE_VIDEO_SUCCESS = "ACTIVE_VIDEO_SUCCESS";
+export const ACTIVE_VIDEO_FAILURE = "ACTIVE_VIDEO_FAILURE";
+
+export const INACTIVE_VIDEO_REQUEST = "INACTIVE_VIDEO_REQUEST";
+export const INACTIVE_VIDEO_SUCCESS = "INACTIVE_VIDEO_SUCCESS";
+export const INACTIVE_VIDEO_FAILURE = "INACTIVE_VIDEO_FAILURE";
+
+export const ACTIVE_SPEAKER_DETECTION_REQUEST =
+  "ACTIVE_SPEAKER_DETECTION_REQUEST";
+export const ACTIVE_SPEAKER_DETECTION_SUCCESS =
+  "ACTIVE_SPEAKER_DETECTION_SUCCESS";
+export const ACTIVE_SPEAKER_DETECTION_FAILURE =
+  "ACTIVE_SPEAKER_DETECTION_FAILURE";
+
+export const INACTIVE_SPEAKER_DETECTION_REQUEST =
+  "INACTIVE_SPEAKER_DETECTION_REQUEST";
+export const INACTIVE_SPEAKER_DETECTION_SUCCESS =
+  "INACTIVE_SPEAKER_DETECTION_SUCCESS";
+export const INACTIVE_SPEAKER_DETECTION_FAILURE =
+  "INACTIVE_SPEAKER_DETECTION_FAILURE";
+
+export const ACTIVE_SCREEN_SHARING_REQUEST = "ACTIVE_SCREEN_SHARING_REQUEST";
+export const ACTIVE_SCREEN_SHARING_SUCCESS = "ACTIVE_SCREEN_SHARING_SUCCESS";
+export const ACTIVE_SCREEN_SHARING_FAILURE = "ACTIVE_SCREEN_SHARING_FAILURE";
+
+export const INACTIVE_SCREEN_SHARING_REQUEST =
+  "INACTIVE_SCREEN_SHARING_REQUEST";
+export const INACTIVE_SCREEN_SHARING_SUCCESS =
+  "INACTIVE_SCREEN_SHARING_SUCCESS";
+export const INACTIVE_SCREEN_SHARING_FAILURE =
+  "INACTIVE_SCREEN_SHARING_FAILURE";
+
 export const connectJanusRequest = () => ({
   type: CONNECT_JANUS_REQUEST,
 });
@@ -152,6 +193,110 @@ export const receiveChatMessage = (payload) => ({
   payload,
 });
 
+export const activeAudioRequest = (payload) => ({
+  type: ACTIVE_AUDIO_REQUEST,
+  payload,
+});
+
+export const activeAudioSuccess = () => ({
+  type: ACTIVE_AUDIO_SUCCESS,
+});
+
+export const activeAudioFailure = () => ({
+  type: ACTIVE_AUDIO_FAILURE,
+});
+
+export const inactiveAudioRequest = (payload) => ({
+  type: INACTIVE_AUDIO_REQUEST,
+  payload,
+});
+
+export const inactiveAudioSuccess = () => ({
+  type: INACTIVE_AUDIO_SUCCESS,
+});
+
+export const inactiveAudioFailure = () => ({
+  type: INACTIVE_AUDIO_FAILURE,
+});
+
+export const activeVideoRequest = (payload) => ({
+  type: ACTIVE_VIDEO_REQUEST,
+  payload,
+});
+
+export const activeVideoSuccess = () => ({
+  type: ACTIVE_VIDEO_SUCCESS,
+});
+
+export const activeVideoFailure = () => ({
+  type: ACTIVE_VIDEO_FAILURE,
+});
+
+export const inactiveVideoRequest = (payload) => ({
+  type: INACTIVE_VIDEO_REQUEST,
+  payload,
+});
+
+export const inactiveVideoSuccess = () => ({
+  type: INACTIVE_VIDEO_SUCCESS,
+});
+
+export const inactiveVideoFailure = () => ({
+  type: INACTIVE_VIDEO_FAILURE,
+});
+
+export const activeSpeakerDetectionRequest = (payload) => ({
+  type: ACTIVE_SPEAKER_DETECTION_REQUEST,
+  payload,
+});
+
+export const activeSpeakerDetectionSuccess = () => ({
+  type: ACTIVE_SPEAKER_DETECTION_SUCCESS,
+});
+
+export const activeSpeakerDetectionFailure = () => ({
+  type: ACTIVE_SPEAKER_DETECTION_FAILURE,
+});
+
+export const inactiveSpeakerDetectionRequest = (payload) => ({
+  type: INACTIVE_SPEAKER_DETECTION_REQUEST,
+  payload,
+});
+
+export const inactiveSpeakerDetectionSuccess = () => ({
+  type: INACTIVE_SPEAKER_DETECTION_SUCCESS,
+});
+
+export const inactiveSpeakerDetectionFailure = () => ({
+  type: INACTIVE_SPEAKER_DETECTION_FAILURE,
+});
+
+export const activeScreenSharingRequest = (payload) => ({
+  type: ACTIVE_SCREEN_SHARING_REQUEST,
+  payload,
+});
+
+export const activeScreenSharingSuccess = () => ({
+  type: ACTIVE_SCREEN_SHARING_SUCCESS,
+});
+
+export const activeScreenSharingFailure = () => ({
+  type: ACTIVE_SCREEN_SHARING_FAILURE,
+});
+
+export const inactiveScreenSharingRequest = (payload) => ({
+  type: INACTIVE_SCREEN_SHARING_REQUEST,
+  payload,
+});
+
+export const inactiveScreenSharingSuccess = () => ({
+  type: INACTIVE_SCREEN_SHARING_SUCCESS,
+});
+
+export const inactiveScreenSharingFailure = () => ({
+  type: INACTIVE_SCREEN_SHARING_FAILURE,
+});
+
 const reducer = (state = initialState, action) =>
   produce(state, (draft) => {
     switch (action.type) {
@@ -226,6 +371,62 @@ const reducer = (state = initialState, action) =>
           display: action.payload.display,
           text: action.payload.text,
         });
+      case ACTIVE_AUDIO_REQUEST:
+        break;
+      case ACTIVE_AUDIO_SUCCESS:
+        draft.activeAudio = true;
+        break;
+      case ACTIVE_AUDIO_FAILURE:
+        break;
+      case INACTIVE_AUDIO_REQUEST:
+        break;
+      case INACTIVE_AUDIO_SUCCESS:
+        draft.activeAudio = false;
+        break;
+      case INACTIVE_AUDIO_FAILURE:
+        break;
+      case ACTIVE_VIDEO_REQUEST:
+        break;
+      case ACTIVE_VIDEO_SUCCESS:
+        draft.activeVideo = true;
+        break;
+      case ACTIVE_VIDEO_FAILURE:
+        break;
+      case INACTIVE_VIDEO_REQUEST:
+        break;
+      case INACTIVE_VIDEO_SUCCESS:
+        draft.activeVideo = false;
+        break;
+      case INACTIVE_VIDEO_FAILURE:
+        break;
+      case ACTIVE_SPEAKER_DETECTION_REQUEST:
+        break;
+      case ACTIVE_SPEAKER_DETECTION_SUCCESS:
+        draft.activeSpeakerDetection = true;
+        break;
+      case ACTIVE_SPEAKER_DETECTION_FAILURE:
+        break;
+      case INACTIVE_SPEAKER_DETECTION_REQUEST:
+        break;
+      case INACTIVE_SPEAKER_DETECTION_SUCCESS:
+        draft.activeSpeakerDetection = false;
+        break;
+      case INACTIVE_SPEAKER_DETECTION_FAILURE:
+        break;
+      case ACTIVE_SCREEN_SHARING_REQUEST:
+        break;
+      case ACTIVE_SCREEN_SHARING_SUCCESS:
+        draft.activeScreenSharing = true;
+        break;
+      case ACTIVE_SCREEN_SHARING_FAILURE:
+        break;
+      case INACTIVE_SCREEN_SHARING_REQUEST:
+        break;
+      case INACTIVE_SCREEN_SHARING_SUCCESS:
+        draft.activeScreenSharing = false;
+        break;
+      case INACTIVE_SCREEN_SHARING_FAILURE:
+        break;
       default:
         break;
     }

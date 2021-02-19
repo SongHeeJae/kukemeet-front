@@ -20,6 +20,7 @@ import UserList from "../../components/UserList";
 import Chatting from "../../components/Chatting";
 import { Grid } from "@material-ui/core";
 import MainVideo from "../../components/MainVideo";
+import VideoOption from "../../components/VideoOption";
 
 const subscribeRemoteFeed = (list, info, dispatch) => {
   list.forEach(({ id, display, audio_codec, video_codec }) => {
@@ -194,6 +195,7 @@ const Video = () => {
         </Grid>
         <Grid item xs={6}>
           <MainVideo />
+          <VideoOption info={info} />
         </Grid>
         <Grid item xs={3}>
           <Chatting info={info} />

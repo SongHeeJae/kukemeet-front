@@ -23,6 +23,31 @@ import {
   sendChatSuccess,
   receiveChatMessage,
   sendChatFailure,
+  ACTIVE_AUDIO_REQUEST,
+  INACTIVE_AUDIO_REQUEST,
+  ACTIVE_VIDEO_REQUEST,
+  INACTIVE_VIDEO_REQUEST,
+  ACTIVE_SPEAKER_DETECTION_REQUEST,
+  INACTIVE_SPEAKER_DETECTION_REQUEST,
+  ACTIVE_SCREEN_SHARING_REQUEST,
+  INACTIVE_SCREEN_SHARING_REQUEST,
+  activeAudioFailure,
+  activeAudioSuccess,
+  inactiveAudioSuccess,
+  inactiveAudioFailure,
+  activeVideoSuccess,
+  activeVideoFailure,
+  inactiveVideoSuccess,
+  inactiveVideoFailure,
+  activeSpeakerDetectionSuccess,
+  activeSpeakerDetectionFailure,
+  inactiveSpeakerDetectionSuccess,
+  inactiveSpeakerDetectionFailure,
+  activeScreenSharingSuccess,
+  activeScreenSharingFailure,
+  inactiveScreenSharingSuccess,
+  inactiveScreenSharingFailure,
+  inactiveScreenSharingRequest,
 } from "../reducers/videoroom";
 
 function joinRoomAPI({ info, room, username, nickname }) {
@@ -225,8 +250,113 @@ function* sendChat(action) {
     const room = yield select((state) => state.room);
     yield call(sendChatAPI, room, action.payload);
   } catch (err) {
-    console.log(err);
     yield put(sendChatFailure());
+  }
+}
+
+function activeAudioAPI({ pluginHandle }) {
+  pluginHandle.unmuteAudio();
+}
+
+function* activeAudio(action) {
+  try {
+    yield call(activeAudioAPI, action.payload);
+    yield put(activeAudioSuccess());
+  } catch (err) {
+    yield put(activeAudioFailure());
+  }
+}
+
+function inactiveAudioAPI({ pluginHandle }) {
+  pluginHandle.muteAudio();
+}
+
+function* inactiveAudio(action) {
+  try {
+    yield call(inactiveAudioAPI, action.payload);
+    yield put(inactiveAudioSuccess());
+  } catch (err) {
+    yield put(inactiveAudioFailure());
+  }
+}
+
+function activeVideoAPI({ pluginHandle }) {
+  pluginHandle.unmuteVideo();
+}
+
+function* activeVideo(action) {
+  try {
+    yield call(activeVideoAPI, action.payload);
+    yield put(activeVideoSuccess());
+  } catch (err) {
+    yield put(activeVideoFailure());
+  }
+}
+
+function inactiveVideoAPI({ pluginHandle }) {
+  pluginHandle.muteVideo();
+}
+
+function* inactiveVideo(action) {
+  try {
+    yield call(inactiveVideoAPI, action.payload);
+    yield put(inactiveVideoSuccess());
+  } catch (err) {
+    yield put(inactiveVideoFailure());
+  }
+}
+
+function* activeSpeakerDetection(action) {}
+
+function* inactiveSpeakerDetection(action) {}
+
+function activeScreenSharingAPI({ info, dispatch }) {
+  const { pluginHandle } = info;
+  pluginHandle.createOffer({
+    media: {
+      video: "screen",
+      replaceVideo: true,
+    },
+    success: function (jsep) {
+      pluginHandle.send({ message: { audio: true, video: true }, jsep: jsep });
+      dispatch(activeScreenSharingSuccess());
+    },
+    error: function (error) {
+      dispatch(activeScreenSharingFailure());
+      dispatch(inactiveScreenSharingRequest({ info, dispatch }));
+    },
+  });
+}
+
+function* activeScreenSharing(action) {
+  try {
+    yield call(activeScreenSharingAPI, action.payload);
+  } catch (err) {
+    yield put(activeScreenSharingFailure());
+  }
+}
+
+function inactiveScreenSharingAPI({ info, dispatch }) {
+  const { pluginHandle } = info;
+  pluginHandle.createOffer({
+    media: {
+      replaceVideo: true,
+    },
+    success: function (jsep) {
+      pluginHandle.send({ message: { audio: true, video: true }, jsep: jsep });
+      dispatch(inactiveScreenSharingSuccess());
+    },
+    error: function (error) {
+      dispatch(inactiveScreenSharingFailure());
+    },
+  });
+}
+
+function* inactiveScreenSharing(action) {
+  try {
+    yield call(inactiveScreenSharingAPI, action.payload);
+  } catch (err) {
+    yield put(inactiveScreenSharingFailure());
   }
 }
 
@@ -250,6 +380,38 @@ function* watchSendChat() {
   yield takeEvery(SEND_CHAT_REQUEST, sendChat);
 }
 
+function* watchActiveAudio() {
+  yield takeEvery(ACTIVE_AUDIO_REQUEST, activeAudio);
+}
+
+function* watchInactiveAudio() {
+  yield takeEvery(INACTIVE_AUDIO_REQUEST, inactiveAudio);
+}
+
+function* watchActiveVideo() {
+  yield takeEvery(ACTIVE_VIDEO_REQUEST, activeVideo);
+}
+
+function* watchInactiveVideo() {
+  yield takeEvery(INACTIVE_VIDEO_REQUEST, inactiveVideo);
+}
+
+function* watchActiveSpeakerDetection() {
+  yield takeEvery(ACTIVE_SPEAKER_DETECTION_REQUEST, activeSpeakerDetection);
+}
+
+function* watchInactiveSpeakerDetection() {
+  yield takeEvery(INACTIVE_SPEAKER_DETECTION_REQUEST, inactiveSpeakerDetection);
+}
+
+function* watchActiveScreenSharing() {
+  yield takeEvery(ACTIVE_SCREEN_SHARING_REQUEST, activeScreenSharing);
+}
+
+function* watchInactiveScreenSharing() {
+  yield takeEvery(INACTIVE_SCREEN_SHARING_REQUEST, inactiveScreenSharing);
+}
+
 export default function* videoroomSaga() {
   yield all([
     fork(watchJoinRoom),
@@ -257,5 +419,13 @@ export default function* videoroomSaga() {
     fork(watchSubscribeRemoteFeed),
     fork(watchLeavingRemoteFeed),
     fork(watchSendChat),
+    fork(watchActiveAudio),
+    fork(watchInactiveAudio),
+    fork(watchActiveVideo),
+    fork(watchInactiveVideo),
+    fork(watchActiveSpeakerDetection),
+    fork(watchInactiveSpeakerDetection),
+    fork(watchActiveScreenSharing),
+    fork(watchInactiveScreenSharing),
   ]);
 }
