@@ -48,7 +48,9 @@ export const LEAVING_REMOTE_FEED_REQUEST = "LEAVING_REMOTE_FEED_REQUEST";
 export const LEAVING_REMOTE_FEED_SUCCESS = "LEAVING_REMOTE_FEED_SUCCESS";
 export const LEAVING_REMOTE_FEED_FAILURE = "LEAVING_REMOTE_FEED_FAILURE";
 
-export const CHANGE_MAIN_STREAM = "CHANGE_MAIN_STREAM";
+export const CHANGE_MAIN_STREAM_REQUEST = "CHANGE_MAIN_STREAM_REQUEST";
+export const CHANGE_MAIN_STREAM_SUCCESS = "CHANGE_MAIN_STREAM_SUCCESS";
+export const CHANGE_MAIN_STREAM_FAILURE = "CHANGE_MAIN_STREAM_FAILURE";
 
 export const SEND_CHAT_REQUEST = "SEND_CHAT_REQUEST";
 export const SEND_CHAT_SUCCESS = "SEND_CHAT_SUCCESS";
@@ -169,9 +171,18 @@ export const leavingRemoteFeedFailure = () => ({
   type: LEAVING_REMOTE_FEED_FAILURE,
 });
 
-export const changeMainStream = (payload) => ({
-  type: CHANGE_MAIN_STREAM,
+export const changeMainStreamRequest = (payload) => ({
+  type: CHANGE_MAIN_STREAM_REQUEST,
   payload,
+});
+
+export const changeMainStreamSuccess = (payload) => ({
+  type: CHANGE_MAIN_STREAM_SUCCESS,
+  payload,
+});
+
+export const changeMainStreamFailure = (payload) => ({
+  type: CHANGE_MAIN_STREAM_FAILURE,
 });
 
 export const sendChatRequest = (payload) => ({
@@ -353,9 +364,13 @@ const reducer = (state = initialState, action) =>
         break;
       case LEAVING_REMOTE_FEED_FAILURE:
         break;
-      case CHANGE_MAIN_STREAM:
+      case CHANGE_MAIN_STREAM_REQUEST:
+        break;
+      case CHANGE_MAIN_STREAM_SUCCESS:
         draft.mainStream.stream = action.payload.stream;
         draft.mainStream.display = action.payload.display;
+        break;
+      case CHANGE_MAIN_STREAM_FAILURE:
         break;
       case SEND_CHAT_REQUEST:
         break;

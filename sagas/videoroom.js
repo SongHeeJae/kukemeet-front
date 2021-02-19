@@ -49,7 +49,10 @@ import {
   inactiveScreenSharingSuccess,
   inactiveScreenSharingFailure,
   inactiveScreenSharingRequest,
-  changeMainStream,
+  changeMainStreamRequest,
+  changeMainStreamSuccess,
+  changeMainStreamFailure,
+  CHANGE_MAIN_STREAM_REQUEST,
 } from "../reducers/videoroom";
 
 function joinRoomAPI({ info, room, username, nickname }) {
@@ -232,6 +235,21 @@ function* leavingRemoteFeed(action) {
   }
 }
 
+function changeMainStreamAPI(mainStream, { display }) {
+  if (mainStream.display === display)
+    throw "already registered as the main stream.";
+}
+
+function* changeMainStream(action) {
+  try {
+    const { mainStream } = yield select((state) => state.videoroom);
+    yield call(changeMainStreamAPI, mainStream, action.payload);
+    yield put(changeMainStreamSuccess(action.payload));
+  } catch (err) {
+    yield put(changeMainStreamFailure());
+  }
+}
+
 function sendChatAPI(room, { dispatch, info, display, text }) {
   const { pluginHandle } = info;
   const message = {
@@ -316,7 +334,9 @@ function activeSpeakerDetectionAPI(remoteFeeds, { dispatch }) {
   remoteFeeds.forEach((v) => {
     if (!v.hark) return;
     v.hark.on("speaking", () => {
-      dispatch(changeMainStream({ display: v.display, stream: v.stream }));
+      dispatch(
+        changeMainStreamRequest({ display: v.display, stream: v.stream })
+      );
     });
   });
 }
@@ -414,6 +434,10 @@ function* watchLeavingRemoteFeed() {
   yield takeEvery(LEAVING_REMOTE_FEED_REQUEST, leavingRemoteFeed);
 }
 
+function* watchChangeMainStream() {
+  yield takeLatest(CHANGE_MAIN_STREAM_REQUEST, changeMainStream);
+}
+
 function* watchSendChat() {
   yield takeEvery(SEND_CHAT_REQUEST, sendChat);
 }
@@ -456,6 +480,7 @@ export default function* videoroomSaga() {
     fork(watchPublishOwnFeed),
     fork(watchSubscribeRemoteFeed),
     fork(watchLeavingRemoteFeed),
+    fork(watchChangeMainStream),
     fork(watchSendChat),
     fork(watchActiveAudio),
     fork(watchInactiveAudio),

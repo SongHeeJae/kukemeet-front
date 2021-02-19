@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useCallback } from "react";
 import styled from "styled-components";
 import { useDispatch } from "react-redux";
-import { changeMainStream } from "../reducers/videoroom";
+import { changeMainStreamRequest } from "../reducers/videoroom";
 
 const VideoWrapper = styled.video`
   width: 100%;
@@ -16,7 +16,7 @@ const VideoItem = ({ stream, display }) => {
   }, []);
 
   const onClick = useCallback(() => {
-    dispatch(changeMainStream({ stream, display }));
+    dispatch(changeMainStreamRequest({ stream, display }));
   }, [stream]);
   return <VideoWrapper ref={videoRef} autoPlay playsInline onClick={onClick} />;
 };
