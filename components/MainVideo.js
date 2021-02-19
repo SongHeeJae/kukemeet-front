@@ -61,6 +61,7 @@ const MainVideo = () => {
             ref={videoRef}
             controls
             onClick={onClick}
+            muted={true}
           />
           <div>{mainStream.display}</div>
         </>
