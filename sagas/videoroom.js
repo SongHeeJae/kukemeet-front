@@ -175,6 +175,13 @@ async function subscribeRemoteFeedAPI(
       onremotestream: function (stream) {
         remoteFeed.stream = stream;
         remoteFeed.hark = hark(stream, {}); // 보이스 추적
+        if (activeSpeakerDetection) {
+          remoteFeed.hark.on("speaking", () => {
+            dispatch(
+              changeMainStreamRequest({ display: remoteFeed.display, stream })
+            );
+          });
+        }
         // remoteFeedsPluginHandle.push({
         //   id: remoteFeed.id,
         //   pluginHandle: remotePluginHandle,
@@ -203,7 +210,9 @@ async function subscribeRemoteFeedAPI(
 
 function* subscribeRemoteFeed(action) {
   try {
-    const { myFeed, room } = yield select((state) => state.videoroom);
+    const { myFeed, room, activeSpeakerDetection } = yield select(
+      (state) => state.videoroom
+    );
     const result = yield call(
       subscribeRemoteFeedAPI,
       myFeed,
