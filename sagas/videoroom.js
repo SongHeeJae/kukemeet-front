@@ -36,8 +36,10 @@ import {
   activeAudioSuccess,
   inactiveAudioSuccess,
   inactiveAudioFailure,
+  activeVideoRequest,
   activeVideoSuccess,
   activeVideoFailure,
+  inactiveVideoRequest,
   inactiveVideoSuccess,
   inactiveVideoFailure,
   activeSpeakerDetectionSuccess,
@@ -388,6 +390,7 @@ function activeScreenSharingAPI({ info, dispatch }) {
     success: function (jsep) {
       pluginHandle.send({ message: { audio: true, video: true }, jsep: jsep });
       dispatch(activeScreenSharingSuccess());
+      dispatch(activeVideoRequest());
     },
     error: function (error) {
       dispatch(activeScreenSharingFailure());
@@ -413,6 +416,7 @@ function inactiveScreenSharingAPI({ info, dispatch }) {
     success: function (jsep) {
       pluginHandle.send({ message: { audio: true, video: true }, jsep: jsep });
       dispatch(inactiveScreenSharingSuccess());
+      dispatch(activeVideoRequest());
     },
     error: function (error) {
       dispatch(inactiveScreenSharingFailure());
