@@ -1,13 +1,13 @@
 import React from "react";
 import MenuBar from "../components/MenuBar";
 
-const Index = () => {
+const About = () => {
   return (
     <>
       <MenuBar />
-      <div>시작 페이지입니다.</div>;
+      소개페이지입니다.
     </>
   );
 };
 
-export default Index;
+export default About;
