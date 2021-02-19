@@ -116,7 +116,8 @@ function* publishOwnFeed(action) {
 async function subscribeRemoteFeedAPI(
   myFeed,
   room,
-  { info, id, display, audio, video, dispatch }
+  { info, id, display, audio, video, dispatch },
+  activeSpeakerDetection
 ) {
   return await new Promise((resolve, reject) => {
     const { janus, opaqueId } = info;
@@ -142,7 +143,6 @@ async function subscribeRemoteFeedAPI(
         Janus.error("  -- Error attaching plugin...", error);
       },
       onmessage: function (msg, jsep) {
-        console.log("remotefeed 메세지옴", msg);
         var event = msg["videoroom"];
         if (msg["error"]) {
           console.log(msg["error"]);
@@ -217,7 +217,8 @@ function* subscribeRemoteFeed(action) {
       subscribeRemoteFeedAPI,
       myFeed,
       room,
-      action.payload
+      action.payload,
+      activeSpeakerDetection
     );
     yield put(subscribeRemoteFeedSuccess(result));
   } catch (err) {
