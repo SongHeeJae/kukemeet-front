@@ -1,11 +1,10 @@
 import React from "react";
-import MenuBar from "../components/MenuBar";
+import AppLayout from "../components/AppLayout";
 
 const Login = () => {
   return (
     <>
-      <MenuBar />
-      로그인 페이지 입니다
+      <AppLayout>로그인 페이지 입니다</AppLayout>
     </>
   );
 };

@@ -1,11 +1,18 @@
 import React from "react";
-import MenuBar from "../components/MenuBar";
+import Head from "next/head";
+import AppLayout from "../components/AppLayout";
+import RegisterForm from "../components/RegisterForm";
 
 const Register = () => {
   return (
     <>
-      <MenuBar />
-      회원가입 페이지 입니다
+      <AppLayout>
+        <Head>
+          <title>회원가입</title>
+        </Head>
+
+        <RegisterForm />
+      </AppLayout>
     </>
   );
 };

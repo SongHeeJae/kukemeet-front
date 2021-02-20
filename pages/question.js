@@ -1,10 +1,11 @@
 import React from "react";
-import MenuBar from "../components/MenuBar";
+import AppLayout from "../components/AppLayout";
 const Question = () => {
   return (
     <>
-      <MenuBar />
-      <div>문의 페이지 입니다. 준비중~</div>
+      <AppLayout>
+        <div>문의 페이지 입니다. 준비중~</div>
+      </AppLayout>
     </>
   );
 };

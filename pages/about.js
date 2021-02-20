@@ -1,11 +1,10 @@
 import React from "react";
-import MenuBar from "../components/MenuBar";
+import AppLayout from "../components/AppLayout";
 
 const About = () => {
   return (
     <>
-      <MenuBar />
-      소개페이지입니다.
+      <AppLayout> 소개페이지입니다.</AppLayout>
     </>
   );
 };

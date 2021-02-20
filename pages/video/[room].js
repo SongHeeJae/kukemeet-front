@@ -21,6 +21,7 @@ import Chatting from "../../components/Chatting";
 import { Grid } from "@material-ui/core";
 import MainVideo from "../../components/MainVideo";
 import VideoOption from "../../components/VideoOption";
+import { mediaServerUrl } from "../../config/config";
 
 const subscribeRemoteFeed = (list, info, dispatch) => {
   list.forEach(({ id, display, audio_codec, video_codec }) => {
@@ -57,7 +58,7 @@ const initJanus = () => {
 const connectJanus = () => {
   return new Promise((resolve, reject) => {
     let janus = new Janus({
-      server: ["http://34.121.167.58:8088/janus", "ws://34.121.167.58:8188/"],
+      server: mediaServerUrl,
       success: () => {
         resolve(janus);
       },

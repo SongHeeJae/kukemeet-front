@@ -1,11 +1,13 @@
 import React from "react";
-import MenuBar from "../components/MenuBar";
+import AppLayout from "../components/AppLayout";
 
 const Index = () => {
   return (
     <>
-      <MenuBar />
-      <div>시작 페이지입니다.</div>;
+      <AppLayout>
+        {" "}
+        <div>시작 페이지입니다.</div>;
+      </AppLayout>
     </>
   );
 };
