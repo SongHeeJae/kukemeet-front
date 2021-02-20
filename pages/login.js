@@ -1,10 +1,17 @@
 import React from "react";
+import Head from "next/head";
 import AppLayout from "../components/AppLayout";
+import LoginForm from "../components/LoginForm";
 
 const Login = () => {
   return (
     <>
-      <AppLayout>로그인 페이지 입니다</AppLayout>
+      <AppLayout>
+        <Head>
+          <title>회원가입</title>
+        </Head>
+        <LoginForm />
+      </AppLayout>
     </>
   );
 };
