@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import styled from "styled-components";
 import { MenuList, MenuItem } from "@material-ui/core";
+import { useSelector } from "react-redux";
 
 const MenuWrapper = styled.div`
   display: flex;
@@ -25,6 +26,8 @@ const MenuWrapper = styled.div`
 `;
 
 const AppLayout = ({ children }) => {
+  const { id } = useSelector((state) => state.user);
+
   return (
     <>
       <MenuWrapper>
@@ -45,17 +48,28 @@ const AppLayout = ({ children }) => {
             </Link>
           </MenuItem>
         </MenuList>
+
         <MenuList className="sign-menu menu-list">
-          <MenuItem>
-            <Link href="/login">
-              <a>로그인</a>
-            </Link>
-          </MenuItem>
-          <MenuItem>
-            <Link href="/register">
-              <a>회원가입</a>
-            </Link>
-          </MenuItem>
+          {id ? (
+            <MenuItem>
+              <Link href="/profile">
+                <a>내정보</a>
+              </Link>
+            </MenuItem>
+          ) : (
+            [
+              <MenuItem key="login">
+                <Link href="/login">
+                  <a>로그인</a>
+                </Link>
+              </MenuItem>,
+              <MenuItem key="register">
+                <Link href="/register">
+                  <a>회원가입</a>
+                </Link>
+              </MenuItem>,
+            ]
+          )}
         </MenuList>
       </MenuWrapper>
       {children}

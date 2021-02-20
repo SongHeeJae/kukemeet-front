@@ -7,6 +7,13 @@ import {
   LOGIN_REQUEST,
   loginSuccess,
   loginFailure,
+  REFRESH_TOKEN_REQUEST,
+  refreshTokenSuccess,
+  refreshTokenFailure,
+  refreshTokenRequest,
+  LOAD_ME_REQUEST,
+  loadMeSuccess,
+  loadMeFailure,
 } from "../reducers/user";
 
 function registerAPI(data) {
@@ -29,13 +36,50 @@ function loginAPI(data) {
 function* login(action) {
   try {
     const result = yield call(loginAPI, action.payload);
-    console.log("데이터 ", result.data.data);
-    const { acessToken, refreshToken, info } = result.data.data;
-    console.log(info);
-    yield put(loginSuccess({ info }));
+    const { accessToken, refreshToken, info } = result.data.data;
+    yield put(loginSuccess({ accessToken, refreshToken, info }));
   } catch (err) {
-    console.log(err);
     yield put(loginFailure({ msg: err.response.data.msg }));
+  }
+}
+
+function refreshTokenAPI({ refreshToken }) {
+  return axios.post(
+    "/api/sign/refresh-token",
+    {},
+    {
+      headers: {
+        Authorization: refreshToken,
+      },
+    }
+  );
+}
+
+function* refreshToken(action) {
+  try {
+    const result = yield call(refreshTokenAPI, action.payload);
+    const { accessToken, refreshToken, info } = result.data.data;
+    yield put(refreshTokenSuccess({ accessToken, refreshToken, info }));
+  } catch (err) {
+    yield put(refreshTokenFailure());
+  }
+}
+
+function loadMeAPI({ accessToken }) {
+  return axios.get("/api/users/me", {
+    headers: {
+      Authorization: accessToken,
+    },
+  });
+}
+
+function* loadMe(action) {
+  try {
+    const result = yield call(loadMeAPI, action.payload);
+    const info = result.data.data;
+    yield put(loadMeSuccess({ info }));
+  } catch (err) {
+    yield put(loadMeFailure());
   }
 }
 
@@ -47,6 +91,19 @@ function* watchLogin() {
   yield takeLatest(LOGIN_REQUEST, login);
 }
 
+function* watchRefreshToken() {
+  yield takeLatest(REFRESH_TOKEN_REQUEST, refreshToken);
+}
+
+function* watchLoadMe() {
+  yield takeLatest(LOAD_ME_REQUEST, loadMe);
+}
+
 export default function* userSaga() {
-  yield all([fork(watchRegister), fork(watchLogin)]);
+  yield all([
+    fork(watchRegister),
+    fork(watchLogin),
+    fork(watchRefreshToken),
+    fork(watchLoadMe),
+  ]);
 }
