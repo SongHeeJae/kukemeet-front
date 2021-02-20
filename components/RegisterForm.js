@@ -62,6 +62,7 @@ const RegisterForm = () => {
       <h1>회원 정보를 입력해주세요.</h1>
       <Collapse in={registerError.length > 0}>
         <Alert
+          severity="error"
           action={
             <IconButton
               aria-label="close"

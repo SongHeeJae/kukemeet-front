@@ -8,7 +8,7 @@ const Login = () => {
     <>
       <AppLayout>
         <Head>
-          <title>회원가입</title>
+          <title>로그인</title>
         </Head>
         <LoginForm />
       </AppLayout>
