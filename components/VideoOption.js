@@ -40,16 +40,22 @@ const VideoOption = ({ info }) => {
   }, [activeScreenSharing]);
   return (
     <ButtonGroup color="primary" aria-label="outlined primary button group">
-      <Button onClick={onClickActiveAudio}>
+      <Button onClick={onClickActiveAudio} disabled={!!info.pluginHandle}>
         {activeAudio ? "음성 비활성화" : "음성 활성화"}
       </Button>
-      <Button onClick={onClickActiveVideo}>
+      <Button onClick={onClickActiveVideo} disabled={!!info.pluginHandle}>
         {activeVideo ? "비디오 비활성화" : "비디오 활성화"}
       </Button>
-      <Button onClick={onClickActiveSpeakerDetection}>
+      <Button
+        onClick={onClickActiveSpeakerDetection}
+        disabled={!!info.pluginHandle}
+      >
         {activeSpeakerDetection ? "화자 추적 비활성화" : "화자 추적 활성화"}
       </Button>
-      <Button onClick={onClickActiveScreenSharing}>
+      <Button
+        onClick={onClickActiveScreenSharing}
+        disabled={!!info.pluginHandle}
+      >
         {activeScreenSharing ? "화면 공유 비활성화" : "화면 공유 활성화"}
       </Button>
     </ButtonGroup>

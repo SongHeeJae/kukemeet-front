@@ -7,6 +7,11 @@ const VideoWrapper = styled.video`
   width: 100%;
 `;
 
+const EmptyVideoDivWrapper = styled.div`
+  text-align: center;
+  padding: 70px;
+`;
+
 const Global = createGlobalStyle`
 video::-webkit-media-controls-play-button {
   display: none !important;
@@ -66,7 +71,9 @@ const MainVideo = () => {
           <div>{mainStream.display}</div>
         </>
       ) : (
-        <div>메인 비디오 없음..</div>
+        <EmptyVideoDivWrapper>
+          다른 사용자의 비디오를 클릭하면 중앙으로 활성화됩니다^^
+        </EmptyVideoDivWrapper>
       )}
     </>
   );

@@ -489,6 +489,7 @@ const reducer = (state = initialState, action) =>
         draft.joinRoomDone = false;
         draft.joinRoomError = "";
         draft.joinRoomLoading = false;
+        break;
       default:
         break;
     }
