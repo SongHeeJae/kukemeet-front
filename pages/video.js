@@ -27,6 +27,7 @@ import wrapper from "../store/configureStore";
 import { stayLoggedIn } from "../auth/auth";
 import Router from "next/router";
 import CreateRoomForm from "../components/CreateRoomForm";
+import JoinRoomForm from "../components/JoinRoomForm";
 
 const subscribeRemoteFeed = (list, info, dispatch) => {
   list.forEach(({ id, display, audio_codec, video_codec }) => {
@@ -131,8 +132,10 @@ const attachJanus = (dispatch, janus) => {
             } else if (msg["leaving"]) {
               dispatch(leavingRemoteFeedRequest({ id: msg["leaving"] }));
             } else if (msg["error"]) {
-              if (msg["error_code"] === 426) {
-                dispatch(joinRoomFailure());
+              if (msg["error_code"] === 433) {
+                dispatch(joinRoomFailure("비밀번호가 잘못되었습니다."));
+              } else if (msg["error_code"] === 426) {
+                dispatch(joinRoomFailure("생성된 방이 없습니다."));
               }
             }
           } else if (event === "destroyed") {
@@ -165,10 +168,13 @@ const Video = () => {
   const info = useRef(null);
   const dispatch = useDispatch();
   const router = useRouter();
-  const { connectJanusDone, room, joinRoomLoading } = useSelector(
-    (state) => state.videoroom
-  );
-  const { username, nickname, id } = useSelector((state) => state.user);
+  const {
+    connectJanusDone,
+    room,
+    joinRoomLoading,
+    joinRoomError,
+  } = useSelector((state) => state.videoroom);
+  const { id } = useSelector((state) => state.user);
   useEffect(() => {
     if (!id) return Router.push("/");
 
@@ -187,25 +193,23 @@ const Video = () => {
   }, []);
 
   useEffect(() => {
-    if (!connectJanusDone) return;
-    if (!router.query.room && !room) {
-      // 쿼리에 room 없고 생성된 방 없으면
-      return;
-    }
-    dispatch(
-      joinRoomRequest({
-        info: info.current,
-        room: parseInt(router.query.room),
-        nickname,
-        username,
-      })
-    );
-    // 반환 426 코드면 룸 생성하면됨 테스트룸 1234
+    // if (!connectJanusDone) return;
+    // if (!router.query.room && !room) {
+    //   // 쿼리에 room 없고 생성된 방 없으면
+    //   return;
+    // }
+    // dispatch(
+    //   joinRoomRequest({
+    //     info: info.current,
+    //     room: parseInt(router.query.room),
+    //     nickname,
+    //     username,
+    //   })
+    // );
   }, [connectJanusDone]);
 
-  useEffect(() => {});
-
   if (!connectJanusDone) {
+    // janus 연결중
     return <div>연결중입니다..</div>;
   }
 
@@ -213,15 +217,39 @@ const Video = () => {
     return <div>입장 대기중..</div>;
   }
 
+  if (!router.query.room) {
+    // 쿼리 없이 들어왔으면 방 생성 처리
+    if (!room) {
+      // 방이 아직 생성 안됨
+      return (
+        <>
+          <CreateRoomForm info={info} />
+        </>
+      );
+    }
+  } else {
+    // 방을 입력하고 들어왔음
+    if (joinRoomError) {
+      //
+      // 에러 코드 426? 이면 방없음. 나가라는 폼 보여줌
+      // 에러 코드 429? 면 비밀번호 틀림
+      // 비밀번호 틀렸다보여주고 에러 초기화..
+    }
+
+    if (!room) {
+      // 아직 입장이 안됨 비밀번호 입력하면 입장 시도
+      return (
+        <>
+          <JoinRoomForm info={info} room={parseInt(router.query.room)} />
+        </>
+      );
+    }
+  }
+
   if (!room) {
     // 방이 없음
     if (!router.query.room) {
       // 쿼리에도 없으면 방 생성 처리
-      return (
-        <>
-          <CreateRoomForm />
-        </>
-      );
     } else {
       // 쿼리에 있어서 입장요청했는데도 방이 없으면
       return <div>생성된 방이 없습니다.</div>;

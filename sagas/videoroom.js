@@ -55,14 +55,18 @@ import {
   changeMainStreamSuccess,
   changeMainStreamFailure,
   CHANGE_MAIN_STREAM_REQUEST,
+  CREATE_ROOM_REQUEST,
+  createRoomSuccess,
+  createRoomFailure,
 } from "../reducers/videoroom";
 
-function joinRoomAPI({ info, room, username, nickname }) {
+function joinRoomAPI({ info, room, username, nickname, password }) {
   const { pluginHandle } = info;
   pluginHandle.send({
     message: {
       request: "join",
       room,
+      pin: password,
       ptype: "publisher",
       display: `${nickname}(${username})`,
     },
@@ -432,6 +436,42 @@ function* inactiveScreenSharing(action) {
   }
 }
 
+function createRoomAPI({ info, title, password }) {
+  const { pluginHandle } = info;
+  const create = {
+    request: "create",
+    description: title,
+    secret: password,
+    pin: password,
+  };
+  console.log("보냄");
+  //   let result = pluginHandle.send({ message: create });
+  //   console.log(result);
+
+  pluginHandle.send({
+    message: {
+      request: "list",
+    },
+    error: (err) => {
+      console.log(err);
+    },
+    success: function (data) {
+      console.log("성공함", data);
+      //   console.log(result);
+    },
+  });
+  console.log("끝남");
+}
+
+function* createRoom(action) {
+  try {
+    yield call(createRoomAPI, action.payload);
+  } catch (err) {
+    console.log(err);
+    yield put(createRoomeFailure());
+  }
+}
+
 function* watchJoinRoom() {
   yield takeLatest(JOIN_ROOM_REQUEST, joinRoom);
 }
@@ -488,6 +528,10 @@ function* watchInactiveScreenSharing() {
   yield takeEvery(INACTIVE_SCREEN_SHARING_REQUEST, inactiveScreenSharing);
 }
 
+function* watchCreateRoom() {
+  yield takeEvery(CREATE_ROOM_REQUEST, createRoom);
+}
+
 export default function* videoroomSaga() {
   yield all([
     fork(watchJoinRoom),
@@ -504,5 +548,6 @@ export default function* videoroomSaga() {
     fork(watchInactiveSpeakerDetection),
     fork(watchActiveScreenSharing),
     fork(watchInactiveScreenSharing),
+    fork(watchCreateRoom),
   ]);
 }

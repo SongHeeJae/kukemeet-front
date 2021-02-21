@@ -22,6 +22,9 @@ export const initialState = {
   connectJanusDone: false,
   joinRoomLoading: false,
   joinRoomDone: false,
+  joinRoomError: "",
+  createRoomLoading: false,
+  createRoomDone: false,
   openDataChannelDone: false,
   mainStream: { stream: null, display: null },
 };
@@ -99,6 +102,12 @@ export const INACTIVE_SCREEN_SHARING_SUCCESS =
 export const INACTIVE_SCREEN_SHARING_FAILURE =
   "INACTIVE_SCREEN_SHARING_FAILURE";
 
+export const CREATE_ROOM_REQUEST = "CREATE_ROOM_REQUEST";
+export const CREATE_ROOM_SUCCESS = "CREATE_ROOM_SUCCESS";
+export const CREATE_ROOM_FAILURE = "CREATE_ROOM_FAILURE";
+
+export const CLEAR_JOIN_ROOM_STATE = "CLEAR_JOIN_ROOM_STATE";
+
 export const connectJanusRequest = () => ({
   type: CONNECT_JANUS_REQUEST,
 });
@@ -121,8 +130,9 @@ export const joinRoomSuccess = (payload) => ({
   payload,
 });
 
-export const joinRoomFailure = () => ({
+export const joinRoomFailure = (payload) => ({
   type: JOIN_ROOM_FAILURE,
+  payload: payload || "",
 });
 
 export const publishOwnFeedRequest = (payload) => ({
@@ -308,6 +318,24 @@ export const inactiveScreenSharingFailure = () => ({
   type: INACTIVE_SCREEN_SHARING_FAILURE,
 });
 
+export const createRoomRequest = (payload) => ({
+  type: CREATE_ROOM_REQUEST,
+  payload,
+});
+
+export const createRoomSuccess = (payload) => ({
+  type: CREATE_ROOM_SUCCESS,
+  payload,
+});
+
+export const createRoomFailure = () => ({
+  type: CREATE_ROOM_FAILURE,
+});
+
+export const clearJoinRoomState = () => ({
+  type: CLEAR_JOIN_ROOM_STATE,
+});
+
 const reducer = (state = initialState, action) =>
   produce(state, (draft) => {
     switch (action.type) {
@@ -333,6 +361,7 @@ const reducer = (state = initialState, action) =>
         break;
       case JOIN_ROOM_FAILURE:
         draft.joinRoomLoading = false;
+        draft.joinRoomError = action.payload;
         break;
       case PUBLISH_OWN_FEED_REQUEST:
         break;
@@ -443,6 +472,21 @@ const reducer = (state = initialState, action) =>
         break;
       case INACTIVE_SCREEN_SHARING_FAILURE:
         break;
+      case CREATE_ROOM_REQUEST:
+        draft.createRoomLoading = true;
+        break;
+      case CREATE_ROOM_SUCCESS:
+        draft.createRoomLoading = false;
+        draft.createRoomDone = true;
+        // draft.room = acton.payload.room;
+        break;
+      case CREATE_ROOM_FAILURE:
+        draft.createRoomLoading = false;
+        break;
+      case CLEAR_JOIN_ROOM_STATE:
+        draft.joinRoomDone = false;
+        draft.joinRoomError = "";
+        draft.joinRoomLoading = false;
       default:
         break;
     }
