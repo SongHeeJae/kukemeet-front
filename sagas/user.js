@@ -64,9 +64,8 @@ function* refreshToken(action) {
     yield put(
       refreshTokenSuccess({ accessToken, refreshToken, info, setCookie })
     );
-    yield put(task);
+    if (task) yield put(task);
   } catch (err) {
-    console.log("에러는", err);
     yield put(refreshTokenFailure());
   }
 }

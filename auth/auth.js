@@ -19,9 +19,6 @@ export const stayLoggedIn = async (context) => {
       context.store.dispatch(
         refreshTokenRequest({
           refreshToken: parsedCookies["kuke-refresh-token"],
-          task: loadMeRequest({
-            accessToken: parsedCookies["kuke-access-token"],
-          }),
         })
       );
     }
