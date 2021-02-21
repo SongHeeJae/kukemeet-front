@@ -58,6 +58,7 @@ import {
   CREATE_ROOM_REQUEST,
   createRoomSuccess,
   createRoomFailure,
+  joinRoomRequest,
 } from "../reducers/videoroom";
 
 function joinRoomAPI({ info, room, username, nickname, password }) {
@@ -436,7 +437,7 @@ function* inactiveScreenSharing(action) {
   }
 }
 
-function createRoomAPI({ info, title, password }) {
+async function createRoomAPI(info, title, password) {
   const { pluginHandle } = info;
   const create = {
     request: "create",
@@ -444,31 +445,34 @@ function createRoomAPI({ info, title, password }) {
     secret: password,
     pin: password,
   };
-  console.log("보냄");
-  //   let result = pluginHandle.send({ message: create });
-  //   console.log(result);
 
-  pluginHandle.send({
-    message: {
-      request: "list",
-    },
-    error: (err) => {
-      console.log(err);
-    },
-    success: function (data) {
-      console.log("성공함", data);
-      //   console.log(result);
-    },
+  return await new Promise((resolve, reject) => {
+    pluginHandle.send({
+      message: create,
+      success: (data) => {
+        resolve(data);
+      },
+    });
   });
-  console.log("끝남");
 }
 
 function* createRoom(action) {
   try {
-    yield call(createRoomAPI, action.payload);
+    const { info, title, password } = action.payload;
+    const { username, nickname } = yield select((state) => state.user);
+    const result = yield call(createRoomAPI, info, title, password);
+    yield put(
+      joinRoomRequest({
+        info: info,
+        room: result.room,
+        nickname,
+        username,
+        password,
+      })
+    );
   } catch (err) {
     console.log(err);
-    yield put(createRoomeFailure());
+    yield put(createRoomFailure());
   }
 }
 
