@@ -127,7 +127,8 @@ async function subscribeRemoteFeedAPI(
   myFeed,
   room,
   { info, id, display, audio, video, dispatch },
-  activeSpeakerDetection
+  activeSpeakerDetection,
+  password
 ) {
   return await new Promise((resolve, reject) => {
     const { janus, opaqueId } = info;
@@ -144,6 +145,7 @@ async function subscribeRemoteFeedAPI(
           room: room,
           ptype: "subscriber",
           feed: id,
+          pin: password,
           private_id: myFeed.mypvtid,
         };
         remotePluginHandle.videoCodec = video;
@@ -220,7 +222,7 @@ async function subscribeRemoteFeedAPI(
 
 function* subscribeRemoteFeed(action) {
   try {
-    const { myFeed, room, activeSpeakerDetection } = yield select(
+    const { myFeed, room, activeSpeakerDetection, password } = yield select(
       (state) => state.videoroom
     );
     const result = yield call(
@@ -228,10 +230,12 @@ function* subscribeRemoteFeed(action) {
       myFeed,
       room,
       action.payload,
-      activeSpeakerDetection
+      activeSpeakerDetection,
+      password
     );
     yield put(subscribeRemoteFeedSuccess(result));
   } catch (err) {
+    console.log(err);
     yield put(subscribeRemoteFeedFailure());
   }
 }

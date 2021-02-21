@@ -3,6 +3,7 @@ import produce from "immer";
 export const initialState = {
   room: 0,
   title: "",
+  password: "",
   myFeed: {},
   remoteFeeds: [],
   activeVideo: true,
@@ -372,6 +373,7 @@ const reducer = (state = initialState, action) =>
         break;
       case JOIN_ROOM_REQUEST:
         draft.joinRoomLoading = true;
+        draft.password = action.payload.password;
         break;
       case JOIN_ROOM_SUCCESS:
         draft.joinRoomLoading = false;
