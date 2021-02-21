@@ -2,12 +2,19 @@ import React from "react";
 import AppLayout from "../components/AppLayout";
 import wrapper from "../store/configureStore";
 import { stayLoggedIn } from "../auth/auth";
+import { Button, TextField } from "@material-ui/core";
 
 const Index = () => {
   return (
     <>
       <AppLayout>
-        <div>시작 페이지입니다.</div>;
+        <div>
+          <Button>방 생성</Button>
+        </div>
+        <div>
+          <TextField />
+          <Button>방 입장</Button>
+        </div>
       </AppLayout>
     </>
   );

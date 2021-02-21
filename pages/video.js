@@ -6,22 +6,27 @@ import {
   connectJanusSuccess,
   connectJanusFailure,
   joinRoomSuccess,
+  joinRoomFailure,
   publishOwnFeedRequest,
   publishOwnFeedSuccess,
   subscribeRemoteFeedRequest,
   openDataChannelSuccess,
   leavingRemoteFeedRequest,
-} from "../../reducers/videoroom";
+} from "../reducers/videoroom";
 import { useRouter } from "next/router";
 import { Janus } from "janus-gateway";
-import VideoList from "../../components/VideoList";
-import MyVideo from "../../components/MyVideo";
-import UserList from "../../components/UserList";
-import Chatting from "../../components/Chatting";
+import VideoList from "../components/VideoList";
+import MyVideo from "../components/MyVideo";
+import UserList from "../components/UserList";
+import Chatting from "../components/Chatting";
 import { Grid } from "@material-ui/core";
-import MainVideo from "../../components/MainVideo";
-import VideoOption from "../../components/VideoOption";
-import { mediaServerUrl } from "../../config/config";
+import MainVideo from "../components/MainVideo";
+import VideoOption from "../components/VideoOption";
+import { mediaServerUrl } from "../config/config";
+import wrapper from "../store/configureStore";
+import { stayLoggedIn } from "../auth/auth";
+import Router from "next/router";
+import CreateRoomForm from "../components/CreateRoomForm";
 
 const subscribeRemoteFeed = (list, info, dispatch) => {
   list.forEach(({ id, display, audio_codec, video_codec }) => {
@@ -125,6 +130,10 @@ const attachJanus = (dispatch, janus) => {
               subscribeRemoteFeed(msg["publishers"], info, dispatch);
             } else if (msg["leaving"]) {
               dispatch(leavingRemoteFeedRequest({ id: msg["leaving"] }));
+            } else if (msg["error"]) {
+              if (msg["error_code"] === 426) {
+                dispatch(joinRoomFailure());
+              }
             }
           } else if (event === "destroyed") {
             alert("룸 제거");
@@ -156,10 +165,13 @@ const Video = () => {
   const info = useRef(null);
   const dispatch = useDispatch();
   const router = useRouter();
-  const { room } = parseInt(router.query.room);
-  const { connectJanusDone } = useSelector((state) => state.videoroom);
-  const { username, nickname } = useSelector((state) => state.user);
+  const { connectJanusDone, room, joinRoomLoading } = useSelector(
+    (state) => state.videoroom
+  );
+  const { username, nickname, id } = useSelector((state) => state.user);
   useEffect(() => {
+    if (!id) return Router.push("/");
+
     dispatch(connectJanusRequest());
     initJanus()
       .then(connectJanus)
@@ -176,8 +188,17 @@ const Video = () => {
 
   useEffect(() => {
     if (!connectJanusDone) return;
+    if (!router.query.room && !room) {
+      // 쿼리에 room 없고 생성된 방 없으면
+      return;
+    }
     dispatch(
-      joinRoomRequest({ info: info.current, room: 1234, nickname, username })
+      joinRoomRequest({
+        info: info.current,
+        room: parseInt(router.query.room),
+        nickname,
+        username,
+      })
     );
     // 반환 426 코드면 룸 생성하면됨 테스트룸 1234
   }, [connectJanusDone]);
@@ -187,6 +208,26 @@ const Video = () => {
   if (!connectJanusDone) {
     return <div>연결중입니다..</div>;
   }
+
+  if (joinRoomLoading) {
+    return <div>입장 대기중..</div>;
+  }
+
+  if (!room) {
+    // 방이 없음
+    if (!router.query.room) {
+      // 쿼리에도 없으면 방 생성 처리
+      return (
+        <>
+          <CreateRoomForm />
+        </>
+      );
+    } else {
+      // 쿼리에 있어서 입장요청했는데도 방이 없으면
+      return <div>생성된 방이 없습니다.</div>;
+    }
+  }
+
   return (
     <div>
       <Grid container spacing={3}>
@@ -206,5 +247,11 @@ const Video = () => {
     </div>
   );
 };
+
+export const getServerSideProps = wrapper.getServerSideProps(
+  async (context) => {
+    await stayLoggedIn(context);
+  }
+);
 
 export default Video;

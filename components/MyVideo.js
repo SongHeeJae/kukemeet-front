@@ -6,7 +6,7 @@ const VideoWrapper = styled.video`
   width: 100%;
 `;
 
-function MyVideo() {
+const MyVideo = () => {
   const videoRef = useRef();
   const { myFeed } = useSelector((state) => state.videoroom);
   useEffect(() => {
@@ -22,6 +22,6 @@ function MyVideo() {
       <VideoWrapper ref={videoRef} autoPlay playsInline />
     </>
   );
-}
+};
 
 export default MyVideo;
