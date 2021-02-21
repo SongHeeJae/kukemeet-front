@@ -116,6 +116,7 @@ const attachJanus = (dispatch, janus) => {
                 id: msg["id"],
                 privateId: msg["private_id"],
                 room: msg["room"],
+                title: msg["description"],
               })
             );
 
@@ -173,6 +174,7 @@ const Video = () => {
     room,
     joinRoomLoading,
     joinRoomError,
+    title,
   } = useSelector((state) => state.videoroom);
   const { id } = useSelector((state) => state.user);
   useEffect(() => {
@@ -258,6 +260,7 @@ const Video = () => {
 
   return (
     <div>
+      <h1>{title}</h1>
       <Grid container spacing={3}>
         <Grid item xs={3}>
           <UserList />

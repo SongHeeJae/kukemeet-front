@@ -2,6 +2,7 @@ import produce from "immer";
 
 export const initialState = {
   room: 0,
+  title: "",
   myFeed: {},
   remoteFeeds: [],
   activeVideo: true,
@@ -358,6 +359,7 @@ const reducer = (state = initialState, action) =>
         draft.myFeed.id = action.payload.id;
         draft.myFeed.privateId = action.payload.privateId;
         draft.room = action.payload.room;
+        draft.title = action.payload.title;
         break;
       case JOIN_ROOM_FAILURE:
         draft.joinRoomLoading = false;
