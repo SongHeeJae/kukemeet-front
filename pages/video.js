@@ -260,7 +260,9 @@ const Video = () => {
 
   return (
     <div>
-      <h1>{title}</h1>
+      <h1>
+        {title} | 방 입장 번호 : {room}
+      </h1>
       <Grid container spacing={3}>
         <Grid item xs={3}>
           <UserList />
