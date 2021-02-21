@@ -451,6 +451,7 @@ async function createRoomAPI(info, title, password) {
     description: title,
     secret: password,
     pin: password,
+    publishers: 100,
   };
 
   return await new Promise((resolve, reject) => {

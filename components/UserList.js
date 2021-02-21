@@ -31,10 +31,6 @@ const UserList = () => {
   const { remoteFeeds } = useSelector((state) => state.videoroom);
   const classes = useStyles();
 
-  const onClick = useCallback((display) => {
-    console.log(display);
-  }, []);
-
   const onClickUserInfo = useCallback((popupState, display) => {
     popupState.close();
     console.log(display);
@@ -57,7 +53,11 @@ const UserList = () => {
           <ListItemIcon>
             <StarIcon />
           </ListItemIcon>
-          <ListItemText primary={`${nickname}(${username})`} />
+          <ListItemText
+            primary={`${nickname}(${username}) 접속 ${
+              remoteFeeds.length + 1
+            }명`}
+          />
         </ListItem>
       </List>
       <Divider />
