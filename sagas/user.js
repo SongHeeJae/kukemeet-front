@@ -57,10 +57,16 @@ function refreshTokenAPI({ refreshToken }) {
 
 function* refreshToken(action) {
   try {
+    const { task } = action.payload;
     const result = yield call(refreshTokenAPI, action.payload);
     const { accessToken, refreshToken, info } = result.data.data;
-    yield put(refreshTokenSuccess({ accessToken, refreshToken, info }));
+    const setCookie = result.headers["set-cookie"];
+    yield put(
+      refreshTokenSuccess({ accessToken, refreshToken, info, setCookie })
+    );
+    yield put(task);
   } catch (err) {
+    console.log("에러는", err);
     yield put(refreshTokenFailure());
   }
 }

@@ -4,6 +4,8 @@ import AppLayout from "../components/AppLayout";
 import LoginForm from "../components/LoginForm";
 import { useSelector } from "react-redux";
 import Router from "next/router";
+import wrapper from "../store/configureStore";
+import { stayLoggedIn } from "../auth/auth";
 
 const Login = () => {
   const { id } = useSelector((state) => state.user);
@@ -24,5 +26,11 @@ const Login = () => {
     </>
   );
 };
+
+export const getServerSideProps = wrapper.getServerSideProps(
+  async (context) => {
+    await stayLoggedIn(context);
+  }
+);
 
 export default Login;

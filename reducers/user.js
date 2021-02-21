@@ -15,6 +15,7 @@ export const initialState = {
   loginLoading: false,
   loginDone: false,
   loginError: "",
+  setCookie: [],
 };
 
 export const REGISTER_REQUEST = "REGISTER_REQUEST";
@@ -162,6 +163,7 @@ const reducer = (state = initialState, action) =>
         draft.modifiedAt = action.payload.info.modifiedAt;
         draft.accessToken = action.payload.accessToken;
         draft.refreshToken = action.payload.refreshToken;
+        draft.setCookie = action.payload.setCookie;
         break;
       case REFRESH_TOKEN_FAILURE:
         draft.id = 0;

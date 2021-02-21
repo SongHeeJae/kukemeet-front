@@ -1,5 +1,7 @@
 import React from "react";
 import AppLayout from "../components/AppLayout";
+import wrapper from "../store/configureStore";
+import { stayLoggedIn } from "../auth/auth";
 
 const About = () => {
   return (
@@ -8,5 +10,11 @@ const About = () => {
     </>
   );
 };
+
+export const getServerSideProps = wrapper.getServerSideProps(
+  async (context) => {
+    await stayLoggedIn(context);
+  }
+);
 
 export default About;
