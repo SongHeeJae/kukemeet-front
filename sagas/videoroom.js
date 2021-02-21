@@ -56,9 +56,12 @@ import {
   changeMainStreamFailure,
   CHANGE_MAIN_STREAM_REQUEST,
   CREATE_ROOM_REQUEST,
-  createRoomSuccess,
   createRoomFailure,
   joinRoomRequest,
+  GET_ROOM_LIST_REQUEST,
+  getRoomListSuccess,
+  getRoomListFailure,
+  createRoomSuccess,
 } from "../reducers/videoroom";
 
 function joinRoomAPI({ info, room, username, nickname, password }) {
@@ -461,6 +464,7 @@ function* createRoom(action) {
     const { info, title, password } = action.payload;
     const { username, nickname } = yield select((state) => state.user);
     const result = yield call(createRoomAPI, info, title, password);
+    yield put(createRoomSuccess());
     yield put(
       joinRoomRequest({
         info: info,
@@ -473,6 +477,34 @@ function* createRoom(action) {
   } catch (err) {
     console.log(err);
     yield put(createRoomFailure());
+  }
+}
+
+async function getRoomListAPI({ info }) {
+  const { pluginHandle } = info;
+  const list = {
+    request: "list",
+  };
+  return await new Promise((resolve, reject) => {
+    pluginHandle.send({
+      message: list,
+      success: (data) => {
+        resolve(data);
+      },
+    });
+  });
+}
+
+function* getRoomList(action) {
+  try {
+    const result = yield call(getRoomListAPI, action.payload);
+    console.log(result);
+    yield put(
+      getRoomListSuccess({ result }) // 결과 값 처리
+    );
+  } catch (err) {
+    console.log(err);
+    yield put(getRoomListFailure());
   }
 }
 
@@ -533,7 +565,11 @@ function* watchInactiveScreenSharing() {
 }
 
 function* watchCreateRoom() {
-  yield takeEvery(CREATE_ROOM_REQUEST, createRoom);
+  yield takeLatest(CREATE_ROOM_REQUEST, createRoom);
+}
+
+function* watchGetRoomList() {
+  yield takeLatest(GET_ROOM_LIST_REQUEST, getRoomList);
 }
 
 export default function* videoroomSaga() {
@@ -553,5 +589,6 @@ export default function* videoroomSaga() {
     fork(watchActiveScreenSharing),
     fork(watchInactiveScreenSharing),
     fork(watchCreateRoom),
+    fork(watchGetRoomList),
   ]);
 }

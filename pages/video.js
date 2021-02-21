@@ -28,6 +28,7 @@ import { stayLoggedIn } from "../auth/auth";
 import Router from "next/router";
 import CreateRoomForm from "../components/CreateRoomForm";
 import JoinRoomForm from "../components/JoinRoomForm";
+import ExitRoomButton from "../components/ExitRoomButton";
 
 const subscribeRemoteFeed = (list, info, dispatch) => {
   list.forEach(({ id, display, audio_codec, video_codec }) => {
@@ -194,22 +195,6 @@ const Video = () => {
       });
   }, []);
 
-  useEffect(() => {
-    // if (!connectJanusDone) return;
-    // if (!router.query.room && !room) {
-    //   // 쿼리에 room 없고 생성된 방 없으면
-    //   return;
-    // }
-    // dispatch(
-    //   joinRoomRequest({
-    //     info: info.current,
-    //     room: parseInt(router.query.room),
-    //     nickname,
-    //     username,
-    //   })
-    // );
-  }, [connectJanusDone]);
-
   if (!connectJanusDone) {
     // janus 연결중
     return <div>연결중입니다..</div>;
@@ -260,9 +245,17 @@ const Video = () => {
 
   return (
     <div>
-      <h1>
-        {title} | 방 입장 번호 : {room}
-      </h1>
+      <Grid container spacing={3}>
+        <Grid item xs={4}>
+          방 입장 번호 : {room}
+        </Grid>
+        <Grid item xs={5}>
+          {title}
+        </Grid>
+        <Grid item xs={3}>
+          <ExitRoomButton info={info} />
+        </Grid>
+      </Grid>
       <Grid container spacing={3}>
         <Grid item xs={3}>
           <UserList />

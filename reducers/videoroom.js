@@ -27,6 +27,8 @@ export const initialState = {
   createRoomLoading: false,
   createRoomDone: false,
   openDataChannelDone: false,
+  getRoomListLoading: false,
+  getRoomListDone: false,
   mainStream: { stream: null, display: null },
 };
 
@@ -108,6 +110,10 @@ export const CREATE_ROOM_SUCCESS = "CREATE_ROOM_SUCCESS";
 export const CREATE_ROOM_FAILURE = "CREATE_ROOM_FAILURE";
 
 export const CLEAR_JOIN_ROOM_STATE = "CLEAR_JOIN_ROOM_STATE";
+
+export const GET_ROOM_LIST_REQUEST = "GET_ROOM_LIST_REQUEST";
+export const GET_ROOM_LIST_SUCCESS = "GET_ROOM_LIST_SUCCESS";
+export const GET_ROOM_LIST_FAILURE = "GET_ROOM_LIST_FAILURE";
 
 export const connectJanusRequest = () => ({
   type: CONNECT_JANUS_REQUEST,
@@ -337,6 +343,20 @@ export const clearJoinRoomState = () => ({
   type: CLEAR_JOIN_ROOM_STATE,
 });
 
+export const getRoomListRequest = (payload) => ({
+  type: GET_ROOM_LIST_REQUEST,
+  payload,
+});
+
+export const getRoomListSuccess = (payload) => ({
+  type: GET_ROOM_LIST_SUCCESS,
+  payload,
+});
+
+export const getRoomListFailure = () => ({
+  type: GET_ROOM_LIST_FAILURE,
+});
+
 const reducer = (state = initialState, action) =>
   produce(state, (draft) => {
     switch (action.type) {
@@ -489,6 +509,16 @@ const reducer = (state = initialState, action) =>
         draft.joinRoomDone = false;
         draft.joinRoomError = "";
         draft.joinRoomLoading = false;
+        break;
+      case GET_ROOM_LIST_REQUEST:
+        draft.getRoomListLoading = true;
+        break;
+      case GET_ROOM_LIST_SUCCESS:
+        draft.getRoomListDone = true;
+        draft.getRoomListLoading = false;
+        break;
+      case GET_ROOM_LIST_FAILURE:
+        draft.getRoomListLoading = false;
         break;
       default:
         break;
