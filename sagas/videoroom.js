@@ -65,6 +65,9 @@ import {
   destroyRoomSuccess,
   destroyRoomFailure,
   DESTROY_ROOM_REQUEST,
+  leaveRoomSuccess,
+  leaveRoomFailure,
+  LEAVE_ROOM_REQUEST,
 } from "../reducers/videoroom";
 
 function joinRoomAPI({ info, room, username, nickname, password }) {
@@ -544,6 +547,31 @@ function* destroyRoom(action) {
   }
 }
 
+async function leaveRoomAPI({ info }) {
+  const { pluginHandle, janus } = info;
+  const leave = {
+    request: "leave",
+  };
+  return await new Promise((resolve, reject) => {
+    pluginHandle.send({
+      message: leave,
+      success: () => {
+        janus.destroy();
+        resolve();
+      },
+    });
+  });
+}
+
+function* leaveRoom(action) {
+  try {
+    yield call(leaveRoomAPI, action.payload);
+    yield put(leaveRoomSuccess());
+  } catch (err) {
+    yield put(leaveRoomFailure());
+  }
+}
+
 function* watchJoinRoom() {
   yield takeLatest(JOIN_ROOM_REQUEST, joinRoom);
 }
@@ -612,6 +640,10 @@ function* watchDestroyRoom() {
   yield takeLatest(DESTROY_ROOM_REQUEST, destroyRoom);
 }
 
+function* watchLeaveRoom() {
+  yield takeLatest(LEAVE_ROOM_REQUEST, leaveRoom);
+}
+
 export default function* videoroomSaga() {
   yield all([
     fork(watchJoinRoom),
@@ -631,5 +663,6 @@ export default function* videoroomSaga() {
     fork(watchCreateRoom),
     fork(watchGetRoomList),
     fork(watchDestroyRoom),
+    fork(watchLeaveRoom),
   ]);
 }

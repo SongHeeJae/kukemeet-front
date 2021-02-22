@@ -2,19 +2,13 @@ import React from "react";
 import AppLayout from "../components/AppLayout";
 import wrapper from "../store/configureStore";
 import { stayLoggedIn } from "../auth/auth";
-import { Button, TextField } from "@material-ui/core";
+import RoomConfig from "../components/RoomConfig";
 
 const Index = () => {
   return (
     <>
       <AppLayout>
-        <div>
-          <Button>방 생성</Button>
-        </div>
-        <div>
-          <TextField />
-          <Button>방 입장</Button>
-        </div>
+        <RoomConfig />
       </AppLayout>
     </>
   );

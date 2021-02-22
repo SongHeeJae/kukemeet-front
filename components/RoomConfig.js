@@ -1,0 +1,53 @@
+import React, { useCallback } from "react";
+import { Button, TextField } from "@material-ui/core";
+import Router from "next/router";
+import styled from "styled-components";
+import useInput from "../hooks/useInput";
+
+const RoomConfigDivWrapper = styled.div`
+  text-align: center;
+  .room-config-div {
+    margin: 30px;
+  }
+`;
+
+const RoomConfig = () => {
+  const [roomNumber, onChangeRoomNumber] = useInput("");
+
+  const onClickCreateRoom = useCallback(() => {
+    Router.push("/video");
+  }, []);
+
+  const onSubmitJoinRoom = useCallback(
+    (e) => {
+      e.preventDefault();
+      Router.push({
+        pathname: "/video",
+        query: { room: roomNumber },
+      });
+    },
+    [roomNumber]
+  );
+
+  return (
+    <RoomConfigDivWrapper>
+      <div className="room-config-div">
+        <Button onClick={onClickCreateRoom}>방 생성</Button>
+      </div>
+      <div className="room-config-div">
+        <form onSubmit={onSubmitJoinRoom}>
+          <TextField
+            required
+            label="방 번호"
+            value={roomNumber}
+            onChange={onChangeRoomNumber}
+            variant="outlined"
+          />
+          <Button type="submit"> 방 입장</Button>
+        </form>
+      </div>
+    </RoomConfigDivWrapper>
+  );
+};
+
+export default RoomConfig;

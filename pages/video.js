@@ -12,6 +12,7 @@ import {
   subscribeRemoteFeedRequest,
   openDataChannelSuccess,
   leavingRemoteFeedRequest,
+  leaveRoomRequest,
 } from "../reducers/videoroom";
 import { useRouter } from "next/router";
 import { Janus } from "janus-gateway";
@@ -99,13 +100,12 @@ const attachJanus = (dispatch, janus) => {
         Janus.log("ICE state changed to " + state);
       },
       mediaState: (medium, on) => {
-        console.log("mediaum스테이트", medium);
         Janus.log(
           "Janus " + (on ? "started" : "stopped") + " receiving our " + medium
         );
       },
       webrtcState: (on) => {
-        console.log("webrtcstate ===ㅇㅇ", on);
+        // empty
       },
       onmessage: (msg, jsep) => {
         console.log(msg);
@@ -132,6 +132,11 @@ const attachJanus = (dispatch, janus) => {
               // 새로운 접속자
               subscribeRemoteFeed(msg["publishers"], info, dispatch);
             } else if (msg["leaving"]) {
+              if (msg["leaving"] === "ok") {
+                // 자신의 종료. publish만 중단. 데이터 채널, remotefeed 살아있음
+                return;
+              }
+
               dispatch(leavingRemoteFeedRequest({ id: msg["leaving"] }));
             } else if (msg["error"]) {
               if (msg["error_code"] === 433) {
@@ -171,13 +176,9 @@ const Video = () => {
   const info = useRef(null);
   const dispatch = useDispatch();
   const router = useRouter();
-  const {
-    connectJanusDone,
-    room,
-    joinRoomLoading,
-    joinRoomError,
-    title,
-  } = useSelector((state) => state.videoroom);
+  const { connectJanusDone, room, joinRoomLoading, title } = useSelector(
+    (state) => state.videoroom
+  );
   const { id } = useSelector((state) => state.user);
   useEffect(() => {
     if (!id) return Router.push("/");
@@ -194,6 +195,13 @@ const Video = () => {
         console.log(err);
         dispatch(connectJanusFailure());
       });
+
+    return () => {
+      const { janus } = info.current;
+      if (janus && janus.isConnected()) {
+        dispatch(leaveRoomRequest({ info: info.current }));
+      }
+    };
   }, []);
 
   if (!connectJanusDone) {
