@@ -141,7 +141,8 @@ const attachJanus = (dispatch, janus) => {
               }
             }
           } else if (event === "destroyed") {
-            alert("룸 제거");
+            alert("방이 파괴되었습니다.");
+            Router.replace("/");
           }
         }
         if (jsep) {
@@ -216,13 +217,6 @@ const Video = () => {
     }
   } else {
     // 방을 입력하고 들어왔음
-    if (joinRoomError) {
-      //
-      // 에러 코드 426? 이면 방없음. 나가라는 폼 보여줌
-      // 에러 코드 429? 면 비밀번호 틀림
-      // 비밀번호 틀렸다보여주고 에러 초기화..
-    }
-
     if (!room) {
       // 아직 입장이 안됨 비밀번호 입력하면 입장 시도
       return (

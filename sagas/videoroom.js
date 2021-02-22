@@ -62,6 +62,9 @@ import {
   getRoomListSuccess,
   getRoomListFailure,
   createRoomSuccess,
+  destroyRoomSuccess,
+  destroyRoomFailure,
+  DESTROY_ROOM_REQUEST,
 } from "../reducers/videoroom";
 
 function joinRoomAPI({ info, room, username, nickname, password }) {
@@ -503,13 +506,41 @@ async function getRoomListAPI({ info }) {
 function* getRoomList(action) {
   try {
     const result = yield call(getRoomListAPI, action.payload);
-    console.log(result);
+    console.log("방조회", result);
     yield put(
       getRoomListSuccess({ result }) // 결과 값 처리
     );
   } catch (err) {
     console.log(err);
     yield put(getRoomListFailure());
+  }
+}
+
+async function destroyRoomAPI({ info }, room, password) {
+  const { pluginHandle } = info;
+  const destroy = {
+    request: "destroy",
+    room,
+    secret: password,
+  };
+  return await new Promise((resolve, reject) => {
+    pluginHandle.send({
+      message: destroy,
+      success: (data) => {
+        resolve(data);
+      },
+    });
+  });
+}
+
+function* destroyRoom(action) {
+  try {
+    const { room, password } = yield select((state) => state.videoroom);
+    const result = yield call(destroyRoomAPI, action.payload, room, password);
+    yield put(destroyRoomSuccess());
+  } catch (err) {
+    console.log(err);
+    yield put(destroyRoomFailure());
   }
 }
 
@@ -577,6 +608,10 @@ function* watchGetRoomList() {
   yield takeLatest(GET_ROOM_LIST_REQUEST, getRoomList);
 }
 
+function* watchDestroyRoom() {
+  yield takeLatest(DESTROY_ROOM_REQUEST, destroyRoom);
+}
+
 export default function* videoroomSaga() {
   yield all([
     fork(watchJoinRoom),
@@ -595,5 +630,6 @@ export default function* videoroomSaga() {
     fork(watchInactiveScreenSharing),
     fork(watchCreateRoom),
     fork(watchGetRoomList),
+    fork(watchDestroyRoom),
   ]);
 }
