@@ -556,6 +556,7 @@ async function leaveRoomAPI({ info }) {
     pluginHandle.send({
       message: leave,
       success: () => {
+        pluginHandle.hangup();
         janus.destroy();
         resolve();
       },
