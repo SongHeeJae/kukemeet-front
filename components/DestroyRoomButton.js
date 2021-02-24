@@ -7,7 +7,7 @@ import { useRouter } from "next/router";
 const DestroyRoomButton = ({ info }) => {
   const dispatch = useDispatch();
   const onClick = useCallback(() => {
-    dispatch(destroyRoomRequest({ info: info.current }));
+    dispatch(destroyRoomRequest());
   }, []);
 
   return (

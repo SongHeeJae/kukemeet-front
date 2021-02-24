@@ -483,27 +483,15 @@ function* createRoom(action) {
   }
 }
 
-async function getRoomListAPI({ info }) {
-  const { pluginHandle } = info;
-  const list = {
-    request: "list",
-  };
-  return await new Promise((resolve, reject) => {
-    pluginHandle.send({
-      message: list,
-      success: (data) => {
-        resolve(data);
-      },
-    });
-  });
+async function getRoomListAPI() {
+  return axios.get(`/api/rooms`);
 }
 
 function* getRoomList(action) {
   try {
     const result = yield call(getRoomListAPI, action.payload);
-    console.log("방조회", result);
     yield put(
-      getRoomListSuccess({ result }) // 결과 값 처리
+      getRoomListSuccess({ list: result.data.data }) // 결과 값 처리
     );
   } catch (err) {
     console.log(err);
@@ -511,27 +499,19 @@ function* getRoomList(action) {
   }
 }
 
-async function destroyRoomAPI({ info }, room, password) {
-  const { pluginHandle } = info;
-  const destroy = {
-    request: "destroy",
-    room,
-    secret: password,
-  };
-  return await new Promise((resolve, reject) => {
-    pluginHandle.send({
-      message: destroy,
-      success: (data) => {
-        resolve(data);
-      },
-    });
+async function destroyRoomAPI(room, accessToken) {
+  return axios.delete(`/api/rooms/${room}`, {
+    headers: {
+      Authorization: accessToken,
+    },
   });
 }
 
-function* destroyRoom(action) {
+function* destroyRoom() {
   try {
-    const { room, password } = yield select((state) => state.videoroom);
-    const result = yield call(destroyRoomAPI, action.payload, room, password);
+    const { room } = yield select((state) => state.videoroom);
+    const { accessToken } = yield select((state) => state.user);
+    yield call(destroyRoomAPI, room, accessToken);
     yield put(destroyRoomSuccess());
   } catch (err) {
     console.log(err);

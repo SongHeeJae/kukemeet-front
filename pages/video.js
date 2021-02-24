@@ -228,7 +228,7 @@ const Video = () => {
   }, [room, password]);
 
   const onClickGetRoomList = useCallback(() => {
-    dispatch(getRoomListRequest({ info: info.current }));
+    dispatch(getRoomListRequest());
   }, []);
 
   if (!connectJanusDone) {
