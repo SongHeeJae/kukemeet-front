@@ -12,6 +12,7 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import StarIcon from "@material-ui/icons/star";
 import PopupState, { bindTrigger, bindMenu } from "material-ui-popup-state";
+import UserInfoDialog from "./UserInfoDialog";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -27,12 +28,15 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const UserList = () => {
+  const classes = useStyles();
   const { username, nickname } = useSelector((state) => state.user);
   const { remoteFeeds } = useSelector((state) => state.videoroom);
-  const classes = useStyles();
+
+  const [userInfoDialogOpen, setUserInfoDialogOpen] = useState(false);
 
   const onClickUserInfo = useCallback((popupState, display) => {
     popupState.close();
+    setUserInfoDialogOpen(true);
     console.log(display);
   }, []);
 
@@ -48,6 +52,7 @@ const UserList = () => {
 
   return (
     <div className={classes.root}>
+      <UserInfoDialog open={userInfoDialogOpen} />
       <List>
         <ListItem button>
           <ListItemIcon>

@@ -179,13 +179,9 @@ const Video = () => {
   const info = useRef(null);
   const dispatch = useDispatch();
   const router = useRouter();
-  const {
-    connectJanusDone,
-    room,
-    joinRoomLoading,
-    title,
-    password,
-  } = useSelector((state) => state.videoroom);
+  const { connectJanusDone, room, joinRoomLoading, title } = useSelector(
+    (state) => state.videoroom
+  );
   const { id } = useSelector((state) => state.user);
 
   useEffect(() => {
@@ -219,16 +215,6 @@ const Video = () => {
       }
       window.removeEventListener("beforeunload", beforeunload);
     };
-  }, []);
-
-  useEffect(() => {
-    if (!room && !password) return;
-    info.current.room = room;
-    info.current.password = password;
-  }, [room, password]);
-
-  const onClickGetRoomList = useCallback(() => {
-    dispatch(getRoomListRequest());
   }, []);
 
   if (!connectJanusDone) {
@@ -284,9 +270,6 @@ const Video = () => {
         <Grid item xs={3}>
           <ExitRoomButton info={info} />
           {!router.query.room && <DestroyRoomButton info={info} />}
-          <Button onClick={onClickGetRoomList} color="secondary">
-            생성 방 조회(임시)
-          </Button>
         </Grid>
       </Grid>
       <Grid container spacing={3}>
