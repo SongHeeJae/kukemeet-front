@@ -30,7 +30,6 @@ const JoinRoomForm = ({ info, room }) => {
           info: info.current,
           room,
           nickname,
-          username,
           password,
         })
       );

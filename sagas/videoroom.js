@@ -78,7 +78,7 @@ function joinRoomAPI({ info, room, username, nickname, password }) {
       room,
       pin: password,
       ptype: "publisher",
-      display: `${nickname}(${username})`,
+      display: `${nickname}`,
     },
   });
 }
@@ -481,7 +481,6 @@ function* createRoom(action) {
         info: info,
         room: result.room,
         nickname,
-        username,
         password,
       })
     );
