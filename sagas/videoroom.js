@@ -455,7 +455,7 @@ async function createRoomAPI(info, title, password) {
   const create = {
     request: "create",
     description: title,
-    secret: password,
+    permanent: false,
     pin: password,
     publishers: 100,
   };
@@ -475,7 +475,7 @@ function* createRoom(action) {
     const { info, title, password } = action.payload;
     const { username, nickname } = yield select((state) => state.user);
     const result = yield call(createRoomAPI, info, title, password);
-    yield put(createRoomSuccess());
+    yield put(createRoomSuccess({ password, room: result.room }));
     yield put(
       joinRoomRequest({
         info: info,

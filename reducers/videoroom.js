@@ -538,6 +538,8 @@ const reducer = (state = initialState, action) =>
         draft.createRoomLoading = true;
         break;
       case CREATE_ROOM_SUCCESS:
+        draft.room = action.payload.room;
+        draft.password = action.payload.password;
         draft.createRoomLoading = false;
         draft.createRoomDone = true;
         // draft.room = acton.payload.room;

@@ -1,5 +1,6 @@
 import React, { useEffect, useCallback, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { END } from "redux-saga";
 import {
   connectJanusRequest,
   joinRoomRequest,
@@ -13,6 +14,8 @@ import {
   openDataChannelSuccess,
   leavingRemoteFeedRequest,
   leaveRoomRequest,
+  destroyRoomRequest,
+  getRoomListRequest,
 } from "../reducers/videoroom";
 import { useRouter } from "next/router";
 import { Janus } from "janus-gateway";
@@ -20,7 +23,7 @@ import VideoList from "../components/VideoList";
 import MyVideo from "../components/MyVideo";
 import UserList from "../components/UserList";
 import Chatting from "../components/Chatting";
-import { Grid } from "@material-ui/core";
+import { Grid, Button, ButtonGroup } from "@material-ui/core";
 import MainVideo from "../components/MainVideo";
 import VideoOption from "../components/VideoOption";
 import { mediaServerUrl } from "../config/config";
@@ -30,6 +33,7 @@ import Router from "next/router";
 import CreateRoomForm from "../components/CreateRoomForm";
 import JoinRoomForm from "../components/JoinRoomForm";
 import ExitRoomButton from "../components/ExitRoomButton";
+import DestroyRoomButton from "../components/DestroyRoomButton";
 
 const subscribeRemoteFeed = (list, info, dispatch) => {
   list.forEach(({ id, display, audio_codec, video_codec }) => {
@@ -74,7 +78,7 @@ const connectJanus = () => {
         reject(error);
       },
       destroyed: () => {
-        console.log("destroyed");
+        console.log("janus destroyed");
       },
     });
   });
@@ -163,10 +167,9 @@ const attachJanus = (dispatch, janus) => {
       },
       ondata: (data) => {
         // empty
-        console.log("내가 데이터 채널로 받은메시지====\n", data);
       },
       oncleanup: () => {
-        console.log("클린업ㅇㅇㅇ");
+        console.log("oncleanup");
       },
     });
   });
@@ -176,12 +179,25 @@ const Video = () => {
   const info = useRef(null);
   const dispatch = useDispatch();
   const router = useRouter();
-  const { connectJanusDone, room, joinRoomLoading, title } = useSelector(
-    (state) => state.videoroom
-  );
+  const {
+    connectJanusDone,
+    room,
+    joinRoomLoading,
+    title,
+    password,
+  } = useSelector((state) => state.videoroom);
   const { id } = useSelector((state) => state.user);
+
   useEffect(() => {
     if (!id) return Router.push("/");
+
+    const beforeunload = (e) => {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      e.returnValue = "";
+    };
+
+    window.addEventListener("beforeunload", beforeunload);
 
     dispatch(connectJanusRequest());
     initJanus()
@@ -201,7 +217,18 @@ const Video = () => {
       if (janus && janus.isConnected()) {
         dispatch(leaveRoomRequest({ info: info.current }));
       }
+      window.removeEventListener("beforeunload", beforeunload);
     };
+  }, []);
+
+  useEffect(() => {
+    if (!room && !password) return;
+    info.current.room = room;
+    info.current.password = password;
+  }, [room, password]);
+
+  const onClickGetRoomList = useCallback(() => {
+    dispatch(getRoomListRequest({ info: info.current }));
   }, []);
 
   if (!connectJanusDone) {
@@ -229,7 +256,7 @@ const Video = () => {
       // 아직 입장이 안됨 비밀번호 입력하면 입장 시도
       return (
         <>
-          <JoinRoomForm info={info} room={parseInt(router.query.room)} />
+          <JoinRoomForm info={info} room={Number(router.query.room)} />
         </>
       );
     }
@@ -256,6 +283,10 @@ const Video = () => {
         </Grid>
         <Grid item xs={3}>
           <ExitRoomButton info={info} />
+          {!router.query.room && <DestroyRoomButton info={info} />}
+          <Button onClick={onClickGetRoomList} color="secondary">
+            생성 방 조회(임시)
+          </Button>
         </Grid>
       </Grid>
       <Grid container spacing={3}>
