@@ -69,14 +69,15 @@ import {
   leaveRoomFailure,
   LEAVE_ROOM_REQUEST,
 } from "../reducers/videoroom";
+import axios from "axios";
 
-function joinRoomAPI({ info, room, username, nickname, password }) {
+function joinRoomAPI({ info, room, nickname, pin }) {
   const { pluginHandle } = info;
   pluginHandle.send({
     message: {
       request: "join",
-      room,
-      pin: password,
+      room: Number(room),
+      pin: pin,
       ptype: "publisher",
       display: `${nickname}`,
     },
@@ -450,38 +451,30 @@ function* inactiveScreenSharing(action) {
   }
 }
 
-async function createRoomAPI(info, title, password) {
-  const { pluginHandle } = info;
-  const create = {
-    request: "create",
-    description: title,
-    permanent: false,
-    pin: password,
-    publishers: 100,
-  };
-
-  return await new Promise((resolve, reject) => {
-    pluginHandle.send({
-      message: create,
-      success: (data) => {
-        resolve(data);
+async function createRoomAPI(title, pin, accessToken) {
+  return axios.post(
+    "/api/rooms",
+    { title, pin },
+    {
+      headers: {
+        Authorization: accessToken,
       },
-    });
-  });
+    }
+  );
 }
 
 function* createRoom(action) {
   try {
-    const { info, title, password } = action.payload;
-    const { username, nickname } = yield select((state) => state.user);
-    const result = yield call(createRoomAPI, info, title, password);
-    yield put(createRoomSuccess({ password, room: result.room }));
+    const { accessToken, nickname } = yield select((state) => state.user);
+    const { info, title, pin } = action.payload;
+    const result = yield call(createRoomAPI, title, pin, accessToken);
+    yield put(createRoomSuccess());
     yield put(
       joinRoomRequest({
         info: info,
-        room: result.room,
+        room: result.data.data.room,
         nickname,
-        password,
+        pin: action.payload.pin,
       })
     );
   } catch (err) {

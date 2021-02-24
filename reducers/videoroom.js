@@ -3,7 +3,6 @@ import produce from "immer";
 export const initialState = {
   room: 0,
   title: "",
-  password: "",
   myFeed: {},
   remoteFeeds: [],
   activeVideo: true,
@@ -411,7 +410,6 @@ const reducer = (state = initialState, action) =>
         break;
       case JOIN_ROOM_REQUEST:
         draft.joinRoomLoading = true;
-        draft.password = action.payload.password;
         break;
       case JOIN_ROOM_SUCCESS:
         draft.joinRoomLoading = false;
@@ -538,11 +536,8 @@ const reducer = (state = initialState, action) =>
         draft.createRoomLoading = true;
         break;
       case CREATE_ROOM_SUCCESS:
-        draft.room = action.payload.room;
-        draft.password = action.payload.password;
         draft.createRoomLoading = false;
         draft.createRoomDone = true;
-        // draft.room = acton.payload.room;
         break;
       case CREATE_ROOM_FAILURE:
         draft.createRoomLoading = false;

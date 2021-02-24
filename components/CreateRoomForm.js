@@ -17,14 +17,14 @@ const CreateRoomFormWrapper = styled.div`
 const CreateRoomForm = ({ info }) => {
   const dispatch = useDispatch();
   const [title, onChangeTitle] = useInput("");
-  const [password, onChangePassword] = useInput("");
+  const [pin, onChangePin] = useInput("");
 
   const onSubmit = useCallback(
     (e) => {
       e.preventDefault();
-      dispatch(createRoomRequest({ info: info.current, title, password }));
+      dispatch(createRoomRequest({ info: info.current, title, pin }));
     },
-    [info, title, password]
+    [info, title, pin]
   );
 
   const onClickCancel = useCallback(() => {
@@ -50,8 +50,8 @@ const CreateRoomForm = ({ info }) => {
             type="password"
             required
             label="방 비밀번호"
-            value={password}
-            onChange={onChangePassword}
+            value={pin}
+            onChange={onChangePin}
             variant="outlined"
             className="create-room-text-field"
           />

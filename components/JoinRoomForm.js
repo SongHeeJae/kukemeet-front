@@ -19,7 +19,7 @@ const JoinRoomFormWrapper = styled.div`
 const JoinRoomForm = ({ info, room }) => {
   const dispatch = useDispatch();
   const [password, onChangePassword] = useInput("");
-  const { username, nickname } = useSelector((state) => state.user);
+  const { nickname } = useSelector((state) => state.user);
   const { joinRoomError } = useSelector((state) => state.videoroom);
 
   const onSubmit = useCallback(
@@ -30,7 +30,7 @@ const JoinRoomForm = ({ info, room }) => {
           info: info.current,
           room,
           nickname,
-          password,
+          pin,
         })
       );
     },
