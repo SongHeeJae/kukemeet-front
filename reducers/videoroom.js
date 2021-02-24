@@ -9,16 +9,7 @@ export const initialState = {
   activeAudio: true,
   activeSpeakerDetection: false,
   activeScreenSharing: false,
-  chatData: [
-    {
-      display: "테스트유저1",
-      text: "안녕하세요~~",
-    },
-    {
-      display: "테스트유저2",
-      text: "ㅎㅎ 안녕하세요~~",
-    },
-  ],
+  chatData: [],
   connectJanusLoading: false,
   connectJanusDone: false,
   joinRoomLoading: false,

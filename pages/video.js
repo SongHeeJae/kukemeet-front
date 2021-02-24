@@ -256,7 +256,7 @@ const Video = () => {
       // 아직 입장이 안됨 비밀번호 입력하면 입장 시도
       return (
         <>
-          <JoinRoomForm info={info} room={Number(router.query.room)} />
+          <JoinRoomForm info={info} room={router.query.room} />
         </>
       );
     }
