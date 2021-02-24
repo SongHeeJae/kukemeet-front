@@ -18,7 +18,7 @@ const JoinRoomFormWrapper = styled.div`
 
 const JoinRoomForm = ({ info, room }) => {
   const dispatch = useDispatch();
-  const [password, onChangePassword] = useInput("");
+  const [pin, onChangePin] = useInput("");
   const { nickname } = useSelector((state) => state.user);
   const { joinRoomError } = useSelector((state) => state.videoroom);
 
@@ -34,7 +34,7 @@ const JoinRoomForm = ({ info, room }) => {
         })
       );
     },
-    [info, password]
+    [info, pin]
   );
 
   const onClickCancel = useCallback(() => {
@@ -71,8 +71,8 @@ const JoinRoomForm = ({ info, room }) => {
             type="password"
             required
             label="방 비밀번호"
-            value={password}
-            onChange={onChangePassword}
+            value={pin}
+            onChange={onChangePin}
             variant="outlined"
             className="join-room-text-field"
           />

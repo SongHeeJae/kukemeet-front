@@ -1,7 +1,7 @@
 import produce from "immer";
 
 export const initialState = {
-  room: 0,
+  room: "",
   title: "",
   myFeed: {},
   remoteFeeds: [],
