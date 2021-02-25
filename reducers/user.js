@@ -32,6 +32,8 @@ export const initialState = {
   sendMessageLoading: false,
   sendMessageError: "",
   sendMessageDone: false,
+  logoutLoading: false,
+  logoutDone: false,
 };
 
 export const REGISTER_REQUEST = "REGISTER_REQUEST";
@@ -67,6 +69,10 @@ export const SEND_MESSAGE_REQUEST = "SEND_MESSAGE_REQUEST";
 export const SEND_MESSAGE_SUCCESS = "SEND_MESSAGE_SUCCESS";
 export const SEND_MESSAGE_FAILURE = "SEND_MESSAGE_FAILURE";
 export const CLEAR_SEND_MESSAGE_STATE = "CLEAR_SEND_MESSAGE_STATE";
+
+export const LOGOUT_REQUEST = "LOGOUT_REQUEST";
+export const LOGOUT_SUCCESS = "LOGOUT_SUCCESS";
+export const LOGOUT_FAILURE = "LOGOUT_FAILURE";
 
 export const registerRequest = (payload) => ({
   type: REGISTER_REQUEST,
@@ -187,6 +193,18 @@ export const sendMessageFailure = (payload) => ({
 
 export const clearSendMessageState = () => ({
   type: CLEAR_SEND_MESSAGE_STATE,
+});
+
+export const logoutRequest = () => ({
+  type: LOGOUT_REQUEST,
+});
+
+export const logoutSuccess = () => ({
+  type: LOGOUT_SUCCESS,
+});
+
+export const logoutFailure = () => ({
+  type: LOGOUT_FAILURE,
 });
 
 const reducer = (state = initialState, action) =>
@@ -318,6 +336,16 @@ const reducer = (state = initialState, action) =>
         draft.sendMessageDone = false;
         draft.sendMessageLoading = false;
         draft.sendMessageError = "";
+        break;
+      case LOGOUT_REQUEST:
+        draft.logoutLoading = true;
+        break;
+      case LOGOUT_SUCCESS:
+        draft.logoutLoading = false;
+        draft.logoutDone = true;
+        break;
+      case LOGOUT_FAILURE:
+        draft.logoutLoading = false;
         break;
       default:
         break;

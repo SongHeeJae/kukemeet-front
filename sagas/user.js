@@ -23,6 +23,9 @@ import {
   SEND_MESSAGE_REQUEST,
   sendMessageSuccess,
   sendMessageFailure,
+  LOGOUT_REQUEST,
+  logoutFailure,
+  logoutSuccess,
 } from "../reducers/user";
 
 function registerAPI(data) {
@@ -157,6 +160,28 @@ function* sendMessage(action) {
   }
 }
 
+function logoutAPI(accessToken) {
+  return axios.post(
+    "/api/sign/logout",
+    {},
+    {
+      headers: {
+        Authorization: accessToken,
+      },
+    }
+  );
+}
+
+function* logout() {
+  try {
+    const { accessToken } = yield select((state) => state.user);
+    yield call(logoutAPI, accessToken);
+    yield put(logoutSuccess());
+  } catch (err) {
+    yield put(logoutFailure());
+  }
+}
+
 function* watchRegister() {
   yield takeLatest(REGISTER_REQUEST, register);
 }
@@ -185,6 +210,10 @@ function* watchSendMessage() {
   yield takeLatest(SEND_MESSAGE_REQUEST, sendMessage);
 }
 
+function* watchLogout() {
+  yield takeLatest(LOGOUT_REQUEST, logout);
+}
+
 export default function* userSaga() {
   yield all([
     fork(watchRegister),
@@ -194,5 +223,6 @@ export default function* userSaga() {
     fork(watchLoadUserByNickname),
     fork(watchAddFriend),
     fork(watchSendMessage),
+    fork(watchLogout),
   ]);
 }
