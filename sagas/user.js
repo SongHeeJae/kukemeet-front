@@ -20,6 +20,9 @@ import {
   ADD_FRIEND_REQUEST,
   addFriendFailure,
   addFriendSuccess,
+  SEND_MESSAGE_REQUEST,
+  sendMessageSuccess,
+  sendMessageFailure,
 } from "../reducers/user";
 
 function registerAPI(data) {
@@ -132,6 +135,28 @@ function* addFriend(action) {
   }
 }
 
+function sendMessageAPI(accessToken, { id, message }) {
+  return axios.post(
+    "/api/messages",
+    { receiverId: id, msg: message },
+    {
+      headers: {
+        Authorization: accessToken,
+      },
+    }
+  );
+}
+
+function* sendMessage(action) {
+  try {
+    const { accessToken } = yield select((state) => state.user);
+    yield call(sendMessageAPI, accessToken, action.payload);
+    yield put(sendMessageSuccess());
+  } catch (err) {
+    yield put(sendMessageFailure({ msg: err.response.data.msg }));
+  }
+}
+
 function* watchRegister() {
   yield takeLatest(REGISTER_REQUEST, register);
 }
@@ -156,6 +181,10 @@ function* watchAddFriend() {
   yield takeLatest(ADD_FRIEND_REQUEST, addFriend);
 }
 
+function* watchSendMessage() {
+  yield takeLatest(SEND_MESSAGE_REQUEST, sendMessage);
+}
+
 export default function* userSaga() {
   yield all([
     fork(watchRegister),
@@ -164,5 +193,6 @@ export default function* userSaga() {
     fork(watchLoadMe),
     fork(watchLoadUserByNickname),
     fork(watchAddFriend),
+    fork(watchSendMessage),
   ]);
 }

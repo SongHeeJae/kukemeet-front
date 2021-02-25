@@ -9,11 +9,7 @@ import {
   TextField,
 } from "@material-ui/core";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  loadUserByNicknameRequest,
-  sendMessageRequest,
-  clearSendMessageState,
-} from "../reducers/user";
+import { sendMessageRequest, clearSendMessageState } from "../reducers/user";
 import Alert from "@material-ui/lab/Alert";
 import CloseIcon from "@material-ui/icons/Close";
 import useInput from "../hooks/useInput";
@@ -39,8 +35,8 @@ const SendMessageDialog = (props) => {
 
   const onClickSendMessage = useCallback(() => {
     if (!id) return;
-    console.log("message", message);
-    // dispatch(addFriendRequest({ id }));
+    dispatch(sendMessageRequest({ id, message }));
+    setMessage("");
   }, [id, message]);
 
   const onClickIconButton = useCallback(() => {

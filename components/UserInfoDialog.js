@@ -9,11 +9,7 @@ import {
   TextField,
 } from "@material-ui/core";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  loadUserByNicknameRequest,
-  addFriendRequest,
-  clearAddFriendState,
-} from "../reducers/user";
+import { addFriendRequest, clearAddFriendState } from "../reducers/user";
 import Alert from "@material-ui/lab/Alert";
 import CloseIcon from "@material-ui/icons/Close";
 
