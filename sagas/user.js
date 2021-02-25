@@ -14,6 +14,9 @@ import {
   LOAD_ME_REQUEST,
   loadMeSuccess,
   loadMeFailure,
+  LOAD_USER_BY_NICKNAME_REQUEST,
+  loadUserByNicknameSuccess,
+  loadUserByNicknameFailure,
 } from "../reducers/user";
 
 function registerAPI(data) {
@@ -88,6 +91,21 @@ function* loadMe(action) {
   }
 }
 
+function loadUserByNicknameAPI({ nickname }) {
+  return axios.get(`/api/users/nickname/${nickname}`);
+}
+
+function* loadUserByNickname(action) {
+  try {
+    const result = yield call(loadUserByNicknameAPI, action.payload);
+    const info = result.data.data;
+    yield put(loadUserByNicknameSuccess({ info }));
+  } catch (err) {
+    console.log(err);
+    yield put(loadUserByNicknameFailure());
+  }
+}
+
 function* watchRegister() {
   yield takeLatest(REGISTER_REQUEST, register);
 }
@@ -104,11 +122,16 @@ function* watchLoadMe() {
   yield takeLatest(LOAD_ME_REQUEST, loadMe);
 }
 
+function* watchLoadUserByNickname() {
+  yield takeLatest(LOAD_USER_BY_NICKNAME_REQUEST, loadUserByNickname);
+}
+
 export default function* userSaga() {
   yield all([
     fork(watchRegister),
     fork(watchLogin),
     fork(watchRefreshToken),
     fork(watchLoadMe),
+    fork(watchLoadUserByNickname),
   ]);
 }

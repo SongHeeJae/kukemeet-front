@@ -16,6 +16,17 @@ export const initialState = {
   loginDone: false,
   loginError: "",
   setCookie: [],
+  loadUser: {
+    id: 0,
+    uid: "",
+    username: "",
+    nickname: "",
+    createdAt: "",
+    modifiedAt: "",
+  },
+  loadUserLoading: false,
+  addFriendLoading: false,
+  friends: [],
 };
 
 export const REGISTER_REQUEST = "REGISTER_REQUEST";
@@ -37,6 +48,14 @@ export const LOAD_ME_SUCCESS = "LOAD_ME_SUCCESS";
 export const LOAD_ME_FAILURE = "LOAD_ME_FAILURE";
 
 export const SET_TOKEN = "SET_TOKEN";
+
+export const LOAD_USER_BY_NICKNAME_REQUEST = "LOAD_USER_BY_NICKNAME_REQUEST";
+export const LOAD_USER_BY_NICKNAME_SUCCESS = "LOAD_USER_BY_NICKNAME_SUCCESS";
+export const LOAD_USER_BY_NICKNAME_FAILURE = "LOAD_USER_BY_NICKNAME_FAILURE";
+
+export const ADD_FRIEND_REQUEST = "ADD_FRIEND_REQUEST";
+export const ADD_FRIEND_SUCCESS = "ADD_FRIEND_SUCCESS";
+export const ADD_FRIEND_FAILURE = "ADD_FRIEND_FAILURE";
 
 export const registerRequest = (payload) => ({
   type: REGISTER_REQUEST,
@@ -104,6 +123,36 @@ export const loadMeFailure = () => ({
 
 export const setToken = (payload) => ({
   type: SET_TOKEN,
+  payload,
+});
+
+export const loadUserByNicknameRequest = (payload) => ({
+  type: LOAD_USER_BY_NICKNAME_REQUEST,
+  payload,
+});
+
+export const loadUserByNicknameSuccess = (payload) => ({
+  type: LOAD_USER_BY_NICKNAME_SUCCESS,
+  payload,
+});
+
+export const loadUserByNicknameFailure = (payload) => ({
+  type: LOAD_USER_BY_NICKNAME_FAILURE,
+  payload,
+});
+
+export const addFriendRequest = (payload) => ({
+  type: ADD_FRIEND_REQUEST,
+  payload,
+});
+
+export const addFriendSuccess = (payload) => ({
+  type: ADD_FRIEND_SUCCESS,
+  payload,
+});
+
+export const addFriendFailure = (payload) => ({
+  type: ADD_FRIEND_FAILURE,
   payload,
 });
 
@@ -190,6 +239,21 @@ const reducer = (state = initialState, action) =>
       case SET_TOKEN:
         draft.accessToken = action.payload.accessToken;
         draft.refreshToken = action.payload.refreshToken;
+      case LOAD_USER_BY_NICKNAME_REQUEST:
+        draft.loadUserLoading = true;
+        break;
+      case LOAD_USER_BY_NICKNAME_SUCCESS:
+        draft.loadUserLoading = false;
+        draft.loadUser.id = action.payload.info.id;
+        draft.loadUser.uid = action.payload.info.uid;
+        draft.loadUser.username = action.payload.info.username;
+        draft.loadUser.nickname = action.payload.info.nickname;
+        draft.loadUser.createdAt = action.payload.info.createdAt;
+        draft.loadUser.modifiedAt = action.payload.info.modifiedAt;
+        break;
+      case LOAD_USER_BY_NICKNAME_REQUEST:
+        draft.loadUserLoading = false;
+        break;
       default:
         break;
     }

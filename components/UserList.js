@@ -33,26 +33,31 @@ const UserList = () => {
   const { remoteFeeds } = useSelector((state) => state.videoroom);
 
   const [userInfoDialogOpen, setUserInfoDialogOpen] = useState(false);
+  const [selectedNickname, setSelectedNickname] = useState("");
 
   const onClickUserInfo = useCallback((popupState, display) => {
     popupState.close();
     setUserInfoDialogOpen(true);
-    console.log(display);
+    setSelectedNickname(display);
   }, []);
 
   const onClickMessage = useCallback((popupState, display) => {
     popupState.close();
-    console.log(display);
+    setSelectedNickname(display);
   }, []);
 
   const onClickAddFriend = useCallback((popupState, display) => {
     popupState.close();
-    console.log(display);
+    setSelectedNickname(display);
   }, []);
 
   return (
     <div className={classes.root}>
-      <UserInfoDialog open={userInfoDialogOpen} />
+      <UserInfoDialog
+        open={userInfoDialogOpen}
+        setOpen={setUserInfoDialogOpen}
+        nickname={selectedNickname}
+      />
       <List>
         <ListItem button>
           <ListItemIcon>
