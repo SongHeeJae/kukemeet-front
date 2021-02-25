@@ -8,7 +8,7 @@ import {
   TextField,
 } from "@material-ui/core";
 import { useSelector, useDispatch } from "react-redux";
-import { loadUserByNicknameRequest } from "../reducers/user";
+import { loadUserByNicknameRequest, addFriendRequest } from "../reducers/user";
 
 const UserInfoDialog = (props) => {
   const { open, setOpen } = props;
@@ -28,6 +28,7 @@ const UserInfoDialog = (props) => {
 
   const onClickAddFriend = useCallback(() => {
     if (!id) return;
+    dispatch(addFriendRequest({ id }));
   }, [id]);
 
   return (

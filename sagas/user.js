@@ -1,4 +1,4 @@
-import { all, takeLatest, put, call, fork } from "redux-saga/effects";
+import { all, takeLatest, put, call, fork, select } from "redux-saga/effects";
 import axios from "axios";
 import {
   registerSuccess,
@@ -17,6 +17,9 @@ import {
   LOAD_USER_BY_NICKNAME_REQUEST,
   loadUserByNicknameSuccess,
   loadUserByNicknameFailure,
+  ADD_FRIEND_REQUEST,
+  addFriendFailure,
+  addFriendSuccess,
 } from "../reducers/user";
 
 function registerAPI(data) {
@@ -106,6 +109,30 @@ function* loadUserByNickname(action) {
   }
 }
 
+function addFriendAPI(accessToken, { id }) {
+  return axios.post(
+    "/api/friends",
+    { toId: id },
+    {
+      headers: {
+        Authorization: accessToken,
+      },
+    }
+  );
+}
+
+function* addFriend(action) {
+  try {
+    const { accessToken } = yield select((state) => state.user);
+    const result = yield call(addFriendAPI, accessToken, action.payload);
+    const info = result.data.data;
+    yield put(addFriendSuccess({ info }));
+  } catch (err) {
+    console.log(err.response.data.msg);
+    yield put(addFriendFailure());
+  }
+}
+
 function* watchRegister() {
   yield takeLatest(REGISTER_REQUEST, register);
 }
@@ -126,6 +153,10 @@ function* watchLoadUserByNickname() {
   yield takeLatest(LOAD_USER_BY_NICKNAME_REQUEST, loadUserByNickname);
 }
 
+function* watchAddFriend() {
+  yield takeLatest(ADD_FRIEND_REQUEST, addFriend);
+}
+
 export default function* userSaga() {
   yield all([
     fork(watchRegister),
@@ -133,5 +164,6 @@ export default function* userSaga() {
     fork(watchRefreshToken),
     fork(watchLoadMe),
     fork(watchLoadUserByNickname),
+    fork(watchAddFriend),
   ]);
 }

@@ -251,8 +251,17 @@ const reducer = (state = initialState, action) =>
         draft.loadUser.createdAt = action.payload.info.createdAt;
         draft.loadUser.modifiedAt = action.payload.info.modifiedAt;
         break;
-      case LOAD_USER_BY_NICKNAME_REQUEST:
+      case LOAD_USER_BY_NICKNAME_FAILURE:
         draft.loadUserLoading = false;
+        break;
+      case ADD_FRIEND_REQUEST:
+        draft.addFriendLoading = true;
+        break;
+      case ADD_FRIEND_SUCCESS:
+        draft.addFriendLoading = false;
+        break;
+      case ADD_FRIEND_FAILURE:
+        draft.addFriendLoading = false;
         break;
       default:
         break;
