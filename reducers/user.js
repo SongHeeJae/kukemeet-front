@@ -34,6 +34,14 @@ export const initialState = {
   sendMessageDone: false,
   logoutLoading: false,
   logoutDone: false,
+  receivedMessages: [],
+  loadReceivedMessagesLoading: false,
+  loadReceievdMessagesDone: false,
+  loadReceivedMessagesHasNext: true,
+  sentMessages: [],
+  loadSentMessagesLoading: false,
+  loadSentMessagesDone: false,
+  loadSentMessagesHasNext: true,
 };
 
 export const REGISTER_REQUEST = "REGISTER_REQUEST";
@@ -73,6 +81,16 @@ export const CLEAR_SEND_MESSAGE_STATE = "CLEAR_SEND_MESSAGE_STATE";
 export const LOGOUT_REQUEST = "LOGOUT_REQUEST";
 export const LOGOUT_SUCCESS = "LOGOUT_SUCCESS";
 export const LOGOUT_FAILURE = "LOGOUT_FAILURE";
+
+export const LOAD_RECEIVED_MESSAGES_REQUEST = "LOAD_RECEIVED_MESSAGES_REQUEST";
+export const LOAD_RECEIVED_MESSAGES_SUCCESS = "LOAD_RECEIVED_MESSAGES_SUCCESS";
+export const LOAD_RECEIVED_MESSAGES_FAILURE = "LOAD_RECEIVED_MESSAGES_FAILURE";
+export const CLEAR_RECEIVED_MESSAGES_STATE = "CLEAR_RECEIVED_MESSAGES_STATE";
+
+export const LOAD_SENT_MESSAGES_REQUEST = "LOAD_SENT_MESSAGES_REQUEST";
+export const LOAD_SENT_MESSAGES_SUCCESS = "LOAD_SENT_MESSAGES_SUCCESS";
+export const LOAD_SENT_MESSAGES_FAILURE = "LOAD_SENT_MESSAGES_FAILURE";
+export const CLEAR_SENT_MESSAGES_STATE = "CLEAR_SENT_MESSAGES_STATE";
 
 export const registerRequest = (payload) => ({
   type: REGISTER_REQUEST,
@@ -205,6 +223,40 @@ export const logoutSuccess = () => ({
 
 export const logoutFailure = () => ({
   type: LOGOUT_FAILURE,
+});
+
+export const loadReceivedMessagesRequest = () => ({
+  type: LOAD_RECEIVED_MESSAGES_REQUEST,
+});
+
+export const loadReceivedMessagesSuccess = (payload) => ({
+  type: LOAD_RECEIVED_MESSAGES_SUCCESS,
+  payload,
+});
+
+export const loadReceivedMessagesFailure = () => ({
+  type: LOAD_RECEIVED_MESSAGES_FAILURE,
+});
+
+export const clearReceivedMessagesState = () => ({
+  type: CLEAR_RECEIVED_MESSAGES_STATE,
+});
+
+export const loadSentMessagesRequest = () => ({
+  type: LOAD_SENT_MESSAGES_REQUEST,
+});
+
+export const loadSentMessagesSuccess = (payload) => ({
+  type: LOAD_SENT_MESSAGES_SUCCESS,
+  payload,
+});
+
+export const loadSentMessagesFailure = () => ({
+  type: LOAD_SENT_MESSAGES_FAILURE,
+});
+
+export const clearSentMessagesState = () => ({
+  type: CLEAR_SENT_MESSAGES_STATE,
 });
 
 const reducer = (state = initialState, action) =>
@@ -347,6 +399,44 @@ const reducer = (state = initialState, action) =>
         break;
       case LOGOUT_FAILURE:
         draft.logoutLoading = false;
+        break;
+      case LOAD_RECEIVED_MESSAGES_REQUEST:
+        draft.loadReceivedMessagesLoading = true;
+        break;
+      case LOAD_RECEIVED_MESSAGES_SUCCESS:
+        draft.loadReceivedMessagesLoading = false;
+        draft.loadReceivedMessagesDone = true;
+        draft.loadReceivedMessagesHasNext = action.payload.hasNext;
+        draft.receivedMessages = draft.receivedMessages.concat(
+          action.payload.messages
+        );
+        break;
+      case LOAD_RECEIVED_MESSAGES_FAILURE:
+        draft.loadReceivedMessagesLoading = false;
+        break;
+      case CLEAR_RECEIVED_MESSAGES_STATE:
+        draft.loadReceivedMessagesLoading = false;
+        draft.loadReceivedMessagesDone = false;
+        draft.loadReceivedMessagesHasNext = true;
+        draft.receivedMessages = [];
+        break;
+      case LOAD_SENT_MESSAGES_REQUEST:
+        draft.loadSentMessagesLoading = true;
+        break;
+      case LOAD_SENT_MESSAGES_SUCCESS:
+        draft.loadSentMessagesLoading = false;
+        draft.loadSentMessagesDone = true;
+        draft.loadSentMessagesHasNext = action.payload.hasNext;
+        draft.sentMessages = draft.sentMessages.concat(action.payload.messages);
+        break;
+      case LOAD_SENT_MESSAGES_FAILURE:
+        draft.loadSentMessagesLoading = false;
+        break;
+      case CLEAR_SENT_MESSAGES_STATE:
+        draft.loadSentMessagesLoading = false;
+        draft.loadSentMessagesDone = false;
+        draft.loadSentMessagesHasNext = true;
+        draft.sentMessages = [];
         break;
       default:
         break;

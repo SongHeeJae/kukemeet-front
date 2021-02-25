@@ -26,6 +26,12 @@ import {
   LOGOUT_REQUEST,
   logoutFailure,
   logoutSuccess,
+  LOAD_RECEIVED_MESSAGES_REQUEST,
+  LOAD_SENT_MESSAGES_REQUEST,
+  loadReceivedMessagesSuccess,
+  loadReceivedMessagesFailure,
+  loadSentMessagesSuccess,
+  loadSentMessagesFailure,
 } from "../reducers/user";
 
 function registerAPI(data) {
@@ -182,6 +188,65 @@ function* logout() {
   }
 }
 
+function loadReceivedMessagesAPI(accessToken, receivedMessages) {
+  const length = receivedMessages.length;
+  const lastMessageId = length !== 0 && receivedMessages[length - 1].id;
+  return axios.get(
+    `/api/messages/received?lastMessageId=${lastMessageId || ""}`,
+    {
+      headers: {
+        Authorization: accessToken,
+      },
+    }
+  );
+}
+
+function* loadReceivedMessages() {
+  try {
+    const { accessToken, receivedMessages } = yield select(
+      (state) => state.user
+    );
+    const result = yield call(
+      loadReceivedMessagesAPI,
+      accessToken,
+      receivedMessages
+    );
+    yield put(
+      loadReceivedMessagesSuccess({
+        messages: result.data.data,
+        hasNext: result.data.hasNext,
+      })
+    );
+  } catch (err) {
+    yield put(loadReceivedMessagesFailure());
+  }
+}
+
+function loadSentMessagesAPI(accessToken, sentMessages) {
+  const length = sentMessages.length;
+  const lastMessageId = length !== 0 && sentMessages[length - 1].id;
+  return axios.get(`/api/messages/sent?lastMessageId=${lastMessageId || ""}`, {
+    headers: {
+      Authorization: accessToken,
+    },
+  });
+}
+
+function* loadSentMessages() {
+  try {
+    const { accessToken, sentMessages } = yield select((state) => state.user);
+    const result = yield call(loadSentMessagesAPI, accessToken, sentMessages);
+    yield put(
+      loadSentMessagesSuccess({
+        messages: result.data.data,
+        hasNext: result.data.hasNext,
+      })
+    );
+  } catch (err) {
+    yield put(loadSentMessagesFailure());
+  }
+}
+
 function* watchRegister() {
   yield takeLatest(REGISTER_REQUEST, register);
 }
@@ -214,6 +279,14 @@ function* watchLogout() {
   yield takeLatest(LOGOUT_REQUEST, logout);
 }
 
+function* watchLoadReceivedMessages() {
+  yield takeLatest(LOAD_RECEIVED_MESSAGES_REQUEST, loadReceivedMessages);
+}
+
+function* watchLoadSentMessages() {
+  yield takeLatest(LOAD_SENT_MESSAGES_REQUEST, loadSentMessages);
+}
+
 export default function* userSaga() {
   yield all([
     fork(watchRegister),
@@ -224,5 +297,7 @@ export default function* userSaga() {
     fork(watchAddFriend),
     fork(watchSendMessage),
     fork(watchLogout),
+    fork(watchLoadReceivedMessages),
+    fork(watchLoadSentMessages),
   ]);
 }

@@ -1,10 +1,11 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import styled from "styled-components";
 import { MenuList, MenuItem } from "@material-ui/core";
 import { useSelector, useDispatch } from "react-redux";
 import Router from "next/router";
 import { logoutRequest } from "../reducers/user";
+import MessageListDialog from "./MessageListDialog";
 
 const MenuWrapper = styled.div`
   display: flex;
@@ -30,6 +31,7 @@ const MenuWrapper = styled.div`
 const AppLayout = ({ children }) => {
   const dispatch = useDispatch();
   const { id, logoutDone } = useSelector((state) => state.user);
+  const [messageListDialogOpen, setMessageListDialogOpen] = useState(false);
 
   useEffect(() => {
     if (!logoutDone) return;
@@ -38,6 +40,10 @@ const AppLayout = ({ children }) => {
 
   const onClickLogout = useCallback(() => {
     dispatch(logoutRequest());
+  }, []);
+
+  const onClickMessageList = useCallback(() => {
+    setMessageListDialogOpen(true);
   }, []);
 
   return (
@@ -69,7 +75,9 @@ const AppLayout = ({ children }) => {
                     <a>내정보</a>
                   </Link>
                 </MenuItem>,
-                <MenuItem key="message">쪽지함</MenuItem>,
+                <MenuItem key="message" onClick={onClickMessageList}>
+                  쪽지함
+                </MenuItem>,
                 <MenuItem key="logout" onClick={onClickLogout}>
                   로그아웃
                 </MenuItem>,
@@ -88,6 +96,12 @@ const AppLayout = ({ children }) => {
               ]}
         </MenuList>
       </MenuWrapper>
+      {!!id && (
+        <MessageListDialog
+          open={messageListDialogOpen}
+          setOpen={setMessageListDialogOpen}
+        />
+      )}
       {children}
     </>
   );

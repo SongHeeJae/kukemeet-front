@@ -25,6 +25,12 @@ const UserInfoDialog = (props) => {
 
   const { id, uid, username, nickname, createdAt } = loadUser;
 
+  useEffect(() => {
+    return () => {
+      dispatch(clearAddFriendState());
+    };
+  }, []);
+
   const onClose = useCallback(() => {
     setOpen(false);
     dispatch(clearAddFriendState());

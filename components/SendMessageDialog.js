@@ -27,6 +27,12 @@ const SendMessageDialog = (props) => {
   const { id, uid, username, nickname, createdAt } = loadUser;
   const [message, onChangeMessage, setMessage] = useInput("");
 
+  useEffect(() => {
+    return () => {
+      dispatch(clearSendMessageState());
+    };
+  }, []);
+
   const onClose = useCallback(() => {
     setOpen(false);
     setMessage("");
