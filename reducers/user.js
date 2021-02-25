@@ -27,6 +27,7 @@ export const initialState = {
   loadUserLoading: false,
   addFriendLoading: false,
   addFriendError: "",
+  addFriendDone: false,
   friends: [],
 };
 
@@ -265,12 +266,14 @@ const reducer = (state = initialState, action) =>
         break;
       case ADD_FRIEND_SUCCESS:
         draft.addFriendLoading = false;
+        draft.addFriendDone = true;
         break;
       case ADD_FRIEND_FAILURE:
         draft.addFriendLoading = false;
         draft.addFriendError = action.payload.msg;
         break;
       case CLEAR_ADD_FRIEND_STATE:
+        draft.addFriendDone = false;
         draft.addFriendLoading = false;
         draft.addFriendError = "";
         break;

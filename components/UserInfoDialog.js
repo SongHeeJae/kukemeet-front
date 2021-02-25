@@ -20,9 +20,12 @@ import CloseIcon from "@material-ui/icons/Close";
 const UserInfoDialog = (props) => {
   const { open, setOpen } = props;
   const dispatch = useDispatch();
-  const { loadUser, loadUserLoading, addFriendError } = useSelector(
-    (state) => state.user
-  );
+  const {
+    loadUser,
+    loadUserLoading,
+    addFriendError,
+    addFriendDone,
+  } = useSelector((state) => state.user);
 
   const { id, uid, username, nickname, createdAt } = loadUser;
 
@@ -41,12 +44,29 @@ const UserInfoDialog = (props) => {
     dispatch(addFriendRequest({ id }));
   }, [id]);
 
-  const onClickErrorIconButton = useCallback(() => {
+  const onClickIconButton = useCallback(() => {
     dispatch(clearAddFriendState());
   }, []);
 
   return (
     <Dialog open={open} onClose={onClose}>
+      <Collapse in={addFriendDone}>
+        <Alert
+          severity="success"
+          action={
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              size="small"
+              onClick={onClickIconButton}
+            >
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+          }
+        >
+          친구로 등록되었습니다.
+        </Alert>
+      </Collapse>
       <Collapse in={addFriendError.length > 0}>
         <Alert
           severity="error"
@@ -55,7 +75,7 @@ const UserInfoDialog = (props) => {
               aria-label="close"
               color="inherit"
               size="small"
-              onClick={onClickErrorIconButton}
+              onClick={onClickIconButton}
             >
               <CloseIcon fontSize="inherit" />
             </IconButton>
