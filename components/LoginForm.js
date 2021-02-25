@@ -26,7 +26,6 @@ const LoginForm = () => {
   useEffect(() => {
     if (!loginDone) return;
     Router.replace("/");
-    dispatch(clearLoginState());
   }, [loginDone]);
 
   const onClickErrorIconButton = useCallback(() => {

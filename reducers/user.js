@@ -290,6 +290,7 @@ const reducer = (state = initialState, action) =>
       case SET_TOKEN:
         draft.accessToken = action.payload.accessToken;
         draft.refreshToken = action.payload.refreshToken;
+        break;
       case LOAD_USER_BY_NICKNAME_REQUEST:
         draft.loadUserLoading = true;
         break;
