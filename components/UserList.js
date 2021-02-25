@@ -14,6 +14,7 @@ import StarIcon from "@material-ui/icons/star";
 import PopupState, { bindTrigger, bindMenu } from "material-ui-popup-state";
 import UserInfoDialog from "./UserInfoDialog";
 import SendMessageDialog from "./SendMessageDialog";
+import { loadUserByNicknameRequest } from "../reducers/user";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -30,23 +31,23 @@ const useStyles = makeStyles((theme) => ({
 
 const UserList = () => {
   const classes = useStyles();
+  const dispatch = useDispatch();
   const { username, nickname } = useSelector((state) => state.user);
   const { remoteFeeds } = useSelector((state) => state.videoroom);
 
   const [userInfoDialogOpen, setUserInfoDialogOpen] = useState(false);
   const [sendMessageDialogOpen, setSendMessageDialogOpen] = useState(false);
-  const [selectedNickname, setSelectedNickname] = useState("");
 
   const onClickUserInfo = useCallback((popupState, display) => {
     popupState.close();
+    dispatch(loadUserByNicknameRequest({ nickname: display }));
     setUserInfoDialogOpen(true);
-    setSelectedNickname(display);
   }, []);
 
   const onClickMessage = useCallback((popupState, display) => {
     popupState.close();
+    dispatch(loadUserByNicknameRequest({ nickname: display }));
     setSendMessageDialogOpen(true);
-    setSelectedNickname(display);
   }, []);
 
   return (
@@ -54,12 +55,10 @@ const UserList = () => {
       <UserInfoDialog
         open={userInfoDialogOpen}
         setOpen={setUserInfoDialogOpen}
-        nickname={selectedNickname}
       />
       <SendMessageDialog
         open={sendMessageDialogOpen}
         setOpen={setSendMessageDialogOpen}
-        nickname={selectedNickname}
       />
       <List>
         <ListItem button>

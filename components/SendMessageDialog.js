@@ -31,11 +31,6 @@ const SendMessageDialog = (props) => {
   const { id, uid, username, nickname, createdAt } = loadUser;
   const [message, onChangeMessage, setMessage] = useInput("");
 
-  useEffect(() => {
-    if (!props.nickname || !open) return;
-    dispatch(loadUserByNicknameRequest({ nickname: props.nickname }));
-  }, [props.nickname]);
-
   const onClose = useCallback(() => {
     setOpen(false);
     setMessage("");
