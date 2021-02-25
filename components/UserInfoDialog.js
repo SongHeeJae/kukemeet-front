@@ -3,17 +3,26 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogContentText,
+  Collapse,
+  IconButton,
   Button,
   TextField,
 } from "@material-ui/core";
 import { useSelector, useDispatch } from "react-redux";
-import { loadUserByNicknameRequest, addFriendRequest } from "../reducers/user";
+import {
+  loadUserByNicknameRequest,
+  addFriendRequest,
+  clearAddFriendState,
+} from "../reducers/user";
+import Alert from "@material-ui/lab/Alert";
+import CloseIcon from "@material-ui/icons/Close";
 
 const UserInfoDialog = (props) => {
   const { open, setOpen } = props;
   const dispatch = useDispatch();
-  const { loadUser, loadUserLoading } = useSelector((state) => state.user);
+  const { loadUser, loadUserLoading, addFriendError } = useSelector(
+    (state) => state.user
+  );
 
   const { id, uid, username, nickname, createdAt } = loadUser;
 
@@ -24,6 +33,7 @@ const UserInfoDialog = (props) => {
 
   const onClose = useCallback(() => {
     setOpen(false);
+    dispatch(clearAddFriendState());
   }, []);
 
   const onClickAddFriend = useCallback(() => {
@@ -31,8 +41,29 @@ const UserInfoDialog = (props) => {
     dispatch(addFriendRequest({ id }));
   }, [id]);
 
+  const onClickErrorIconButton = useCallback(() => {
+    dispatch(clearAddFriendState());
+  }, []);
+
   return (
     <Dialog open={open} onClose={onClose}>
+      <Collapse in={addFriendError.length > 0}>
+        <Alert
+          severity="error"
+          action={
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              size="small"
+              onClick={onClickErrorIconButton}
+            >
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+          }
+        >
+          {addFriendError}
+        </Alert>
+      </Collapse>
       <DialogTitle>사용자 정보</DialogTitle>
       {loadUserLoading ? (
         <div>로딩중...</div>

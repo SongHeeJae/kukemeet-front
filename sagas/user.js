@@ -128,8 +128,7 @@ function* addFriend(action) {
     const info = result.data.data;
     yield put(addFriendSuccess({ info }));
   } catch (err) {
-    console.log(err.response.data.msg);
-    yield put(addFriendFailure());
+    yield put(addFriendFailure({ msg: err.response.data.msg }));
   }
 }
 

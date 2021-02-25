@@ -26,6 +26,7 @@ export const initialState = {
   },
   loadUserLoading: false,
   addFriendLoading: false,
+  addFriendError: "",
   friends: [],
 };
 
@@ -56,6 +57,7 @@ export const LOAD_USER_BY_NICKNAME_FAILURE = "LOAD_USER_BY_NICKNAME_FAILURE";
 export const ADD_FRIEND_REQUEST = "ADD_FRIEND_REQUEST";
 export const ADD_FRIEND_SUCCESS = "ADD_FRIEND_SUCCESS";
 export const ADD_FRIEND_FAILURE = "ADD_FRIEND_FAILURE";
+export const CLEAR_ADD_FRIEND_STATE = "CLEAR_ADD_FRIEND_STATE";
 
 export const registerRequest = (payload) => ({
   type: REGISTER_REQUEST,
@@ -154,6 +156,10 @@ export const addFriendSuccess = (payload) => ({
 export const addFriendFailure = (payload) => ({
   type: ADD_FRIEND_FAILURE,
   payload,
+});
+
+export const clearAddFriendState = () => ({
+  type: CLEAR_ADD_FRIEND_STATE,
 });
 
 const reducer = (state = initialState, action) =>
@@ -262,6 +268,11 @@ const reducer = (state = initialState, action) =>
         break;
       case ADD_FRIEND_FAILURE:
         draft.addFriendLoading = false;
+        draft.addFriendError = action.payload.msg;
+        break;
+      case CLEAR_ADD_FRIEND_STATE:
+        draft.addFriendLoading = false;
+        draft.addFriendError = "";
         break;
       default:
         break;

@@ -46,11 +46,6 @@ const UserList = () => {
     setSelectedNickname(display);
   }, []);
 
-  const onClickAddFriend = useCallback((popupState, display) => {
-    popupState.close();
-    setSelectedNickname(display);
-  }, []);
-
   return (
     <div className={classes.root}>
       <UserInfoDialog
@@ -95,12 +90,6 @@ const UserList = () => {
                     onClick={() => onClickMessage(popupState, v.display)}
                   >
                     쪽지 보내기
-                  </MenuItem>
-                  <MenuItem
-                    onClick={() => onClickAddFriend(popupState, v.display)}
-                  >
-                    {" "}
-                    친구 추가
                   </MenuItem>
                 </Menu>
               </>
