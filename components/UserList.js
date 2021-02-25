@@ -13,6 +13,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import StarIcon from "@material-ui/icons/star";
 import PopupState, { bindTrigger, bindMenu } from "material-ui-popup-state";
 import UserInfoDialog from "./UserInfoDialog";
+import SendMessageDialog from "./SendMessageDialog";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -33,6 +34,7 @@ const UserList = () => {
   const { remoteFeeds } = useSelector((state) => state.videoroom);
 
   const [userInfoDialogOpen, setUserInfoDialogOpen] = useState(false);
+  const [sendMessageDialogOpen, setSendMessageDialogOpen] = useState(false);
   const [selectedNickname, setSelectedNickname] = useState("");
 
   const onClickUserInfo = useCallback((popupState, display) => {
@@ -43,6 +45,7 @@ const UserList = () => {
 
   const onClickMessage = useCallback((popupState, display) => {
     popupState.close();
+    setSendMessageDialogOpen(true);
     setSelectedNickname(display);
   }, []);
 
@@ -51,6 +54,11 @@ const UserList = () => {
       <UserInfoDialog
         open={userInfoDialogOpen}
         setOpen={setUserInfoDialogOpen}
+        nickname={selectedNickname}
+      />
+      <SendMessageDialog
+        open={sendMessageDialogOpen}
+        setOpen={setSendMessageDialogOpen}
         nickname={selectedNickname}
       />
       <List>

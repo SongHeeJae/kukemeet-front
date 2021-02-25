@@ -29,6 +29,9 @@ export const initialState = {
   addFriendError: "",
   addFriendDone: false,
   friends: [],
+  sendMessageLoading: false,
+  sendMessageError: "",
+  sendMessageDone: false,
 };
 
 export const REGISTER_REQUEST = "REGISTER_REQUEST";
@@ -59,6 +62,11 @@ export const ADD_FRIEND_REQUEST = "ADD_FRIEND_REQUEST";
 export const ADD_FRIEND_SUCCESS = "ADD_FRIEND_SUCCESS";
 export const ADD_FRIEND_FAILURE = "ADD_FRIEND_FAILURE";
 export const CLEAR_ADD_FRIEND_STATE = "CLEAR_ADD_FRIEND_STATE";
+
+export const SEND_MESSAGE_REQUEST = "SEND_MESSAGE_REQUEST";
+export const SEND_MESSAGE_SUCCESS = "SEND_MESSAGE_SUCCESS";
+export const SEND_MESSAGE_FAILURE = "SEND_MESSAGE_FAILURE";
+export const CLEAR_SEND_MESSAGE_STATE = "CLEAR_SEND_MESSAGE_STATE";
 
 export const registerRequest = (payload) => ({
   type: REGISTER_REQUEST,
@@ -161,6 +169,24 @@ export const addFriendFailure = (payload) => ({
 
 export const clearAddFriendState = () => ({
   type: CLEAR_ADD_FRIEND_STATE,
+});
+
+export const sendMessageRequest = (payload) => ({
+  type: SEND_MESSAGE_REQUEST,
+  payload,
+});
+
+export const sendMessageSuccess = () => ({
+  type: SEND_MESSAGE_SUCCESS,
+});
+
+export const sendMessageFailure = (payload) => ({
+  type: SEND_MESSAGE_FAILURE,
+  payload,
+});
+
+export const clearSendMessageState = () => ({
+  type: CLEAR_SEND_MESSAGE_STATE,
 });
 
 const reducer = (state = initialState, action) =>
@@ -276,6 +302,22 @@ const reducer = (state = initialState, action) =>
         draft.addFriendDone = false;
         draft.addFriendLoading = false;
         draft.addFriendError = "";
+        break;
+      case SEND_MESSAGE_REQUEST:
+        draft.sendMessageLoading = true;
+        break;
+      case SEND_MESSAGE_SUCCESS:
+        draft.sendMessageDone = true;
+        draft.sendMessageLoading = false;
+        break;
+      case SEND_MESSAGE_FAILURE:
+        draft.sendMessageLoading = false;
+        draft.sendMessageError = action.payload.msg;
+        break;
+      case CLEAR_SEND_MESSAGE_STATE:
+        draft.sendMessageDone = false;
+        draft.sendMessageLoading = false;
+        draft.sendMessageError = "";
         break;
       default:
         break;
