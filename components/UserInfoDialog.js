@@ -28,7 +28,7 @@ const UserInfoDialog = (props) => {
 
   useEffect(() => {
     return () => {
-      dispatch(clearAddFriendState());
+      if (addFriendError) dispatch(clearAddFriendState());
     };
   }, []);
 

@@ -7,6 +7,8 @@ import {
   loadSentMessagesRequest,
   deleteReceivedMessageRequest,
   deleteSentMessageRequest,
+  clearDeleteReceivedMessageState,
+  clearDeleteSentMessageState,
 } from "../reducers/user";
 import {
   Accordion,
@@ -48,6 +50,11 @@ const MessageListTabPanel = ({ type, value, index }) => {
         type === "received"
           ? clearReceivedMessagesState()
           : clearSentMessagesState()
+      );
+      dispatch(
+        type === "received"
+          ? clearDeleteReceivedMessageState()
+          : clearDeleteSentMessageState()
       );
     };
   }, []);

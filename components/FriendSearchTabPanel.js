@@ -15,7 +15,7 @@ const FriendSearchTabPanel = ({ value, index }) => {
 
   useEffect(() => {
     return () => {
-      dispatch(clearAddFriendState());
+      //   dispatch(clearAddFriendState());
     };
   }, []);
 
