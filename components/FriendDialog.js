@@ -21,12 +21,15 @@ import {
   loadMyFriendsRequest,
   clearMyFriendsState,
   clearDeleteFriendState,
+  clearLoadUsersState,
 } from "../reducers/user";
 
 const FriendDialog = (props) => {
   const { open, setOpen } = props;
   const dispatch = useDispatch();
-  const { deleteFriendError } = useSelector((state) => state.user);
+  const { deleteFriendError, loadUsersError } = useSelector(
+    (state) => state.user
+  );
   const [value, setValue] = useState(0);
 
   const onChange = useCallback((e, nextValue) => {
@@ -37,8 +40,12 @@ const FriendDialog = (props) => {
     setOpen(false);
   }, []);
 
-  const onCiickDeleteFriendErrorIconButton = useCallback(() => {
+  const onClickDeleteFriendErrorIconButton = useCallback(() => {
     dispatch(clearDeleteFriendState());
+  }, []);
+
+  const onClickLoadUsersErrorIconButton = useCallback(() => {
+    dispatch(clearLoadUsersState());
   }, []);
 
   return (
@@ -51,13 +58,30 @@ const FriendDialog = (props) => {
               aria-label="close"
               color="inherit"
               size="small"
-              onClick={onCiickDeleteFriendErrorIconButton}
+              onClick={onClickDeleteFriendErrorIconButton}
             >
               <CloseIcon fontSize="inherit" />
             </IconButton>
           }
         >
           {deleteFriendError}
+        </Alert>
+      </Collapse>
+      <Collapse in={loadUsersError.length > 0}>
+        <Alert
+          severity="error"
+          action={
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              size="small"
+              onClick={onClickLoadUsersErrorIconButton}
+            >
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+          }
+        >
+          {loadUsersError}
         </Alert>
       </Collapse>
       <DialogTitle>친구 관리</DialogTitle>

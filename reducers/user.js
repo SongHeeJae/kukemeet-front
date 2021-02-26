@@ -49,6 +49,9 @@ export const initialState = {
   loadMyFriendsLoading: false,
   deleteFriendLoading: false,
   deleteFriendError: "",
+  loadUsers: [],
+  loadUsersLoading: false,
+  loadUsersError: "",
 };
 
 export const REGISTER_REQUEST = "REGISTER_REQUEST";
@@ -125,6 +128,11 @@ export const DELETE_FRIEND_REQUEST = "DELETE_FRIEND_REQUEST";
 export const DELETE_FRIEND_SUCCESS = "DELETE_FRIEND_SUCCESS";
 export const DELETE_FRIEND_FAILURE = "DELETE_FRIEND_FAILURE";
 export const CLEAR_DELETE_FRIEND_STATE = "CLEAR_DELETE_FRIEND_STATE";
+
+export const LOAD_USERS_REQUEST = "LOAD_USERS_REQUEST";
+export const LOAD_USERS_SUCCESS = "LOAD_USERS_SUCCESS";
+export const LOAD_USERS_FAILURE = "LOAD_USERS_FAILURE";
+export const CLEAR_LOAD_USERS_STATE = "CLEAR_LOAD_USERS_STATE";
 
 export const registerRequest = (payload) => ({
   type: REGISTER_REQUEST,
@@ -370,6 +378,25 @@ export const deleteFriendFailure = (payload) => ({
 
 export const clearDeleteFriendState = () => ({
   type: CLEAR_DELETE_FRIEND_STATE,
+});
+
+export const loadUsersRequest = (payload) => ({
+  type: LOAD_USERS_REQUEST,
+  payload,
+});
+
+export const loadUsersSuccess = (payload) => ({
+  type: LOAD_USERS_SUCCESS,
+  payload,
+});
+
+export const loadUsersFailure = (payload) => ({
+  type: LOAD_USERS_FAILURE,
+  payload,
+});
+
+export const clearLoadUsersState = () => ({
+  type: CLEAR_LOAD_USERS_STATE,
 });
 
 const reducer = (state = initialState, action) =>
@@ -623,6 +650,23 @@ const reducer = (state = initialState, action) =>
       case CLEAR_DELETE_FRIEND_STATE:
         draft.deleteFriendLoading = false;
         draft.deleteFriendError = "";
+        break;
+      case LOAD_USERS_REQUEST:
+        draft.loadUsers = [];
+        draft.loadUsersLoading = true;
+        break;
+      case LOAD_USERS_SUCCESS:
+        draft.loadUsers = action.payload.users;
+        draft.loadUsersLoading = false;
+        break;
+      case LOAD_USERS_FAILURE:
+        draft.loadUsersLoading = false;
+        draft.loadUsersError = action.payload.msg;
+        break;
+      case CLEAR_LOAD_USERS_STATE:
+        draft.loadUsers = [];
+        draft.loadUsersLoading = false;
+        draft.loadUsersError = "";
         break;
       default:
         break;
