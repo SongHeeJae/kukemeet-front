@@ -11,6 +11,14 @@ import {
   activeScreenSharingRequest,
   inactiveScreenSharingRequest,
 } from "../reducers/videoroom";
+import MicIcon from "@material-ui/icons/Mic";
+import MicNoneIcon from "@material-ui/icons/MicNone";
+import VideocamIcon from "@material-ui/icons/Videocam";
+import VideocamOffIcon from "@material-ui/icons/VideocamOff";
+import ScreenShareIcon from "@material-ui/icons/ScreenShare";
+import CancelPresentationIcon from "@material-ui/icons/CancelPresentation";
+import SpeakerPhoneIcon from "@material-ui/icons/SpeakerPhone";
+import SmartphoneIcon from "@material-ui/icons/Smartphone";
 
 const VideoOption = ({ info }) => {
   const dispatch = useDispatch();
@@ -41,22 +49,22 @@ const VideoOption = ({ info }) => {
   return (
     <ButtonGroup color="primary" aria-label="outlined primary button group">
       <Button onClick={onClickActiveAudio} disabled={!!info.pluginHandle}>
-        {activeAudio ? "음성 비활성화" : "음성 활성화"}
+        {activeAudio ? <MicIcon /> : <MicNoneIcon />}
       </Button>
       <Button onClick={onClickActiveVideo} disabled={!!info.pluginHandle}>
-        {activeVideo ? "비디오 비활성화" : "비디오 활성화"}
+        {activeVideo ? <VideocamIcon /> : <VideocamOffIcon />}
       </Button>
       <Button
         onClick={onClickActiveSpeakerDetection}
         disabled={!!info.pluginHandle}
       >
-        {activeSpeakerDetection ? "화자 추적 비활성화" : "화자 추적 활성화"}
+        {activeSpeakerDetection ? <SpeakerPhoneIcon /> : <SmartphoneIcon />}
       </Button>
       <Button
         onClick={onClickActiveScreenSharing}
         disabled={!!info.pluginHandle}
       >
-        {activeScreenSharing ? "화면 공유 비활성화" : "화면 공유 활성화"}
+        {activeScreenSharing ? <CancelPresentationIcon /> : <ScreenShareIcon />}
       </Button>
     </ButtonGroup>
   );
