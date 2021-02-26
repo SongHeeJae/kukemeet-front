@@ -23,9 +23,10 @@ import {
 } from "../reducers/user";
 
 const FriendSearchWrapper = styled.div`
-  height: 400px;
+  height: 394px;
   width: 100%;
   overflow: auto;
+  padding-top: 6px;
 `;
 
 const useStyles = makeStyles((theme) => ({
@@ -33,7 +34,8 @@ const useStyles = makeStyles((theme) => ({
     padding: "2px 4px",
     display: "flex",
     alignItems: "center",
-    width: "100%",
+    width: "90%",
+    margin: "0 auto",
   },
   input: {
     marginLeft: theme.spacing(1),
