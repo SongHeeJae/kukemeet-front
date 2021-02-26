@@ -131,7 +131,7 @@ const UserInfoDialog = (props) => {
       )}
 
       <Button onClick={onClose}>확인</Button>
-      {!myFriends.some((f) => f.id === id) && (
+      {!myFriends.some((f) => f.user.id === id) && (
         <Button onClick={onClickAddFriend}>친구추가</Button>
       )}
     </Dialog>

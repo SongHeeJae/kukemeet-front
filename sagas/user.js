@@ -306,7 +306,7 @@ function* deleteSentMessage(action) {
 }
 
 function loadMyFriendsAPI(accessToken) {
-  return axios.get(`/api/friends`, {
+  return axios.get(`/api/friends/me`, {
     headers: {
       Authorization: accessToken,
     },
@@ -328,7 +328,6 @@ function* loadMyFriends() {
 }
 
 function deleteFriendAPI(accessToken, id) {
-  console.log("id", id);
   return axios.delete(`/api/friends/${id}`, {
     headers: {
       Authorization: accessToken,
