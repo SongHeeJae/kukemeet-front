@@ -19,6 +19,7 @@ import SendMessageTabPanel from "./SendMessageTabPanel";
 import {
   clearDeleteReceivedMessageState,
   clearDeleteSentMessageState,
+  clearSendMessageState,
 } from "../reducers/user";
 import styled from "styled-components";
 
@@ -26,9 +27,12 @@ const MessageDialog = (props) => {
   const { open, setOpen } = props;
   const dispatch = useDispatch();
   const [value, setValue] = useState(0);
-  const { deleteReceivedMessageError, deleteSentMessageError } = useSelector(
-    (state) => state.user
-  );
+  const {
+    deleteReceivedMessageError,
+    deleteSentMessageError,
+    sendMessageDone,
+    sendMessageError,
+  } = useSelector((state) => state.user);
 
   useEffect(() => {
     return () => {
@@ -50,6 +54,10 @@ const MessageDialog = (props) => {
 
   const onClickDeleteSentMessageErrorIconButton = useCallback(() => {
     dispatch(clearDeleteSentMessageState());
+  }, []);
+
+  const onClickSendMessageIconButton = useCallback(() => {
+    dispatch(clearSendMessageState());
   }, []);
 
   return (
@@ -86,6 +94,40 @@ const MessageDialog = (props) => {
           }
         >
           {deleteSentMessageError}
+        </Alert>
+      </Collapse>
+      <Collapse in={sendMessageDone}>
+        <Alert
+          severity="success"
+          action={
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              size="small"
+              onClick={onClickSendMessageIconButton}
+            >
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+          }
+        >
+          쪽지가 전송되었습니다.
+        </Alert>
+      </Collapse>
+      <Collapse in={sendMessageError.length > 0}>
+        <Alert
+          severity="error"
+          action={
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              size="small"
+              onClick={onClickSendMessageIconButton}
+            >
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+          }
+        >
+          {sendMessageError}
         </Alert>
       </Collapse>
       <DialogTitle>쪽지함</DialogTitle>

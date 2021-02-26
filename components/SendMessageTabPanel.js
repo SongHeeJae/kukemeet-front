@@ -1,10 +1,16 @@
-import React, { useEffect, useRef, useCallback } from "react";
+import React, { useEffect, useRef, useCallback, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { TextField, DialogContent, Button } from "@material-ui/core";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import { TextField, Button } from "@material-ui/core";
 import styled from "styled-components";
 import { Autocomplete, AutoComplete } from "@material-ui/lab";
-import { clearMyFriendsState, loadMyFriendsRequest } from "../reducers/user";
+import {
+  clearMyFriendsState,
+  clearSendMessageState,
+  loadMyFriendsRequest,
+  sendMessageFailure,
+  sendMessageRequest,
+} from "../reducers/user";
+import useInput from "../hooks/useInput";
 
 const SendMessageWrapper = styled.div`
   width: 100%;
@@ -18,11 +24,14 @@ const SendMessageTabPanel = ({ value, index }) => {
   const dispatch = useDispatch();
   const wrapperRef = useRef();
   const { myFriends } = useSelector((state) => state.user);
+  const [message, onChangeMessage, setMessage] = useInput("");
+  const [receiver, setReceiver] = useState(null);
 
   useEffect(() => {
     dispatch(loadMyFriendsRequest());
     return () => {
       dispatch(clearMyFriendsState());
+      dispatch(clearSendMessageState());
     };
   }, []);
 
@@ -30,10 +39,24 @@ const SendMessageTabPanel = ({ value, index }) => {
     wrapperRef.current.style.display = value !== index ? "none" : "block";
   }, [value]);
 
+  const onClickSendMessage = useCallback(() => {
+    if (!receiver) {
+      dispatch(sendMessageFailure({ msg: "수신자를 선택해주세요." }));
+      return;
+    }
+    dispatch(sendMessageRequest({ id: receiver, message }));
+    setMessage("");
+  }, [receiver, message]);
+
+  const onChangeAutocomplete = useCallback((e, v) => {
+    setReceiver(v.id);
+  }, []);
+
   return (
     <SendMessageWrapper ref={wrapperRef}>
       <Autocomplete
         className="send-message-autocomplete"
+        onChange={onChangeAutocomplete}
         options={myFriends}
         getOptionLabel={(option) =>
           `${option.uid} ${option.username} ${option.nickname}`
@@ -52,11 +75,13 @@ const SendMessageTabPanel = ({ value, index }) => {
         multiline
         rows={12}
         fullWidth={true}
-        //   value={message}
-        //   onChange={onChangeMessage}
+        value={message}
+        onChange={onChangeMessage}
         variant="outlined"
       />
-      <Button fullWidth={true}>전송</Button>
+      <Button fullWidth={true} onClick={onClickSendMessage}>
+        전송
+      </Button>
     </SendMessageWrapper>
   );
 };
