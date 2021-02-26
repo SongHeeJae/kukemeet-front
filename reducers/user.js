@@ -47,6 +47,8 @@ export const initialState = {
   deleteSentMessageError: "",
   myFriends: [],
   loadMyFriendsLoading: false,
+  deleteFriendLoading: false,
+  deleteFriendError: "",
 };
 
 export const REGISTER_REQUEST = "REGISTER_REQUEST";
@@ -118,6 +120,11 @@ export const LOAD_MY_FRIENDS_FAILURE = "LOAD_MY_FRIENDS_FAILURE";
 export const CLEAR_MY_FRIENDS_STATE = "CLEAR_MY_FRIENDS_STATE";
 
 export const SET_LOAD_USER = "SET_LOAD_USER";
+
+export const DELETE_FRIEND_REQUEST = "DELETE_FRIEND_REQUEST";
+export const DELETE_FRIEND_SUCCESS = "DELETE_FRIEND_SUCCESS";
+export const DELETE_FRIEND_FAILURE = "DELETE_FRIEND_FAILURE";
+export const CLEAR_DELETE_FRIEND_STATE = "CLEAR_DELETE_FRIEND_STATE";
 
 export const registerRequest = (payload) => ({
   type: REGISTER_REQUEST,
@@ -344,6 +351,25 @@ export const clearMyFriendsState = () => ({
 export const setLoadUser = (payload) => ({
   type: SET_LOAD_USER,
   payload,
+});
+
+export const deleteFriendRequest = (payload) => ({
+  type: DELETE_FRIEND_REQUEST,
+  payload,
+});
+
+export const deleteFriendSuccess = (payload) => ({
+  type: DELETE_FRIEND_SUCCESS,
+  payload,
+});
+
+export const deleteFriendFailure = (payload) => ({
+  type: DELETE_FRIEND_FAILURE,
+  payload,
+});
+
+export const clearDeleteFriendState = () => ({
+  type: CLEAR_DELETE_FRIEND_STATE,
 });
 
 const reducer = (state = initialState, action) =>
@@ -580,6 +606,23 @@ const reducer = (state = initialState, action) =>
         draft.loadUser.nickname = action.payload.info.nickname;
         draft.loadUser.createdAt = action.payload.info.createdAt;
         draft.loadUser.modifiedAt = action.payload.info.modifiedAt;
+        break;
+      case DELETE_FRIEND_REQUEST:
+        draft.deleteFriendLoading = true;
+        break;
+      case DELETE_FRIEND_SUCCESS:
+        draft.deleteFriendLoading = false;
+        draft.myFriends = draft.myFriends.filter(
+          (f) => f.id !== action.payload.id
+        );
+        break;
+      case DELETE_FRIEND_FAILURE:
+        draft.deleteFriendLoading = false;
+        draft.deleteFriendError = action.payload.msg;
+        break;
+      case CLEAR_DELETE_FRIEND_STATE:
+        draft.deleteFriendLoading = false;
+        draft.deleteFriendError = "";
         break;
       default:
         break;

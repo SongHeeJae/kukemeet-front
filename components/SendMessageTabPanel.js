@@ -49,7 +49,7 @@ const SendMessageTabPanel = ({ value, index }) => {
   }, [receiver, message]);
 
   const onChangeAutocomplete = useCallback((e, v) => {
-    setReceiver(v.id);
+    setReceiver(v.user.id);
   }, []);
 
   return (
@@ -59,7 +59,7 @@ const SendMessageTabPanel = ({ value, index }) => {
         onChange={onChangeAutocomplete}
         options={myFriends}
         getOptionLabel={(option) =>
-          `${option.uid} ${option.username} ${option.nickname}`
+          `${option.user.uid} ${option.user.username} ${option.user.nickname}`
         }
         renderInput={(params) => (
           <TextField

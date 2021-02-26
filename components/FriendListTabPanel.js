@@ -9,7 +9,7 @@ import {
   IconButton,
 } from "@material-ui/core";
 import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
-import { setLoadUser } from "../reducers/user";
+import { setLoadUser, deleteFriendRequest } from "../reducers/user";
 import UserInfoDialog from "./UserInfoDialog";
 
 const FriendListWrapper = styled.div`
@@ -29,12 +29,12 @@ const FriendListTabPanel = ({ value, index }) => {
   }, [value]);
 
   const onClickFriend = useCallback((friend) => {
-    dispatch(setLoadUser({ info: friend }));
+    dispatch(setLoadUser({ info: friend.user }));
     setUserInfoDialogOpen(true);
   }, []);
 
   const onClickDeleteFriend = useCallback((friend) => {
-    console.log("친구삭제", friend);
+    dispatch(deleteFriendRequest({ id: friend.id }));
   }, []);
 
   return (
@@ -52,7 +52,7 @@ const FriendListTabPanel = ({ value, index }) => {
             color="primary"
             onClick={() => onClickFriend(v)}
           >
-            <ListItemText primary={`${v.username}(${v.nickname})`} />
+            <ListItemText primary={`${v.user.username}(${v.user.nickname})`} />
             <ListItemSecondaryAction>
               <IconButton onClick={() => onClickDeleteFriend(v)}>
                 <RemoveCircleOutlineIcon />

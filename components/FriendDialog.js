@@ -17,17 +17,23 @@ import CloseIcon from "@material-ui/icons/Close";
 import styled from "styled-components";
 import FriendListTabPanel from "./FriendListTabPanel";
 import FriendSearchTabPanel from "./FriendSearchTabPanel";
-import { loadMyFriendsRequest, clearMyFriendsState } from "../reducers/user";
+import {
+  loadMyFriendsRequest,
+  clearMyFriendsState,
+  clearDeleteFriendState,
+} from "../reducers/user";
 
 const FriendDialog = (props) => {
   const { open, setOpen } = props;
   const dispatch = useDispatch();
+  const { deleteFriendError } = useSelector((state) => state.user);
   const [value, setValue] = useState(0);
 
   useEffect(() => {
     dispatch(loadMyFriendsRequest());
     return () => {
       dispatch(clearMyFriendsState());
+      dispatch(clearDeleteFriendState());
     };
   }, []);
 
@@ -39,8 +45,29 @@ const FriendDialog = (props) => {
     setOpen(false);
   }, []);
 
+  const onCiickDeleteFriendErrorIconButton = useCallback(() => {
+    dispatch(clearDeleteFriendState());
+  }, []);
+
   return (
     <Dialog open={open} onClose={onClose}>
+      <Collapse in={deleteFriendError.length > 0}>
+        <Alert
+          severity="error"
+          action={
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              size="small"
+              onClick={onCiickDeleteFriendErrorIconButton}
+            >
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+          }
+        >
+          {deleteFriendError}
+        </Alert>
+      </Collapse>
       <DialogTitle>친구 관리</DialogTitle>
       <AppBar position="static">
         <Tabs value={value} onChange={onChange}>
