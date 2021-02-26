@@ -29,14 +29,6 @@ const FriendDialog = (props) => {
   const { deleteFriendError } = useSelector((state) => state.user);
   const [value, setValue] = useState(0);
 
-  useEffect(() => {
-    dispatch(loadMyFriendsRequest());
-    return () => {
-      dispatch(clearMyFriendsState());
-      dispatch(clearDeleteFriendState());
-    };
-  }, []);
-
   const onChange = useCallback((e, nextValue) => {
     setValue(nextValue);
   }, []);

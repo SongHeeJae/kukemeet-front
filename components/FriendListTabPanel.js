@@ -9,7 +9,13 @@ import {
   IconButton,
 } from "@material-ui/core";
 import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
-import { setLoadUser, deleteFriendRequest } from "../reducers/user";
+import {
+  setLoadUser,
+  deleteFriendRequest,
+  loadMyFriendsRequest,
+  clearMyFriendsState,
+  clearDeleteFriendState,
+} from "../reducers/user";
 import UserInfoDialog from "./UserInfoDialog";
 
 const FriendListWrapper = styled.div`
@@ -23,6 +29,14 @@ const FriendListTabPanel = ({ value, index }) => {
   const dispatch = useDispatch();
   const { myFriends } = useSelector((state) => state.user);
   const [userInfoDialogOpen, setUserInfoDialogOpen] = useState(false);
+
+  useEffect(() => {
+    dispatch(loadMyFriendsRequest());
+    return () => {
+      dispatch(clearMyFriendsState());
+      dispatch(clearDeleteFriendState());
+    };
+  }, []);
 
   useEffect(() => {
     wrapperRef.current.style.display = value !== index ? "none" : "block";
