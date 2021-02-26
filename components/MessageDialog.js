@@ -12,9 +12,9 @@ import {
   AppBar,
 } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
-import MessageList from "./MessageList";
+import MessageListTabPanel from "./MessageListTabPanel";
 
-const MessageListDialog = (props) => {
+const MessageDialog = (props) => {
   const { open, setOpen } = props;
   const [value, setValue] = useState(0);
   const { id, uid, username, nickname, createdAt } = useSelector(
@@ -37,18 +37,18 @@ const MessageListDialog = (props) => {
 
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>메세지함</DialogTitle>
+      <DialogTitle>쪽지함</DialogTitle>
       <AppBar position="static">
         <Tabs value={value} onChange={onChange}>
-          <Tab label="받은 메세지" />
-          <Tab label="보낸 메세지" />
+          <Tab label="받은 쪽지" />
+          <Tab label="보낸 쪽지" />
         </Tabs>
       </AppBar>
-      <MessageList type="received" value={value} index={0} />
-      <MessageList type="sent" value={value} index={1} />
+      <MessageListTabPanel type="received" value={value} index={0} />
+      <MessageListTabPanel type="sent" value={value} index={1} />
       <Button onClick={onClose}>닫기</Button>
     </Dialog>
   );
 };
 
-export default MessageListDialog;
+export default MessageDialog;

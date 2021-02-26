@@ -11,6 +11,7 @@ import {
   AccordionSummary,
   AccordionDetails,
   Typography,
+  Button,
 } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import styled from "styled-components";
@@ -21,7 +22,7 @@ const MessageListWrapper = styled.div`
   overflow: auto;
 `;
 
-const MessageList = ({ type, value, index }) => {
+const MessageListTabPanel = ({ type, value, index }) => {
   const dispatch = useDispatch();
   const wrapperRef = useRef();
   const { messages, hasNext, loadMessagesLoading } = useSelector((state) => {
@@ -81,24 +82,29 @@ const MessageList = ({ type, value, index }) => {
     []
   );
 
+  const onClickDeleteMessage = useCallback((id) => {
+    console.log(id);
+  }, []);
+
   return (
     <MessageListWrapper ref={wrapperRef}>
-      {messages.map((m, i) => (
-        <Accordion key={i}>
+      {messages.map((m) => (
+        <Accordion key={m.id}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Typography>
-              {m.msg} {i}
+              {m.user.nickname}({m.user.username}) - {m.createdAt}
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <Typography>
-              {m.msg} {i}
-            </Typography>
+            <Typography>{m.msg}</Typography>
           </AccordionDetails>
+          <Button color="secondary" onClick={() => onClickDeleteMessage(m.id)}>
+            삭제
+          </Button>
         </Accordion>
       ))}
     </MessageListWrapper>
   );
 };
 
-export default MessageList;
+export default MessageListTabPanel;

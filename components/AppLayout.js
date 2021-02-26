@@ -5,7 +5,7 @@ import { MenuList, MenuItem } from "@material-ui/core";
 import { useSelector, useDispatch } from "react-redux";
 import Router from "next/router";
 import { logoutRequest } from "../reducers/user";
-import MessageListDialog from "./MessageListDialog";
+import MessageDialog from "./MessageDialog";
 
 const MenuWrapper = styled.div`
   display: flex;
@@ -31,7 +31,7 @@ const MenuWrapper = styled.div`
 const AppLayout = ({ children }) => {
   const dispatch = useDispatch();
   const { id, logoutDone } = useSelector((state) => state.user);
-  const [messageListDialogOpen, setMessageListDialogOpen] = useState(false);
+  const [messageDialogOpen, setMessageDialogOpen] = useState(false);
 
   useEffect(() => {
     if (!logoutDone) return;
@@ -43,7 +43,7 @@ const AppLayout = ({ children }) => {
   }, []);
 
   const onClickMessageList = useCallback(() => {
-    setMessageListDialogOpen(true);
+    setMessageDialogOpen(true);
   }, []);
 
   return (
@@ -97,9 +97,9 @@ const AppLayout = ({ children }) => {
         </MenuList>
       </MenuWrapper>
       {!!id && (
-        <MessageListDialog
-          open={messageListDialogOpen}
-          setOpen={setMessageListDialogOpen}
+        <MessageDialog
+          open={messageDialogOpen}
+          setOpen={setMessageDialogOpen}
         />
       )}
       {children}
