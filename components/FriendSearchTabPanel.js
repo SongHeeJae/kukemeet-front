@@ -1,5 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
+import { clearAddFriendState } from "../reducers/user";
+import { useSelector, useDispatch } from "react-redux";
 
 const FriendSearchWrapper = styled.div`
   height: 400px;
@@ -8,7 +10,15 @@ const FriendSearchWrapper = styled.div`
 `;
 
 const FriendSearchTabPanel = ({ value, index }) => {
+  const dispatch = useDispatch();
   const wrapperRef = useRef();
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearAddFriendState());
+    };
+  }, []);
+
   useEffect(() => {
     wrapperRef.current.style.display = value !== index ? "none" : "block";
   }, [value]);

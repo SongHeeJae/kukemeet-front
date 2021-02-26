@@ -21,6 +21,7 @@ const UserInfoDialog = (props) => {
     loadUserLoading,
     addFriendError,
     addFriendDone,
+    myFriends,
   } = useSelector((state) => state.user);
 
   const { id, uid, username, nickname, createdAt } = loadUser;
@@ -130,7 +131,9 @@ const UserInfoDialog = (props) => {
       )}
 
       <Button onClick={onClose}>확인</Button>
-      <Button onClick={onClickAddFriend}>친구추가</Button>
+      {!myFriends.some((f) => f.id === id) && (
+        <Button onClick={onClickAddFriend}>친구추가</Button>
+      )}
     </Dialog>
   );
 };

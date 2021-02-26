@@ -117,6 +117,8 @@ export const LOAD_MY_FRIENDS_SUCCESS = "LOAD_MY_FRIENDS_SUCCESS";
 export const LOAD_MY_FRIENDS_FAILURE = "LOAD_MY_FRIENDS_FAILURE";
 export const CLEAR_MY_FRIENDS_STATE = "CLEAR_MY_FRIENDS_STATE";
 
+export const SET_LOAD_USER = "SET_LOAD_USER";
+
 export const registerRequest = (payload) => ({
   type: REGISTER_REQUEST,
   payload,
@@ -337,6 +339,11 @@ export const loadMyFriendsFailure = () => ({
 
 export const clearMyFriendsState = () => ({
   type: CLEAR_MY_FRIENDS_STATE,
+});
+
+export const setLoadUser = (payload) => ({
+  type: SET_LOAD_USER,
+  payload,
 });
 
 const reducer = (state = initialState, action) =>
@@ -565,6 +572,14 @@ const reducer = (state = initialState, action) =>
       case CLEAR_MY_FRIENDS_STATE:
         draft.loadMyFriendsLoading = false;
         draft.myFriends = [];
+        break;
+      case SET_LOAD_USER:
+        draft.loadUser.id = action.payload.info.id;
+        draft.loadUser.uid = action.payload.info.uid;
+        draft.loadUser.username = action.payload.info.username;
+        draft.loadUser.nickname = action.payload.info.nickname;
+        draft.loadUser.createdAt = action.payload.info.createdAt;
+        draft.loadUser.modifiedAt = action.payload.info.modifiedAt;
         break;
       default:
         break;

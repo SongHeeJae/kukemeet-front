@@ -17,6 +17,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import styled from "styled-components";
 import FriendListTabPanel from "./FriendListTabPanel";
 import FriendSearchTabPanel from "./FriendSearchTabPanel";
+import { loadMyFriendsRequest, clearMyFriendsState } from "../reducers/user";
 
 const FriendDialog = (props) => {
   const { open, setOpen } = props;
@@ -24,8 +25,9 @@ const FriendDialog = (props) => {
   const [value, setValue] = useState(0);
 
   useEffect(() => {
+    dispatch(loadMyFriendsRequest());
     return () => {
-      // clear
+      dispatch(clearMyFriendsState());
     };
   }, []);
 
