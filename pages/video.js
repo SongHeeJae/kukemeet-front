@@ -33,7 +33,10 @@ import Router from "next/router";
 import CreateRoomForm from "../components/CreateRoomForm";
 import JoinRoomForm from "../components/JoinRoomForm";
 import ExitRoomButton from "../components/ExitRoomButton";
-import DestroyRoomButton from "../components/DestroyRoomButton";
+import FriendDialog from "../components/FriendDialog";
+import MessageDialog from "../components/MessageDialog";
+import FriendButton from "../components/FriendButton";
+import MessageButton from "../components/MessageButton";
 
 const subscribeRemoteFeed = (list, info, dispatch) => {
   list.forEach(({ id, display, audio_codec, video_codec }) => {
@@ -183,6 +186,8 @@ const Video = () => {
     (state) => state.videoroom
   );
   const { id } = useSelector((state) => state.user);
+  const [messageDialogOpen, setMessageDialogOpen] = useState(false);
+  const [friendDialogOpen, setFriendDialogOpen] = useState(false);
 
   useEffect(() => {
     if (!id) return Router.push("/");
@@ -206,6 +211,14 @@ const Video = () => {
         dispatch(leaveRoomRequest({ info: info.current }));
       }
     };
+  }, []);
+
+  const onClickMessageDialog = useCallback(() => {
+    setMessageDialogOpen(true);
+  }, []);
+
+  const onClickFriendDialog = useCallback(() => {
+    setFriendDialogOpen(true);
   }, []);
 
   if (!connectJanusDone) {
@@ -251,6 +264,8 @@ const Video = () => {
 
   return (
     <div>
+      <MessageDialog open={messageDialogOpen} setOpen={setMessageDialogOpen} />
+      <FriendDialog open={friendDialogOpen} setOpen={setFriendDialogOpen} />
       <Grid container spacing={3}>
         <Grid item xs={4}>
           방 입장 번호 : {room}
@@ -259,8 +274,9 @@ const Video = () => {
           {title}
         </Grid>
         <Grid item xs={3}>
+          <MessageButton setOpen={setMessageDialogOpen} />
+          <FriendButton setOpen={setFriendDialogOpen} />
           <ExitRoomButton info={info} />
-          {!router.query.room && <DestroyRoomButton info={info} />}
         </Grid>
       </Grid>
       <Grid container spacing={3}>

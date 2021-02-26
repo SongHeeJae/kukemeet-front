@@ -500,11 +500,12 @@ function* getRoomList(action) {
 }
 
 async function destroyRoomAPI(room, accessToken) {
-  return axios.delete(`/api/rooms/${room}`, {
-    headers: {
-      Authorization: accessToken,
-    },
-  });
+  return null; // api 제거. 서버 내에서만 자동 파괴
+  //   return axios.delete(`/api/rooms/${room}`, {
+  //     headers: {
+  //       Authorization: accessToken,
+  //     },
+  //   });
 }
 
 function* destroyRoom() {
