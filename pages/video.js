@@ -187,14 +187,6 @@ const Video = () => {
   useEffect(() => {
     if (!id) return Router.push("/");
 
-    const beforeunload = (e) => {
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      e.returnValue = "";
-    };
-
-    window.addEventListener("beforeunload", beforeunload);
-
     dispatch(connectJanusRequest());
     initJanus()
       .then(connectJanus)
@@ -213,7 +205,6 @@ const Video = () => {
       if (janus && janus.isConnected()) {
         dispatch(leaveRoomRequest({ info: info.current }));
       }
-      window.removeEventListener("beforeunload", beforeunload);
     };
   }, []);
 
