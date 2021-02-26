@@ -42,6 +42,10 @@ export const initialState = {
   loadSentMessagesLoading: false,
   loadSentMessagesDone: false,
   loadSentMessagesHasNext: true,
+  deleteReceivedMessageLoading: false,
+  deleteReceivedMessageError: "",
+  deleteSentMessageLoading: false,
+  deleteSentMessageError: "",
 };
 
 export const REGISTER_REQUEST = "REGISTER_REQUEST";
@@ -91,6 +95,21 @@ export const LOAD_SENT_MESSAGES_REQUEST = "LOAD_SENT_MESSAGES_REQUEST";
 export const LOAD_SENT_MESSAGES_SUCCESS = "LOAD_SENT_MESSAGES_SUCCESS";
 export const LOAD_SENT_MESSAGES_FAILURE = "LOAD_SENT_MESSAGES_FAILURE";
 export const CLEAR_SENT_MESSAGES_STATE = "CLEAR_SENT_MESSAGES_STATE";
+
+export const DELETE_RECEIVED_MESSAGE_REQUEST =
+  "DELETE_RECEIVED_MESSAGE_REQUEST";
+export const DELETE_RECEIVED_MESSAGE_SUCCESS =
+  "DELETE_RECEIVED_MESSAGE_SUCCESS";
+export const DELETE_RECEIVED_MESSAGE_FAILURE =
+  "DELETE_RECEIVED_MESSAGE_FAILURE";
+export const CLEAR_DELETE_RECEIVED_MESSAGE_STATE =
+  "CLEAR_DELETE_RECEIVED_MESSAGE_STATE";
+
+export const DELETE_SENT_MESSAGE_REQUEST = "DELETE_SENT_MESSAGE_REQUEST";
+export const DELETE_SENT_MESSAGE_SUCCESS = "DELETE_SENT_MESSAGE_SUCCESS";
+export const DELETE_SENT_MESSAGE_FAILURE = "DELETE_SENT_MESSAGE_FAILURE";
+export const CLEAR_DELETE_SENT_MESSAGE_STATE =
+  "CLEAR_DELETE_SENT_MESSAGE_STATE";
 
 export const registerRequest = (payload) => ({
   type: REGISTER_REQUEST,
@@ -257,6 +276,44 @@ export const loadSentMessagesFailure = () => ({
 
 export const clearSentMessagesState = () => ({
   type: CLEAR_SENT_MESSAGES_STATE,
+});
+
+export const deleteReceivedMessageRequest = (payload) => ({
+  type: DELETE_RECEIVED_MESSAGE_REQUEST,
+  payload,
+});
+
+export const deleteReceivedMessageSuccess = (payload) => ({
+  type: DELETE_RECEIVED_MESSAGE_SUCCESS,
+  payload,
+});
+
+export const deleteReceivedMessageFailure = (payload) => ({
+  type: DELETE_RECEIVED_MESSAGE_FAILURE,
+  payload,
+});
+
+export const clearDeleteReceivedMessageState = () => ({
+  type: CLEAR_DELETE_RECEIVED_MESSAGE_STATE,
+});
+
+export const deleteSentMessageRequest = (payload) => ({
+  type: DELETE_SENT_MESSAGE_REQUEST,
+  payload,
+});
+
+export const deleteSentMessageSuccess = (payload) => ({
+  type: DELETE_SENT_MESSAGE_SUCCESS,
+  payload,
+});
+
+export const deleteSentMessageFailure = (payload) => ({
+  type: DELETE_SENT_MESSAGE_FAILURE,
+  payload,
+});
+
+export const clearDeleteSentMessageState = () => ({
+  type: CLEAR_DELETE_SENT_MESSAGE_STATE,
 });
 
 const reducer = (state = initialState, action) =>
@@ -437,6 +494,40 @@ const reducer = (state = initialState, action) =>
         draft.loadSentMessagesDone = false;
         draft.loadSentMessagesHasNext = true;
         draft.sentMessages = [];
+        break;
+      case DELETE_RECEIVED_MESSAGE_REQUEST:
+        draft.deleteReceivedMessageLoading = true;
+        break;
+      case DELETE_RECEIVED_MESSAGE_SUCCESS:
+        draft.deleteReceivedMessageLoading = false;
+        draft.receivedMessages = draft.receivedMessages.filter(
+          (m) => m.id !== action.payload.id
+        );
+        break;
+      case DELETE_RECEIVED_MESSAGE_FAILURE:
+        draft.deleteReceivedMessageLoading = false;
+        draft.deleteReceivedMessageError = action.payload.msg;
+        break;
+      case CLEAR_DELETE_RECEIVED_MESSAGE_STATE:
+        draft.deleteReceivedMessageLoading = false;
+        draft.deleteReceivedMessageError = "";
+        break;
+      case DELETE_SENT_MESSAGE_REQUEST:
+        draft.deleteSentMessageLoading = true;
+        break;
+      case DELETE_SENT_MESSAGE_SUCCESS:
+        draft.deleteSentMessageLoading = false;
+        draft.sentMessages = draft.sentMessages.filter(
+          (m) => m.id !== action.payload.id
+        );
+        break;
+      case DELETE_SENT_MESSAGE_FAILURE:
+        draft.deleteSentMessageLoading = false;
+        draft.deleteSentMessageError = action.payload.msg;
+        break;
+      case CLEAR_DELETE_SENT_MESSAGE_STATE:
+        draft.deleteSentMessageLoading = false;
+        draft.deleteSentMessageError = "";
         break;
       default:
         break;

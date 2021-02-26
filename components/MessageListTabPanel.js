@@ -5,6 +5,8 @@ import {
   clearSentMessagesState,
   loadReceivedMessagesRequest,
   loadSentMessagesRequest,
+  deleteReceivedMessageRequest,
+  deleteSentMessageRequest,
 } from "../reducers/user";
 import {
   Accordion,
@@ -83,7 +85,11 @@ const MessageListTabPanel = ({ type, value, index }) => {
   );
 
   const onClickDeleteMessage = useCallback((id) => {
-    console.log(id);
+    dispatch(
+      type === "received"
+        ? deleteReceivedMessageRequest({ id })
+        : deleteSentMessageRequest({ id })
+    );
   }, []);
 
   return (

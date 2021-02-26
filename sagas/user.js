@@ -32,6 +32,12 @@ import {
   loadReceivedMessagesFailure,
   loadSentMessagesSuccess,
   loadSentMessagesFailure,
+  DELETE_RECEIVED_MESSAGE_REQUEST,
+  DELETE_SENT_MESSAGE_REQUEST,
+  deleteReceivedMessageFailure,
+  deleteReceivedMessageSuccess,
+  deleteSentMessageSuccess,
+  deleteSentMessageFailure,
 } from "../reducers/user";
 
 function registerAPI(data) {
@@ -247,6 +253,52 @@ function* loadSentMessages() {
   }
 }
 
+function deleteReceivedMessageAPI(accessToken, id) {
+  return axios.delete(`/api/messages/received/${id}`, {
+    headers: {
+      Authorization: accessToken,
+    },
+  });
+}
+
+function* deleteReceivedMessage(action) {
+  try {
+    const { accessToken } = yield select((state) => state.user);
+    const { id } = action.payload;
+    yield call(deleteReceivedMessageAPI, accessToken, id);
+    yield put(
+      deleteReceivedMessageSuccess({
+        id,
+      })
+    );
+  } catch (err) {
+    yield put(deleteReceivedMessageFailure(err.response.data.msg));
+  }
+}
+
+function deleteSentMessageAPI(accessToken, id) {
+  return axios.delete(`/api/messages/sent/${id}`, {
+    headers: {
+      Authorization: accessToken,
+    },
+  });
+}
+
+function* deleteSentMessage(action) {
+  try {
+    const { accessToken } = yield select((state) => state.user);
+    const { id } = action.payload;
+    yield call(deleteSentMessageAPI, accessToken, id);
+    yield put(
+      deleteSentMessageSuccess({
+        id,
+      })
+    );
+  } catch (err) {
+    yield put(deleteSentMessageFailure(err.response.data.msg));
+  }
+}
+
 function* watchRegister() {
   yield takeLatest(REGISTER_REQUEST, register);
 }
@@ -287,6 +339,14 @@ function* watchLoadSentMessages() {
   yield takeLatest(LOAD_SENT_MESSAGES_REQUEST, loadSentMessages);
 }
 
+function* watchDeleteReceivedMessage() {
+  yield takeLatest(DELETE_RECEIVED_MESSAGE_REQUEST, deleteReceivedMessage);
+}
+
+function* watchDeleteSentMessage() {
+  yield takeLatest(DELETE_SENT_MESSAGE_REQUEST, deleteSentMessage);
+}
+
 export default function* userSaga() {
   yield all([
     fork(watchRegister),
@@ -299,5 +359,7 @@ export default function* userSaga() {
     fork(watchLogout),
     fork(watchLoadReceivedMessages),
     fork(watchLoadSentMessages),
+    fork(watchDeleteReceivedMessage),
+    fork(watchDeleteSentMessage),
   ]);
 }
