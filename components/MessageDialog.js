@@ -21,7 +21,6 @@ import {
   clearDeleteSentMessageState,
   clearSendMessageState,
 } from "../reducers/user";
-import styled from "styled-components";
 
 const MessageDialog = (props) => {
   const { open, setOpen } = props;
@@ -33,12 +32,6 @@ const MessageDialog = (props) => {
     sendMessageDone,
     sendMessageError,
   } = useSelector((state) => state.user);
-
-  useEffect(() => {
-    return () => {
-      // clear
-    };
-  }, []);
 
   const onChange = useCallback((e, nextValue) => {
     setValue(nextValue);

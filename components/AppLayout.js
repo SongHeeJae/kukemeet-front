@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from "react-redux";
 import Router from "next/router";
 import { logoutRequest } from "../reducers/user";
 import MessageDialog from "./MessageDialog";
-
+import FriendDialog from "./FriendDialog";
 const MenuWrapper = styled.div`
   display: flex;
   .sign-menu {
@@ -32,6 +32,7 @@ const AppLayout = ({ children }) => {
   const dispatch = useDispatch();
   const { id, logoutDone } = useSelector((state) => state.user);
   const [messageDialogOpen, setMessageDialogOpen] = useState(false);
+  const [friendDialogOpen, setFriendDialogOpen] = useState(false);
 
   useEffect(() => {
     if (!logoutDone) return;
@@ -42,8 +43,12 @@ const AppLayout = ({ children }) => {
     dispatch(logoutRequest());
   }, []);
 
-  const onClickMessageList = useCallback(() => {
+  const onClickMessage = useCallback(() => {
     setMessageDialogOpen(true);
+  }, []);
+
+  const onClickFriend = useCallback(() => {
+    setFriendDialogOpen(true);
   }, []);
 
   return (
@@ -75,8 +80,11 @@ const AppLayout = ({ children }) => {
                     <a>내정보</a>
                   </Link>
                 </MenuItem>,
-                <MenuItem key="message" onClick={onClickMessageList}>
+                <MenuItem key="message" onClick={onClickMessage}>
                   쪽지함
+                </MenuItem>,
+                <MenuItem key="friend" onClick={onClickFriend}>
+                  친구관리
                 </MenuItem>,
                 <MenuItem key="logout" onClick={onClickLogout}>
                   로그아웃
@@ -97,11 +105,15 @@ const AppLayout = ({ children }) => {
         </MenuList>
       </MenuWrapper>
       {!!id && (
-        <MessageDialog
-          open={messageDialogOpen}
-          setOpen={setMessageDialogOpen}
-        />
+        <>
+          <MessageDialog
+            open={messageDialogOpen}
+            setOpen={setMessageDialogOpen}
+          />
+          <FriendDialog open={friendDialogOpen} setOpen={setFriendDialogOpen} />
+        </>
       )}
+
       {children}
     </>
   );
