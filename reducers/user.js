@@ -28,7 +28,6 @@ export const initialState = {
   addFriendLoading: false,
   addFriendError: "",
   addFriendDone: false,
-  friends: [],
   sendMessageLoading: false,
   sendMessageError: "",
   sendMessageDone: false,
@@ -46,6 +45,8 @@ export const initialState = {
   deleteReceivedMessageError: "",
   deleteSentMessageLoading: false,
   deleteSentMessageError: "",
+  myFriends: [],
+  loadMyFriendsLoading: false,
 };
 
 export const REGISTER_REQUEST = "REGISTER_REQUEST";
@@ -110,6 +111,11 @@ export const DELETE_SENT_MESSAGE_SUCCESS = "DELETE_SENT_MESSAGE_SUCCESS";
 export const DELETE_SENT_MESSAGE_FAILURE = "DELETE_SENT_MESSAGE_FAILURE";
 export const CLEAR_DELETE_SENT_MESSAGE_STATE =
   "CLEAR_DELETE_SENT_MESSAGE_STATE";
+
+export const LOAD_MY_FRIENDS_REQUEST = "LOAD_MY_FRIENDS_REQUEST";
+export const LOAD_MY_FRIENDS_SUCCESS = "LOAD_MY_FRIENDS_SUCCESS";
+export const LOAD_MY_FRIENDS_FAILURE = "LOAD_MY_FRIENDS_FAILURE";
+export const CLEAR_MY_FRIENDS_STATE = "CLEAR_MY_FRIENDS_STATE";
 
 export const registerRequest = (payload) => ({
   type: REGISTER_REQUEST,
@@ -314,6 +320,23 @@ export const deleteSentMessageFailure = (payload) => ({
 
 export const clearDeleteSentMessageState = () => ({
   type: CLEAR_DELETE_SENT_MESSAGE_STATE,
+});
+
+export const loadMyFriendsRequest = () => ({
+  type: LOAD_MY_FRIENDS_REQUEST,
+});
+
+export const loadMyFriendsSuccess = (payload) => ({
+  type: LOAD_MY_FRIENDS_SUCCESS,
+  payload,
+});
+
+export const loadMyFriendsFailure = () => ({
+  type: LOAD_MY_FRIENDS_FAILURE,
+});
+
+export const clearMyFriendsState = () => ({
+  type: CLEAR_MY_FRIENDS_STATE,
 });
 
 const reducer = (state = initialState, action) =>
@@ -528,6 +551,20 @@ const reducer = (state = initialState, action) =>
       case CLEAR_DELETE_SENT_MESSAGE_STATE:
         draft.deleteSentMessageLoading = false;
         draft.deleteSentMessageError = "";
+        break;
+      case LOAD_MY_FRIENDS_REQUEST:
+        draft.loadMyFriendsLoading = true;
+        break;
+      case LOAD_MY_FRIENDS_SUCCESS:
+        draft.loadMyFriendsLoading = false;
+        draft.myFriends = action.payload.myFriends;
+        break;
+      case LOAD_MY_FRIENDS_FAILURE:
+        draft.loadMyFriendsLoading = false;
+        break;
+      case CLEAR_MY_FRIENDS_STATE:
+        draft.loadMyFriendsLoading = false;
+        draft.myFriends = [];
         break;
       default:
         break;

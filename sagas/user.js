@@ -38,6 +38,9 @@ import {
   deleteReceivedMessageSuccess,
   deleteSentMessageSuccess,
   deleteSentMessageFailure,
+  LOAD_MY_FRIENDS_REQUEST,
+  loadMyFriendsSuccess,
+  loadMyFriendsFailure,
 } from "../reducers/user";
 
 function registerAPI(data) {
@@ -299,6 +302,28 @@ function* deleteSentMessage(action) {
   }
 }
 
+function loadMyFriendsAPI(accessToken) {
+  return axios.get(`/api/friends`, {
+    headers: {
+      Authorization: accessToken,
+    },
+  });
+}
+
+function* loadMyFriends() {
+  try {
+    const { accessToken } = yield select((state) => state.user);
+    const result = yield call(loadMyFriendsAPI, accessToken);
+    yield put(
+      loadMyFriendsSuccess({
+        myFriends: result.data.data,
+      })
+    );
+  } catch (err) {
+    yield put(loadMyFriendsFailure());
+  }
+}
+
 function* watchRegister() {
   yield takeLatest(REGISTER_REQUEST, register);
 }
@@ -347,6 +372,10 @@ function* watchDeleteSentMessage() {
   yield takeLatest(DELETE_SENT_MESSAGE_REQUEST, deleteSentMessage);
 }
 
+function* watchLoadMyFriends() {
+  yield takeLatest(LOAD_MY_FRIENDS_REQUEST, loadMyFriends);
+}
+
 export default function* userSaga() {
   yield all([
     fork(watchRegister),
@@ -361,5 +390,6 @@ export default function* userSaga() {
     fork(watchLoadSentMessages),
     fork(watchDeleteReceivedMessage),
     fork(watchDeleteSentMessage),
+    fork(watchLoadMyFriends),
   ]);
 }

@@ -15,10 +15,12 @@ import { useDispatch, useSelector } from "react-redux";
 import MessageListTabPanel from "./MessageListTabPanel";
 import Alert from "@material-ui/lab/Alert";
 import CloseIcon from "@material-ui/icons/Close";
+import SendMessageTabPanel from "./SendMessageTabPanel";
 import {
   clearDeleteReceivedMessageState,
   clearDeleteSentMessageState,
 } from "../reducers/user";
+import styled from "styled-components";
 
 const MessageDialog = (props) => {
   const { open, setOpen } = props;
@@ -89,12 +91,14 @@ const MessageDialog = (props) => {
       <DialogTitle>쪽지함</DialogTitle>
       <AppBar position="static">
         <Tabs value={value} onChange={onChange}>
+          <Tab label="쪽지 보내기" />
           <Tab label="받은 쪽지" />
           <Tab label="보낸 쪽지" />
         </Tabs>
       </AppBar>
-      <MessageListTabPanel type="received" value={value} index={0} />
-      <MessageListTabPanel type="sent" value={value} index={1} />
+      <SendMessageTabPanel value={value} index={0} />
+      <MessageListTabPanel type="received" value={value} index={1} />
+      <MessageListTabPanel type="sent" value={value} index={2} />
       <Button onClick={onClose}>닫기</Button>
     </Dialog>
   );

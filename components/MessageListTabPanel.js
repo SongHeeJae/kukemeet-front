@@ -19,8 +19,8 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import styled from "styled-components";
 
 const MessageListWrapper = styled.div`
-  max-height: 400px;
-  max-width: 350px;
+  height: 400px;
+  width: 100%;
   overflow: auto;
 `;
 
