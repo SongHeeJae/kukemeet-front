@@ -272,7 +272,7 @@ function* deleteReceivedMessage(action) {
       })
     );
   } catch (err) {
-    yield put(deleteReceivedMessageFailure(err.response.data.msg));
+    yield put(deleteReceivedMessageFailure({ msg: err.response.data.msg }));
   }
 }
 
@@ -295,7 +295,7 @@ function* deleteSentMessage(action) {
       })
     );
   } catch (err) {
-    yield put(deleteSentMessageFailure(err.response.data.msg));
+    yield put(deleteSentMessageFailure({ msg: err.response.data.msg }));
   }
 }
 
