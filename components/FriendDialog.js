@@ -23,10 +23,12 @@ import {
   clearDeleteFriendState,
   clearLoadUsersState,
 } from "../reducers/user";
+import UserInfoDialog from "./UserInfoDialog";
 
 const FriendDialog = (props) => {
   const { open, setOpen } = props;
   const dispatch = useDispatch();
+  const [userInfoDialogOpen, setUserInfoDialogOpen] = useState(false);
   const { deleteFriendError, loadUsersError } = useSelector(
     (state) => state.user
   );
@@ -50,6 +52,10 @@ const FriendDialog = (props) => {
 
   return (
     <Dialog open={open} onClose={onClose}>
+      <UserInfoDialog
+        open={userInfoDialogOpen}
+        setOpen={setUserInfoDialogOpen}
+      />
       <Collapse in={deleteFriendError.length > 0}>
         <Alert
           severity="error"
@@ -91,8 +97,16 @@ const FriendDialog = (props) => {
           <Tab label="친구 찾기" />
         </Tabs>
       </AppBar>
-      <FriendListTabPanel value={value} index={0} />
-      <FriendSearchTabPanel value={value} index={1} />
+      <FriendListTabPanel
+        setUserInfoDialogOpen={setUserInfoDialogOpen}
+        value={value}
+        index={0}
+      />
+      <FriendSearchTabPanel
+        setUserInfoDialogOpen={setUserInfoDialogOpen}
+        value={value}
+        index={1}
+      />
       <Button onClick={onClose}>닫기</Button>
     </Dialog>
   );

@@ -7,12 +7,20 @@ import {
   InputBase,
   Paper,
   Menu,
+  List,
+  ListItem,
+  ListItemText,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import MenuIcon from "@material-ui/icons/Menu";
 import SearchIcon from "@material-ui/icons/Search";
 import useInput from "../hooks/useInput";
-import { loadUsersFailure } from "../reducers/user";
+import {
+  clearLoadUsersState,
+  loadUsersFailure,
+  loadUsersRequest,
+  setLoadUser,
+} from "../reducers/user";
 
 const FriendSearchWrapper = styled.div`
   height: 400px;
@@ -41,16 +49,20 @@ const conditions = [
   { type: "nickname", value: "닉네임" },
   { type: "uid", value: "이메일" },
 ];
-const FriendSearchTabPanel = ({ value, index }) => {
+const FriendSearchTabPanel = ({ value, index, setUserInfoDialogOpen }) => {
+  const classes = useStyles();
   const dispatch = useDispatch();
   const wrapperRef = useRef();
-  const [searchText, onChangeSearchText, setSearchText] = useInput("");
-  const classes = useStyles();
+  const [searchText, onChangeSearchText] = useInput("");
+  const { loadUsers, loadUsersLoading } = useSelector((state) => state.user);
+
   const [condition, setCondition] = useState(conditions[0]);
   const [anchorEl, setAnchorEl] = useState(null);
 
   useEffect(() => {
-    return () => {};
+    return () => {
+      dispatch(clearLoadUsersState());
+    };
   }, []);
 
   useEffect(() => {
@@ -70,13 +82,18 @@ const FriendSearchTabPanel = ({ value, index }) => {
     setCondition({ ...c });
   }, []);
 
+  const onClickUser = useCallback((user) => {
+    dispatch(setLoadUser({ info: user }));
+    setUserInfoDialogOpen(true);
+  }, []);
+
   const onSubmit = useCallback(
     (e) => {
       e.preventDefault();
-      if (searchText.length === 0) {
-        dispatch(loadUsersFailure({ msg: "검색어를 입력해주세요." }));
-        return;
-      }
+      if (loadUsersLoading) return;
+      if (searchText.length === 0)
+        return dispatch(loadUsersFailure({ msg: "검색어를 입력해주세요." }));
+      dispatch(loadUsersRequest({ [condition.type]: searchText }));
     },
     [searchText]
   );
@@ -108,6 +125,19 @@ const FriendSearchTabPanel = ({ value, index }) => {
           <SearchIcon />
         </IconButton>
       </Paper>
+      <List>
+        {loadUsers.map((u) => (
+          <ListItem
+            button
+            key={u.id}
+            variant="contained"
+            color="primary"
+            onClick={() => onClickUser(u)}
+          >
+            <ListItemText primary={`${u.username}(${u.nickname})`} />
+          </ListItem>
+        ))}
+      </List>
     </FriendSearchWrapper>
   );
 };

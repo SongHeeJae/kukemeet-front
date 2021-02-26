@@ -24,11 +24,10 @@ const FriendListWrapper = styled.div`
   overflow: auto;
 `;
 
-const FriendListTabPanel = ({ value, index }) => {
+const FriendListTabPanel = ({ value, index, setUserInfoDialogOpen }) => {
   const wrapperRef = useRef();
   const dispatch = useDispatch();
   const { myFriends } = useSelector((state) => state.user);
-  const [userInfoDialogOpen, setUserInfoDialogOpen] = useState(false);
 
   useEffect(() => {
     dispatch(loadMyFriendsRequest());
@@ -53,10 +52,6 @@ const FriendListTabPanel = ({ value, index }) => {
 
   return (
     <FriendListWrapper ref={wrapperRef}>
-      <UserInfoDialog
-        open={userInfoDialogOpen}
-        setOpen={setUserInfoDialogOpen}
-      />
       <List>
         {myFriends.map((v) => (
           <ListItem

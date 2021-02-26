@@ -44,6 +44,9 @@ import {
   DELETE_FRIEND_REQUEST,
   deleteFriendSuccess,
   deleteFriendFailure,
+  LOAD_USERS_REQUEST,
+  loadUsersSuccess,
+  loadUsersFailure,
 } from "../reducers/user";
 
 function registerAPI(data) {
@@ -346,6 +349,24 @@ function* deleteFriend(action) {
   }
 }
 
+function loadUsersAPI(conditions) {
+  const { uid, nickname, username } = conditions;
+  return axios.get(
+    `/api/users?uid=${uid || ""}&nickname=${nickname || ""}&username=${
+      username || ""
+    }`
+  );
+}
+
+function* loadUsers(action) {
+  try {
+    const result = yield call(loadUsersAPI, action.payload);
+    yield put(loadUsersSuccess({ users: result.data.data }));
+  } catch (err) {
+    yield put(loadUsersFailure({ msg: err.response.data.msg }));
+  }
+}
+
 function* watchRegister() {
   yield takeLatest(REGISTER_REQUEST, register);
 }
@@ -402,6 +423,10 @@ function* watchDeleteFriend() {
   yield takeLatest(DELETE_FRIEND_REQUEST, deleteFriend);
 }
 
+function* watchLoadUsers() {
+  yield takeLatest(LOAD_USERS_REQUEST, loadUsers);
+}
+
 export default function* userSaga() {
   yield all([
     fork(watchRegister),
@@ -418,5 +443,6 @@ export default function* userSaga() {
     fork(watchDeleteSentMessage),
     fork(watchLoadMyFriends),
     fork(watchDeleteFriend),
+    fork(watchLoadUsers),
   ]);
 }
