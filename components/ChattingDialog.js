@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, forwardRef } from "react";
 import styled from "styled-components";
 import {
   InputBase,
@@ -6,12 +6,21 @@ import {
   DialogTitle,
   Paper,
   IconButton,
+  AppBar,
+  Slide,
+  Toolbar,
+  Typography,
 } from "@material-ui/core";
 import useInput from "../hooks/useInput";
 import { useSelector, useDispatch } from "react-redux";
 import { sendChatRequest } from "../reducers/videoroom";
 import SendIcon from "@material-ui/icons/Send";
 import { makeStyles } from "@material-ui/core/styles";
+import CloseIcon from "@material-ui/icons/Close";
+
+const Transition = forwardRef((props, ref) => {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -28,14 +37,19 @@ const useStyles = makeStyles((theme) => ({
   iconButton: {
     padding: 10,
   },
+  appBar: {
+    position: "relative",
+  },
+  title: {
+    marginLeft: theme.spacing(2),
+    flex: 1,
+  },
 }));
 
 const ChatDivWrapper = styled.div`
-  height: 400px;
+  height: 100%;
+  width: 100%;
   overflow: auto;
-  border: solid 1px;
-  margin: 10px;
-  padding: 5px;
 `;
 
 const ChattingDialog = ({ info, open, setOpen }) => {
@@ -68,13 +82,32 @@ const ChattingDialog = ({ info, open, setOpen }) => {
   }, []);
 
   return (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle>채팅창</DialogTitle>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      fullScreen
+      TransitionComponent={Transition}
+    >
+      <AppBar className={classes.appBar}>
+        <Toolbar>
+          <IconButton
+            edge="start"
+            color="inherit"
+            onClick={onClose}
+            aria-label="close"
+          >
+            <CloseIcon />
+          </IconButton>
+          <Typography variant="h6" className={classes.title}>
+            채팅방
+          </Typography>
+        </Toolbar>
+      </AppBar>
       <ChatDivWrapper>
         {chatData.map((v, i) => (
-          <div key={i}>
+          <Typography key={i}>
             {v.display} : {v.text}
-          </div>
+          </Typography>
         ))}
       </ChatDivWrapper>
 
