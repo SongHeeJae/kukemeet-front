@@ -38,12 +38,10 @@ import RoomInfoButton from "../components/RoomInfoButton";
 
 const LeftButtonsWrapper = styled.div`
   float: left;
-  display: inline;
 `;
 
 const RightButtonsWrapper = styled.div`
   float: right;
-  display: inline;
 `;
 
 const VideoOptionWrapper = styled.div`
