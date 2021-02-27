@@ -3,8 +3,24 @@ import { useSelector } from "react-redux";
 import { createGlobalStyle } from "styled-components";
 import styled from "styled-components";
 
+const MainVideoWrapper = styled.div`
+  position: relative;
+`;
+
 const VideoWrapper = styled.video`
   width: 100%;
+  height: 75vh;
+  position: relative;
+  z-index: 0;
+`;
+
+const DisplayTextWrapper = styled.div`
+  position: absolute;
+  top: 95%;
+  left: 50%;
+  z-index: 1;
+  transform: translate(-50%, -50%);
+  color: white;
 `;
 
 const Global = createGlobalStyle`
@@ -51,7 +67,7 @@ const MainVideo = () => {
     e.preventDefault();
   }, []);
   return (
-    <>
+    <MainVideoWrapper>
       <Global />
       <VideoWrapper
         autoPlay
@@ -61,8 +77,8 @@ const MainVideo = () => {
         onClick={onClick}
         muted={true}
       />
-      <div>{mainStream.display}</div>
-    </>
+      <DisplayTextWrapper>{mainStream.display}</DisplayTextWrapper>
+    </MainVideoWrapper>
   );
 };
 

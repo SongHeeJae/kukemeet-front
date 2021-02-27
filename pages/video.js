@@ -1,9 +1,7 @@
-import React, { useEffect, useCallback, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { END } from "redux-saga";
 import {
   connectJanusRequest,
-  joinRoomRequest,
   connectJanusSuccess,
   connectJanusFailure,
   joinRoomSuccess,
@@ -14,16 +12,12 @@ import {
   openDataChannelSuccess,
   leavingRemoteFeedRequest,
   leaveRoomRequest,
-  destroyRoomRequest,
-  getRoomListRequest,
 } from "../reducers/videoroom";
 import { useRouter } from "next/router";
 import { Janus } from "janus-gateway";
 import VideoList from "../components/VideoList";
-import MyVideo from "../components/MyVideo";
 import UserListDialog from "../components/UserListDialog";
 import ChattingDialog from "../components/ChattingDialog";
-import { Grid, Button, ButtonGroup } from "@material-ui/core";
 import MainVideo from "../components/MainVideo";
 import VideoOption from "../components/VideoOption";
 import { mediaServerUrl } from "../config/config";
@@ -39,6 +33,22 @@ import FriendButton from "../components/FriendButton";
 import MessageButton from "../components/MessageButton";
 import UserListButton from "../components/UserListButton";
 import ChattingButton from "../components/ChattingButton";
+import styled from "styled-components";
+import RoomInfoButton from "../components/RoomInfoButton";
+
+const LeftButtonsWrapper = styled.div`
+  float: left;
+  display: inline;
+`;
+
+const RightButtonsWrapper = styled.div`
+  float: right;
+  display: inline;
+`;
+
+const VideoOptionWrapper = styled.div`
+  margin-bottom: 5px;
+`;
 
 const subscribeRemoteFeed = (list, info, dispatch) => {
   list.forEach(({ id, display, audio_codec, video_codec }) => {
@@ -259,11 +269,7 @@ const Video = () => {
   }
 
   return (
-    <div>
-      <UserListButton setOpen={setUserListDialogOpen} />
-
-      <ChattingButton setOpen={setChattingDialogOpen} />
-
+    <>
       <UserListDialog
         open={userListDialogOpen}
         setOpen={setUserListDialogOpen}
@@ -275,30 +281,22 @@ const Video = () => {
       />
       <MessageDialog open={messageDialogOpen} setOpen={setMessageDialogOpen} />
       <FriendDialog open={friendDialogOpen} setOpen={setFriendDialogOpen} />
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={4}>
-          방 입장 번호 : {room}
-        </Grid>
-        <Grid item xs={12} md={5}>
-          {title}
-        </Grid>
-        <Grid item xs={12} md={3}>
-          <MessageButton setOpen={setMessageDialogOpen} />
-          <FriendButton setOpen={setFriendDialogOpen} />
-          <ExitRoomButton info={info} />
-        </Grid>
-      </Grid>
-      <Grid container spacing={3}>
-        <Grid item xs={3}>
-          <MyVideo />
-        </Grid>
-        <Grid item xs={9}>
-          <VideoOption info={info} />
-          <MainVideo />
-        </Grid>
-      </Grid>
+      <LeftButtonsWrapper>
+        <RoomInfoButton />
+        <UserListButton setOpen={setUserListDialogOpen} />
+        <ChattingButton setOpen={setChattingDialogOpen} />
+      </LeftButtonsWrapper>
+      <RightButtonsWrapper>
+        <MessageButton setOpen={setMessageDialogOpen} />
+        <FriendButton setOpen={setFriendDialogOpen} />
+        <ExitRoomButton info={info} />
+      </RightButtonsWrapper>
+      <MainVideo />
+      <VideoOptionWrapper>
+        <VideoOption info={info} />
+      </VideoOptionWrapper>
       <VideoList />
-    </div>
+    </>
   );
 };
 

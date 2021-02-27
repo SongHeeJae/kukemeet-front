@@ -1,6 +1,7 @@
 import React, { useCallback } from "react";
 import { IconButton } from "@material-ui/core";
-import PeopleIcon from "@material-ui/icons/People";
+import ChatBubbleIcon from "@material-ui/icons/ChatBubble";
+
 const ChattingButton = ({ setOpen }) => {
   const onClick = useCallback(() => {
     setOpen(true);
@@ -8,7 +9,7 @@ const ChattingButton = ({ setOpen }) => {
 
   return (
     <IconButton onClick={onClick}>
-      <PeopleIcon />
+      <ChatBubbleIcon />
     </IconButton>
   );
 };

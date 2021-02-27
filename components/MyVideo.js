@@ -4,6 +4,7 @@ import styled from "styled-components";
 
 const VideoWrapper = styled.video`
   width: 100%;
+  height: 100%;
 `;
 
 const MyVideo = () => {
@@ -15,7 +16,7 @@ const MyVideo = () => {
   }, [myFeed.stream]);
 
   if (!myFeed.stream) {
-    <div>내 비디오 로딩중..</div>;
+    <div>로딩중..</div>;
   }
   return (
     <>

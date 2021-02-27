@@ -1,6 +1,7 @@
 import React, { useCallback } from "react";
 import { IconButton } from "@material-ui/core";
-import PeopleIcon from "@material-ui/icons/People";
+import SentimentVerySatisfiedIcon from "@material-ui/icons/SentimentVerySatisfied";
+
 const UserListButton = ({ setOpen }) => {
   const onClick = useCallback(() => {
     setOpen(true);
@@ -8,7 +9,7 @@ const UserListButton = ({ setOpen }) => {
 
   return (
     <IconButton onClick={onClick}>
-      <PeopleIcon />
+      <SentimentVerySatisfiedIcon />
     </IconButton>
   );
 };

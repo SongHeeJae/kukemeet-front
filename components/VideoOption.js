@@ -47,7 +47,11 @@ const VideoOption = ({ info }) => {
     else dispatch(activeScreenSharingRequest({ info: info.current, dispatch }));
   }, [activeScreenSharing]);
   return (
-    <ButtonGroup color="primary" aria-label="outlined primary button group">
+    <ButtonGroup
+      color="primary"
+      aria-label="outlined primary button group"
+      fullWidth
+    >
       <Button onClick={onClickActiveAudio} disabled={!!info.pluginHandle}>
         {activeAudio ? <MicIcon /> : <MicNoneIcon />}
       </Button>
