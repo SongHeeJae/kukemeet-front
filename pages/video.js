@@ -22,7 +22,7 @@ import { Janus } from "janus-gateway";
 import VideoList from "../components/VideoList";
 import MyVideo from "../components/MyVideo";
 import UserListDialog from "../components/UserListDialog";
-import Chatting from "../components/Chatting";
+import ChattingDialog from "../components/ChattingDialog";
 import { Grid, Button, ButtonGroup } from "@material-ui/core";
 import MainVideo from "../components/MainVideo";
 import VideoOption from "../components/VideoOption";
@@ -37,6 +37,8 @@ import FriendDialog from "../components/FriendDialog";
 import MessageDialog from "../components/MessageDialog";
 import FriendButton from "../components/FriendButton";
 import MessageButton from "../components/MessageButton";
+import UserListButton from "../components/UserListButton";
+import ChattingButton from "../components/ChattingButton";
 
 const subscribeRemoteFeed = (list, info, dispatch) => {
   list.forEach(({ id, display, audio_codec, video_codec }) => {
@@ -189,6 +191,7 @@ const Video = () => {
   const [messageDialogOpen, setMessageDialogOpen] = useState(false);
   const [friendDialogOpen, setFriendDialogOpen] = useState(false);
   const [userListDialogOpen, setUserListDialogOpen] = useState(false);
+  const [chattingDialogOpen, setChattingDialogOpen] = useState(false);
 
   useEffect(() => {
     if (!id) return Router.push("/");
@@ -212,10 +215,6 @@ const Video = () => {
         dispatch(leaveRoomRequest({ info: info.current }));
       }
     };
-  }, []);
-
-  const onClickUserListDialog = useCallback(() => {
-    setUserListDialogOpen(true);
   }, []);
 
   if (!connectJanusDone) {
@@ -261,10 +260,16 @@ const Video = () => {
 
   return (
     <div>
-      <Button onClick={onClickUserListDialog}>유저리스트</Button>
+      <UserListButton setOpen={setUserListDialogOpen} />
+      <ChattingButton setOpen={setChattingDialogOpen} />
       <UserListDialog
         open={userListDialogOpen}
         setOpen={setUserListDialogOpen}
+      />
+      <ChattingDialog
+        info={info}
+        open={chattingDialogOpen}
+        setOpen={setChattingDialogOpen}
       />
       <MessageDialog open={messageDialogOpen} setOpen={setMessageDialogOpen} />
       <FriendDialog open={friendDialogOpen} setOpen={setFriendDialogOpen} />
@@ -285,12 +290,9 @@ const Video = () => {
         <Grid item xs={3}>
           <MyVideo />
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={9}>
           <VideoOption info={info} />
           <MainVideo />
-        </Grid>
-        <Grid item xs={3}>
-          <Chatting info={info} />
         </Grid>
       </Grid>
       <VideoList />
