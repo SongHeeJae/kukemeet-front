@@ -261,7 +261,9 @@ const Video = () => {
   return (
     <div>
       <UserListButton setOpen={setUserListDialogOpen} />
+
       <ChattingButton setOpen={setChattingDialogOpen} />
+
       <UserListDialog
         open={userListDialogOpen}
         setOpen={setUserListDialogOpen}

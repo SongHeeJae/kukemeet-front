@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, forwardRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   ListItem,
@@ -10,6 +10,11 @@ import {
   MenuItem,
   Dialog,
   DialogTitle,
+  AppBar,
+  Toolbar,
+  IconButton,
+  Typography,
+  Slide,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import StarIcon from "@material-ui/icons/star";
@@ -18,14 +23,31 @@ import UserInfoDialog from "./UserInfoDialog";
 import SendMessageDialog from "./SendMessageDialog";
 import { loadUserByNicknameRequest } from "../reducers/user";
 import styled from "styled-components";
+import CloseIcon from "@material-ui/icons/Close";
+
+const Transition = forwardRef((props, ref) => {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 const UserListWrapper = styled.div`
-  height: 400px;
+  height: 100%;
+  width: 100%;
   overflow: auto;
 `;
 
+const useStyles = makeStyles((theme) => ({
+  appBar: {
+    position: "relative",
+  },
+  title: {
+    marginLeft: theme.spacing(2),
+    flex: 1,
+  },
+}));
+
 const UserListDialog = (props) => {
   const { open, setOpen } = props;
+  const classes = useStyles();
   const dispatch = useDispatch();
   const { username, nickname } = useSelector((state) => state.user);
   const { remoteFeeds } = useSelector((state) => state.videoroom);
@@ -50,7 +72,12 @@ const UserListDialog = (props) => {
   }, []);
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      fullScreen
+      TransitionComponent={Transition}
+    >
       <UserInfoDialog
         open={userInfoDialogOpen}
         setOpen={setUserInfoDialogOpen}
@@ -59,7 +86,21 @@ const UserListDialog = (props) => {
         open={sendMessageDialogOpen}
         setOpen={setSendMessageDialogOpen}
       />
-      <DialogTitle>접속자 목록 - {remoteFeeds.length + 1}명</DialogTitle>
+      <AppBar className={classes.appBar}>
+        <Toolbar>
+          <IconButton
+            edge="start"
+            color="inherit"
+            onClick={onClose}
+            aria-label="close"
+          >
+            <CloseIcon />
+          </IconButton>
+          <Typography variant="h6" className={classes.title}>
+            접속자 목록 - {remoteFeeds.length + 1}명
+          </Typography>
+        </Toolbar>
+      </AppBar>
       <UserListWrapper>
         <List>
           <ListItem button>
