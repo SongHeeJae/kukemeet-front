@@ -21,7 +21,7 @@ import { useRouter } from "next/router";
 import { Janus } from "janus-gateway";
 import VideoList from "../components/VideoList";
 import MyVideo from "../components/MyVideo";
-import UserList from "../components/UserList";
+import UserListDialog from "../components/UserListDialog";
 import Chatting from "../components/Chatting";
 import { Grid, Button, ButtonGroup } from "@material-ui/core";
 import MainVideo from "../components/MainVideo";
@@ -188,6 +188,7 @@ const Video = () => {
   const { id } = useSelector((state) => state.user);
   const [messageDialogOpen, setMessageDialogOpen] = useState(false);
   const [friendDialogOpen, setFriendDialogOpen] = useState(false);
+  const [userListDialogOpen, setUserListDialogOpen] = useState(false);
 
   useEffect(() => {
     if (!id) return Router.push("/");
@@ -213,12 +214,8 @@ const Video = () => {
     };
   }, []);
 
-  const onClickMessageDialog = useCallback(() => {
-    setMessageDialogOpen(true);
-  }, []);
-
-  const onClickFriendDialog = useCallback(() => {
-    setFriendDialogOpen(true);
+  const onClickUserListDialog = useCallback(() => {
+    setUserListDialogOpen(true);
   }, []);
 
   if (!connectJanusDone) {
@@ -264,16 +261,21 @@ const Video = () => {
 
   return (
     <div>
+      <Button onClick={onClickUserListDialog}>유저리스트</Button>
+      <UserListDialog
+        open={userListDialogOpen}
+        setOpen={setUserListDialogOpen}
+      />
       <MessageDialog open={messageDialogOpen} setOpen={setMessageDialogOpen} />
       <FriendDialog open={friendDialogOpen} setOpen={setFriendDialogOpen} />
       <Grid container spacing={3}>
-        <Grid item xs={4}>
+        <Grid item xs={12} md={4}>
           방 입장 번호 : {room}
         </Grid>
-        <Grid item xs={5}>
+        <Grid item xs={12} md={5}>
           {title}
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={12} md={3}>
           <MessageButton setOpen={setMessageDialogOpen} />
           <FriendButton setOpen={setFriendDialogOpen} />
           <ExitRoomButton info={info} />
@@ -281,7 +283,6 @@ const Video = () => {
       </Grid>
       <Grid container spacing={3}>
         <Grid item xs={3}>
-          <UserList />
           <MyVideo />
         </Grid>
         <Grid item xs={6}>

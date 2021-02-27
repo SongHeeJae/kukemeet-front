@@ -33,13 +33,6 @@ const MessageDialog = (props) => {
     sendMessageError,
   } = useSelector((state) => state.user);
 
-  useEffect(() => {
-    return () => {
-      dispatch(clearDeleteReceivedMessageState());
-      dispatch(clearDeleteSentMessageState());
-    };
-  }, []);
-
   const onChange = useCallback((e, nextValue) => {
     setValue(nextValue);
   }, []);

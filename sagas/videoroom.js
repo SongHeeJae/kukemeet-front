@@ -88,6 +88,7 @@ function* joinRoom(action) {
   try {
     yield call(joinRoomAPI, action.payload);
   } catch (err) {
+    console.log(err);
     yield put(joinRoomFailure());
   }
 }
