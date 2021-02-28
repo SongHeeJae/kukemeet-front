@@ -97,7 +97,7 @@ const FriendSearchTabPanel = ({ value, index, setUserInfoDialogOpen }) => {
         return dispatch(loadUsersFailure({ msg: "검색어를 입력해주세요." }));
       dispatch(loadUsersRequest({ [condition.type]: searchText }));
     },
-    [searchText]
+    [searchText, condition]
   );
 
   return (
