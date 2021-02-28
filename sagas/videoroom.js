@@ -105,6 +105,8 @@ function publishOwnFeedAPI({ info, useAudio }) {
       videoSend: true,
     },
     success: function (jsep) {
+      pluginHandle.muteAudio();
+      pluginHandle.muteVideo();
       var publish = {
         request: "configure",
         audio: useAudio,
