@@ -16,9 +16,13 @@ import {
   AccordionDetails,
   Typography,
   Button,
+  Divider,
 } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import styled from "styled-components";
+import moment from "moment";
+
+moment.locale("ko");
 
 const MessageListWrapper = styled.div`
   height: 400px;
@@ -105,12 +109,17 @@ const MessageListTabPanel = ({ type, value, index }) => {
         <Accordion key={m.id}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Typography>
-              {m.user.nickname}({m.user.username}) - {m.createdAt}
+              {m.user.nickname}({m.user.username}) -
+              {moment(m.createdAt).fromNow()}
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
             <Typography>{m.msg}</Typography>
           </AccordionDetails>
+          <Typography align="center">
+            {moment(m.createdAt).format("YYYY-MM-DD hh:mm:ss")}
+          </Typography>
+          <Divider />
           <Button color="secondary" onClick={() => onClickDeleteMessage(m.id)}>
             삭제
           </Button>

@@ -12,6 +12,9 @@ import { useSelector, useDispatch } from "react-redux";
 import { addFriendRequest, clearAddFriendState } from "../reducers/user";
 import Alert from "@material-ui/lab/Alert";
 import CloseIcon from "@material-ui/icons/Close";
+import moment from "moment";
+
+moment.locale("ko");
 
 const UserInfoDialog = (props) => {
   const { open, setOpen } = props;
@@ -120,7 +123,7 @@ const UserInfoDialog = (props) => {
           <DialogContent>
             <TextField
               label="가입일"
-              defaultValue={createdAt}
+              defaultValue={moment(createdAt).format("YYYY-MM-DD")}
               InputProps={{
                 readOnly: true,
               }}
