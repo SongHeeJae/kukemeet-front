@@ -1,4 +1,13 @@
-import { all, takeLatest, put, call, fork, select } from "redux-saga/effects";
+import {
+  all,
+  takeLatest,
+  put,
+  call,
+  fork,
+  select,
+  takeEvery,
+  take,
+} from "redux-saga/effects";
 import axios from "axios";
 import {
   registerSuccess,
@@ -47,6 +56,11 @@ import {
   LOAD_USERS_REQUEST,
   loadUsersSuccess,
   loadUsersFailure,
+  HANDLE_ERROR,
+  handleError,
+  REFRESH_TOKEN_BY_CLIENT_REQUEST,
+  refreshTokenByClientRequest,
+  REFRESH_TOKEN_SUCCESS,
 } from "../reducers/user";
 
 function registerAPI(data) {
@@ -90,14 +104,25 @@ function refreshTokenAPI({ refreshToken }) {
 
 function* refreshToken(action) {
   try {
-    const { task } = action.payload;
     const result = yield call(refreshTokenAPI, action.payload);
     const { accessToken, refreshToken, info } = result.data.data;
     const setCookie = result.headers["set-cookie"];
     yield put(
       refreshTokenSuccess({ accessToken, refreshToken, info, setCookie })
     );
-    if (task) yield put(task);
+  } catch (err) {
+    yield put(refreshTokenFailure());
+  }
+}
+
+function* refreshTokenByClient(action) {
+  try {
+    const { task } = action.payload;
+    const user = yield select((state) => state.user);
+    const result = yield call(refreshTokenAPI, user);
+    const { accessToken, refreshToken, info } = result.data.data;
+    yield put(refreshTokenSuccess({ accessToken, refreshToken, info }));
+    yield put(task);
   } catch (err) {
     yield put(refreshTokenFailure());
   }
@@ -118,6 +143,7 @@ function* loadMe(action) {
     yield put(loadMeSuccess({ info }));
   } catch (err) {
     yield put(loadMeFailure());
+    yield put(handleError({ result: err.response.data, task: action }));
   }
 }
 
@@ -131,8 +157,8 @@ function* loadUserByNickname(action) {
     const info = result.data.data;
     yield put(loadUserByNicknameSuccess({ info }));
   } catch (err) {
-    console.log(err);
     yield put(loadUserByNicknameFailure());
+    yield put(handleError({ result: err.response.data, task: action }));
   }
 }
 
@@ -156,6 +182,7 @@ function* addFriend(action) {
     yield put(addFriendSuccess({ info }));
   } catch (err) {
     yield put(addFriendFailure({ msg: err.response.data.msg }));
+    yield put(handleError({ result: err.response.data, task: action }));
   }
 }
 
@@ -178,6 +205,7 @@ function* sendMessage(action) {
     yield put(sendMessageSuccess());
   } catch (err) {
     yield put(sendMessageFailure({ msg: err.response.data.msg }));
+    yield put(handleError({ result: err.response.data, task: action }));
   }
 }
 
@@ -193,13 +221,14 @@ function logoutAPI(accessToken) {
   );
 }
 
-function* logout() {
+function* logout(action) {
   try {
     const { accessToken } = yield select((state) => state.user);
     yield call(logoutAPI, accessToken);
     yield put(logoutSuccess());
   } catch (err) {
     yield put(logoutFailure());
+    yield put(handleError({ result: err.response.data, task: action }));
   }
 }
 
@@ -216,7 +245,7 @@ function loadReceivedMessagesAPI(accessToken, receivedMessages) {
   );
 }
 
-function* loadReceivedMessages() {
+function* loadReceivedMessages(action) {
   try {
     const { accessToken, receivedMessages } = yield select(
       (state) => state.user
@@ -234,6 +263,7 @@ function* loadReceivedMessages() {
     );
   } catch (err) {
     yield put(loadReceivedMessagesFailure());
+    yield put(handleError({ result: err.response.data, task: action }));
   }
 }
 
@@ -247,7 +277,7 @@ function loadSentMessagesAPI(accessToken, sentMessages) {
   });
 }
 
-function* loadSentMessages() {
+function* loadSentMessages(action) {
   try {
     const { accessToken, sentMessages } = yield select((state) => state.user);
     const result = yield call(loadSentMessagesAPI, accessToken, sentMessages);
@@ -259,6 +289,7 @@ function* loadSentMessages() {
     );
   } catch (err) {
     yield put(loadSentMessagesFailure());
+    yield put(handleError({ result: err.response.data, task: action }));
   }
 }
 
@@ -282,6 +313,7 @@ function* deleteReceivedMessage(action) {
     );
   } catch (err) {
     yield put(deleteReceivedMessageFailure({ msg: err.response.data.msg }));
+    yield put(handleError({ result: err.response.data, task: action }));
   }
 }
 
@@ -305,6 +337,7 @@ function* deleteSentMessage(action) {
     );
   } catch (err) {
     yield put(deleteSentMessageFailure({ msg: err.response.data.msg }));
+    yield put(handleError({ result: err.response.data, task: action }));
   }
 }
 
@@ -316,7 +349,7 @@ function loadMyFriendsAPI(accessToken) {
   });
 }
 
-function* loadMyFriends() {
+function* loadMyFriends(action) {
   try {
     const { accessToken } = yield select((state) => state.user);
     const result = yield call(loadMyFriendsAPI, accessToken);
@@ -327,6 +360,7 @@ function* loadMyFriends() {
     );
   } catch (err) {
     yield put(loadMyFriendsFailure());
+    yield put(handleError({ result: err.response.data, task: action }));
   }
 }
 
@@ -346,6 +380,7 @@ function* deleteFriend(action) {
     yield put(deleteFriendSuccess({ id }));
   } catch (err) {
     yield put(deleteFriendFailure({ msg: err.response.data.msg }));
+    yield put(handleError({ result: err.response.data, task: action }));
   }
 }
 
@@ -364,6 +399,21 @@ function* loadUsers(action) {
     yield put(loadUsersSuccess({ users: result.data.data }));
   } catch (err) {
     yield put(loadUsersFailure({ msg: err.response.data.msg }));
+    yield put(handleError({ result: err.response.data, task: action }));
+  }
+}
+
+function* errorHandling(action) {
+  const { refreshTokenLoading } = yield select((state) => state.user);
+  const { result, task } = action.payload;
+  const { code } = result;
+  if (code === -1001 || code === -1002) {
+    if (refreshTokenLoading) {
+      yield take(REFRESH_TOKEN_SUCCESS);
+      yield put(task);
+    } else {
+      yield put(refreshTokenByClientRequest({ task }));
+    }
   }
 }
 
@@ -377,6 +427,10 @@ function* watchLogin() {
 
 function* watchRefreshToken() {
   yield takeLatest(REFRESH_TOKEN_REQUEST, refreshToken);
+}
+
+function* watchRefreshTokenByClient() {
+  yield takeEvery(REFRESH_TOKEN_BY_CLIENT_REQUEST, refreshTokenByClient);
 }
 
 function* watchLoadMe() {
@@ -427,11 +481,16 @@ function* watchLoadUsers() {
   yield takeLatest(LOAD_USERS_REQUEST, loadUsers);
 }
 
+function* watchHandleError() {
+  yield takeEvery(HANDLE_ERROR, errorHandling);
+}
+
 export default function* userSaga() {
   yield all([
     fork(watchRegister),
     fork(watchLogin),
     fork(watchRefreshToken),
+    fork(watchRefreshTokenByClient),
     fork(watchLoadMe),
     fork(watchLoadUserByNickname),
     fork(watchAddFriend),
@@ -444,5 +503,6 @@ export default function* userSaga() {
     fork(watchLoadMyFriends),
     fork(watchDeleteFriend),
     fork(watchLoadUsers),
+    fork(watchHandleError),
   ]);
 }

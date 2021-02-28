@@ -69,6 +69,7 @@ import {
   leaveRoomFailure,
   LEAVE_ROOM_REQUEST,
 } from "../reducers/videoroom";
+import { handleError } from "../reducers/user";
 import axios from "axios";
 
 function joinRoomAPI({ info, room, nickname, pin }) {
@@ -479,8 +480,8 @@ function* createRoom(action) {
       })
     );
   } catch (err) {
-    console.log(err);
     yield put(createRoomFailure());
+    yield put(handleError({ result: err.response.data, task: action }));
   }
 }
 

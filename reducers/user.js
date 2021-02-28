@@ -9,6 +9,7 @@ export const initialState = {
   modifiedAt: "",
   accessToken: "",
   refreshToken: "",
+  refreshTokenLoading: false,
   registerLoading: false,
   registerDone: false,
   registerError: "",
@@ -64,6 +65,8 @@ export const LOGIN_SUCCESS = "LOGIN_SUCCESS";
 export const LOGIN_FAILURE = "LOGIN_FAILURE";
 export const CLEAR_LOGIN_STATE = "CLEAR_LOGIN_STATE";
 
+export const REFRESH_TOKEN_BY_CLIENT_REQUEST =
+  "REFRESH_TOKEN_BY_CLIENT_REQUEST";
 export const REFRESH_TOKEN_REQUEST = "REFRESH_TOKEN_REQUEST";
 export const REFRESH_TOKEN_SUCCESS = "REFRESH_TOKEN_SUCCESS";
 export const REFRESH_TOKEN_FAILURE = "REFRESH_TOKEN_FAILURE";
@@ -134,6 +137,8 @@ export const LOAD_USERS_SUCCESS = "LOAD_USERS_SUCCESS";
 export const LOAD_USERS_FAILURE = "LOAD_USERS_FAILURE";
 export const CLEAR_LOAD_USERS_STATE = "CLEAR_LOAD_USERS_STATE";
 
+export const HANDLE_ERROR = "HANDLE_ERROR";
+
 export const registerRequest = (payload) => ({
   type: REGISTER_REQUEST,
   payload,
@@ -168,6 +173,11 @@ export const loginFailure = (payload) => ({
 
 export const clearLoginState = () => ({
   type: CLEAR_LOGIN_STATE,
+});
+
+export const refreshTokenByClientRequest = (payload) => ({
+  type: REFRESH_TOKEN_BY_CLIENT_REQUEST,
+  payload,
 });
 
 export const refreshTokenRequest = (payload) => ({
@@ -399,6 +409,11 @@ export const clearLoadUsersState = () => ({
   type: CLEAR_LOAD_USERS_STATE,
 });
 
+export const handleError = (payload) => ({
+  type: HANDLE_ERROR,
+  payload,
+});
+
 const reducer = (state = initialState, action) =>
   produce(state, (draft) => {
     switch (action.type) {
@@ -444,9 +459,12 @@ const reducer = (state = initialState, action) =>
         draft.loginDone = false;
         draft.loginError = "";
         break;
+      case REFRESH_TOKEN_BY_CLIENT_REQUEST:
       case REFRESH_TOKEN_REQUEST:
+        draft.refreshTokenLoading = true;
         break;
       case REFRESH_TOKEN_SUCCESS:
+        draft.refreshTokenLoading = false;
         draft.id = action.payload.info.id;
         draft.uid = action.payload.info.uid;
         draft.username = action.payload.info.username;
@@ -458,6 +476,7 @@ const reducer = (state = initialState, action) =>
         draft.setCookie = action.payload.setCookie;
         break;
       case REFRESH_TOKEN_FAILURE:
+        draft.refreshTokenLoading = false;
         draft.id = 0;
         draft.uid = "";
         draft.username = "";
