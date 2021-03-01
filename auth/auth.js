@@ -34,6 +34,7 @@ export const stayLoggedIn = async (context) => {
   if (id) {
     if (accessToken && refreshToken) {
       // refresh한 경우 쿠키 다시 세팅
+
       context.res.setHeader("Set-Cookie", setCookie);
     } else {
       // access token으로 요청한 경우 리덕스에만 담아줌
