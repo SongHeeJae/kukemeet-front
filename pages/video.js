@@ -125,7 +125,7 @@ const attachJanus = (dispatch, janus) => {
         // empty
       },
       onmessage: (msg, jsep) => {
-        console.log(msg);
+        console.log("onmessage", msg);
         let event = msg["videoroom"];
         if (event) {
           if (event === "joined") {
@@ -137,8 +137,7 @@ const attachJanus = (dispatch, janus) => {
                 title: msg["description"],
               })
             );
-
-            dispatch(publishOwnFeedRequest({ info, useAudio: true }));
+            dispatch(publishOwnFeedRequest({ info, dispatch }));
 
             if (msg["publishers"]) {
               // 기존 접속자

@@ -68,6 +68,9 @@ import {
   leaveRoomSuccess,
   leaveRoomFailure,
   LEAVE_ROOM_REQUEST,
+  publishOwnFeedRequest,
+  addRemoteFeedStream,
+  setAudioVideoState,
 } from "../reducers/videoroom";
 import { handleError } from "../reducers/user";
 import axios from "axios";
@@ -94,29 +97,40 @@ function* joinRoom(action) {
   }
 }
 
-function publishOwnFeedAPI({ info, useAudio }) {
+function publishOwnFeedAPI(payload, useVideo, useAudio) {
+  const { info, dispatch } = payload;
   const { pluginHandle } = info;
+
   pluginHandle.createOffer({
     media: {
       data: true,
       audioRecv: false,
       videoRecv: false,
       audioSend: useAudio,
-      videoSend: true,
+      videoSend: useVideo,
     },
     success: function (jsep) {
+      dispatch(setAudioVideoState({ useVideo, useAudio }));
       pluginHandle.muteAudio();
       pluginHandle.muteVideo();
       var publish = {
         request: "configure",
         audio: useAudio,
-        video: true,
+        video: useVideo,
       };
       pluginHandle.send({ message: publish, jsep: jsep });
     },
     error: function (err) {
-      if (useAudio) {
-        publishOwnFeedAPI(pluginHandle, { info, useAudio: false }); // 오디오 꺼서 다시 요청
+      // Video ON  Mic ON 	1
+      // Video OFF Mic ON 	2
+      // Video ON  Mic OFF	3
+      // Video OFF Mic OFF	4
+      if (useVideo && useAudio) {
+        publishOwnFeedAPI(payload, false, true); // 1 -> 2
+      } else if (!useVideo && useAudio) {
+        publishOwnFeedAPI(payload, true, false); // 2 -> 3
+      } else if (useVideo && !useAudio) {
+        publishOwnFeedAPI(payload, false, false); // 3 -> 4
       } else {
         throw err;
       }
@@ -126,9 +140,10 @@ function publishOwnFeedAPI({ info, useAudio }) {
 
 function* publishOwnFeed(action) {
   try {
-    yield call(publishOwnFeedAPI, action.payload);
+    yield call(publishOwnFeedAPI, action.payload, true, true);
   } catch (err) {
     yield put(publishOwnFeedFailure());
+    yield put(leaveRoomRe);
   }
 }
 
@@ -144,7 +159,6 @@ async function subscribeRemoteFeedAPI(
   return await new Promise((resolve, reject) => {
     const { janus, opaqueId } = info;
     let remotePluginHandle = null;
-    const remoteFeed = {};
     janus.attach({
       plugin: "janus.plugin.videoroom",
       opaqueId: opaqueId,
@@ -171,8 +185,7 @@ async function subscribeRemoteFeedAPI(
           console.log(msg["error"]);
         } else if (event) {
           if (event === "attached") {
-            remoteFeed.id = msg["id"];
-            remoteFeed.display = msg["display"];
+            resolve({ id: msg["id"], display: msg["display"] });
           } else if (event === "event") {
           } else {
             // What has just happened?
@@ -196,23 +209,19 @@ async function subscribeRemoteFeedAPI(
       webrtcState: function (on) {},
       onlocalstream: function (stream) {},
       onremotestream: function (stream) {
-        remoteFeed.stream = stream;
-        remoteFeed.hark = hark(stream, {}); // 보이스 추적
-        if (activeSpeakerDetection) {
-          remoteFeed.hark.on("speaking", () => {
-            dispatch(
-              changeMainStreamRequest({ display: remoteFeed.display, stream })
-            );
-          });
+        const addStream = { id, stream };
+        if (stream.getAudioTracks() && stream.getAudioTracks().length > 0) {
+          addStream.hark = hark(stream, {});
+          if (activeSpeakerDetection) {
+            addStream.hark = hark.on("speaking", () => {
+              dispatch(changeMainStreamRequest({ display, stream }));
+            });
+          }
         }
-        // remoteFeedsPluginHandle.push({
-        //   id: remoteFeed.id,
-        //   pluginHandle: remotePluginHandle,
-        // });
-        resolve(remoteFeed);
+        dispatch(addRemoteFeedStream(addStream));
       },
       oncleanup: function () {
-        console.log("다른 사용자 나감 ㅇㅇㅇ");
+        console.log("remotefeed cleanup");
       },
       ondataopen: function () {},
       ondata: function (data) {
@@ -236,7 +245,7 @@ function* subscribeRemoteFeed(action) {
     const { myFeed, room, activeSpeakerDetection, pin } = yield select(
       (state) => state.videoroom
     );
-    const result = yield call(
+    yield call(
       subscribeRemoteFeedAPI,
       myFeed,
       room,
@@ -244,7 +253,7 @@ function* subscribeRemoteFeed(action) {
       activeSpeakerDetection,
       pin
     );
-    yield put(subscribeRemoteFeedSuccess(result));
+    yield put(subscribeRemoteFeedSuccess());
   } catch (err) {
     console.log(err);
     yield put(subscribeRemoteFeedFailure());
@@ -411,9 +420,12 @@ function activeScreenSharingAPI({ info, dispatch }) {
       replaceVideo: true,
     },
     success: function (jsep) {
-      pluginHandle.send({ message: { audio: true, video: true }, jsep: jsep });
+      pluginHandle.send({
+        message: { audio: true, video: true },
+        jsep: jsep,
+      });
       dispatch(activeScreenSharingSuccess());
-      dispatch(activeVideoRequest());
+      dispatch(activeVideoRequest(info));
     },
     error: function (error) {
       dispatch(activeScreenSharingFailure());
@@ -437,9 +449,12 @@ function inactiveScreenSharingAPI({ info, dispatch }) {
       replaceVideo: true,
     },
     success: function (jsep) {
-      pluginHandle.send({ message: { audio: true, video: true }, jsep: jsep });
+      pluginHandle.send({
+        message: { audio: true, video: true },
+        jsep: jsep,
+      });
       dispatch(inactiveScreenSharingSuccess());
-      dispatch(activeVideoRequest());
+      dispatch(activeVideoRequest(info));
     },
     error: function (error) {
       dispatch(inactiveScreenSharingFailure());

@@ -13,7 +13,7 @@ const VideoItem = ({ stream, display }) => {
   const videoRef = useRef();
   useEffect(() => {
     videoRef.current.srcObject = stream;
-  }, []);
+  }, [stream]);
 
   const onClick = useCallback(() => {
     dispatch(changeMainStreamRequest({ stream, display }));

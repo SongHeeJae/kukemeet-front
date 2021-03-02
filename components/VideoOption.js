@@ -27,6 +27,8 @@ const VideoOption = ({ info }) => {
     activeVideo,
     activeSpeakerDetection,
     activeScreenSharing,
+    useAudio,
+    useVideo,
   } = useSelector((state) => state.videoroom);
 
   const onClickActiveAudio = useCallback(() => {
@@ -52,24 +54,34 @@ const VideoOption = ({ info }) => {
       aria-label="outlined primary button group"
       fullWidth
     >
-      <Button onClick={onClickActiveAudio} disabled={!!info.pluginHandle}>
-        {activeAudio ? <MicIcon /> : <MicNoneIcon />}
-      </Button>
-      <Button onClick={onClickActiveVideo} disabled={!!info.pluginHandle}>
-        {activeVideo ? <VideocamIcon /> : <VideocamOffIcon />}
-      </Button>
+      {useAudio && (
+        <Button onClick={onClickActiveAudio} disabled={!!info.pluginHandle}>
+          {activeAudio ? <MicIcon /> : <MicNoneIcon />}
+        </Button>
+      )}
+      {useVideo && (
+        <Button onClick={onClickActiveVideo} disabled={!!info.pluginHandle}>
+          {activeVideo ? <VideocamIcon /> : <VideocamOffIcon />}
+        </Button>
+      )}
       <Button
         onClick={onClickActiveSpeakerDetection}
         disabled={!!info.pluginHandle}
       >
         {activeSpeakerDetection ? <SpeakerPhoneIcon /> : <SmartphoneIcon />}
       </Button>
-      <Button
-        onClick={onClickActiveScreenSharing}
-        disabled={!!info.pluginHandle}
-      >
-        {activeScreenSharing ? <CancelPresentationIcon /> : <ScreenShareIcon />}
-      </Button>
+      {useVideo && (
+        <Button
+          onClick={onClickActiveScreenSharing}
+          disabled={!!info.pluginHandle}
+        >
+          {activeScreenSharing ? (
+            <CancelPresentationIcon />
+          ) : (
+            <ScreenShareIcon />
+          )}
+        </Button>
+      )}
     </ButtonGroup>
   );
 };

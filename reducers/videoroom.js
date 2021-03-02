@@ -4,6 +4,8 @@ export const initialState = {
   room: "",
   title: "",
   pin: "",
+  useAudio: true,
+  useVideo: true,
   myFeed: {},
   remoteFeeds: [],
   activeVideo: false,
@@ -43,6 +45,7 @@ export const PUBLISH_OWN_FEED_FAILURE = "PUBLISH_OWN_FEED_FAILURE";
 export const SUBSCRIBE_REMOTE_FEED_REQUEST = "SUBSCRIBE_REMOTE_FEED_REQUEST";
 export const SUBSCRIBE_REMOTE_FEED_SUCCESS = "SUBSCRIBE_REMOTE_FEED_SUCCESS";
 export const SUBSCRIBE_REMOTE_FEED_FAILURE = "SUBSCRIBE_REMOTE_FEED_FAILURE";
+export const ADD_REMOTE_FEED_STREAM = "ADD_REMOTE_FEED_STREAM";
 
 export const OPEN_DATA_CHANNEL_SUCCESS = "OPEN_DATA_CHANNEL_SUCCESS";
 
@@ -75,6 +78,8 @@ export const ACTIVE_VIDEO_FAILURE = "ACTIVE_VIDEO_FAILURE";
 export const INACTIVE_VIDEO_REQUEST = "INACTIVE_VIDEO_REQUEST";
 export const INACTIVE_VIDEO_SUCCESS = "INACTIVE_VIDEO_SUCCESS";
 export const INACTIVE_VIDEO_FAILURE = "INACTIVE_VIDEO_FAILURE";
+
+export const SET_AUDIO_VIDEO_STATE = "SET_AUDIO_VIDEO_STATE";
 
 export const ACTIVE_SPEAKER_DETECTION_REQUEST =
   "ACTIVE_SPEAKER_DETECTION_REQUEST";
@@ -172,6 +177,11 @@ export const subscribeRemoteFeedSuccess = (payload) => ({
 
 export const subscribeRemoteFeedFailure = () => ({
   type: SUBSCRIBE_REMOTE_FEED_FAILURE,
+});
+
+export const addRemoteFeedStream = (payload) => ({
+  type: ADD_REMOTE_FEED_STREAM,
+  payload,
 });
 
 export const openDataChannelSuccess = () => ({
@@ -387,6 +397,11 @@ export const leaveRoomFailure = () => ({
   type: LEAVE_ROOM_FAILURE,
 });
 
+export const setAudioVideoState = (payload) => ({
+  type: SET_AUDIO_VIDEO_STATE,
+  payload,
+});
+
 const reducer = (state = initialState, action) =>
   produce(state, (draft) => {
     switch (action.type) {
@@ -424,16 +439,20 @@ const reducer = (state = initialState, action) =>
       case PUBLISH_OWN_FEED_FAILURE:
         break;
       case SUBSCRIBE_REMOTE_FEED_REQUEST:
-        break;
-      case SUBSCRIBE_REMOTE_FEED_SUCCESS:
         draft.remoteFeeds.push({
           id: action.payload.id,
           display: action.payload.display,
-          stream: action.payload.stream,
-          hark: action.payload.hark,
         });
         break;
+      case SUBSCRIBE_REMOTE_FEED_SUCCESS:
+        break;
       case SUBSCRIBE_REMOTE_FEED_FAILURE:
+        break;
+      case ADD_REMOTE_FEED_STREAM:
+        const feed = draft.remoteFeeds.find((f) => f.id === action.payload.id);
+        if (feed.hark) feed.hark.off("speaking");
+        feed.stream = action.payload.stream;
+        feed.hark = action.payload.hark;
         break;
       case OPEN_DATA_CHANNEL_SUCCESS:
         draft.openDataChannelDone = true;
@@ -569,6 +588,10 @@ const reducer = (state = initialState, action) =>
         break;
       case LEAVE_ROOM_FAILURE:
         draft.leaveRoomLoading = false;
+        break;
+      case SET_AUDIO_VIDEO_STATE:
+        draft.useAudio = action.payload.useAudio;
+        draft.useVideo = action.payload.useVideo;
         break;
       default:
         break;
