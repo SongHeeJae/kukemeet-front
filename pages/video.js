@@ -12,6 +12,7 @@ import {
   openDataChannelSuccess,
   leavingRemoteFeedRequest,
   leaveRoomRequest,
+  inactiveSpeakerDetectionRequest,
 } from "../reducers/videoroom";
 import { useRouter } from "next/router";
 import { Janus } from "janus-gateway";
@@ -125,7 +126,6 @@ const attachJanus = (dispatch, janus) => {
         // empty
       },
       onmessage: (msg, jsep) => {
-        console.log("onmessage", msg);
         let event = msg["videoroom"];
         if (event) {
           if (event === "joined") {
@@ -218,6 +218,7 @@ const Video = () => {
 
     return () => {
       const { janus } = info.current;
+      dispatch(inactiveSpeakerDetectionRequest());
       if (janus && janus.isConnected()) {
         dispatch(leaveRoomRequest({ info: info.current }));
       }

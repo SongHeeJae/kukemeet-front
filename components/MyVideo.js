@@ -20,7 +20,7 @@ const MyVideo = () => {
   }
   return (
     <>
-      <VideoWrapper ref={videoRef} autoPlay playsInline />
+      <VideoWrapper ref={videoRef} autoPlay playsInline muted />
     </>
   );
 };

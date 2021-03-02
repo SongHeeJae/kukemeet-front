@@ -92,7 +92,6 @@ function* joinRoom(action) {
   try {
     yield call(joinRoomAPI, action.payload);
   } catch (err) {
-    console.log(err);
     yield put(joinRoomFailure());
   }
 }
@@ -113,7 +112,7 @@ function publishOwnFeedAPI(payload, useVideo, useAudio) {
       dispatch(setAudioVideoState({ useVideo, useAudio }));
       pluginHandle.muteAudio();
       pluginHandle.muteVideo();
-      var publish = {
+      const publish = {
         request: "configure",
         audio: useAudio,
         video: useVideo,
@@ -143,7 +142,6 @@ function* publishOwnFeed(action) {
     yield call(publishOwnFeedAPI, action.payload, true, true);
   } catch (err) {
     yield put(publishOwnFeedFailure());
-    yield put(leaveRoomRe);
   }
 }
 
@@ -255,7 +253,6 @@ function* subscribeRemoteFeed(action) {
     );
     yield put(subscribeRemoteFeedSuccess());
   } catch (err) {
-    console.log(err);
     yield put(subscribeRemoteFeedFailure());
   }
 }
@@ -304,9 +301,6 @@ function sendChatAPI(room, { dispatch, info, display, text }) {
   };
   pluginHandle.data({
     text: JSON.stringify(message),
-    error: (err) => {
-      console.log(err);
-    },
     success: () => {
       dispatch(sendChatSuccess({ display, text }));
     },
@@ -412,17 +406,22 @@ function* inactiveSpeakerDetection() {
   }
 }
 
-function activeScreenSharingAPI({ info, dispatch }) {
+function activeScreenSharingAPI({ info, dispatch }, useAudio, useVideo) {
   const { pluginHandle } = info;
   pluginHandle.createOffer({
     media: {
       video: "screen",
+      audio: useAudio,
       replaceVideo: true,
     },
     success: function (jsep) {
       pluginHandle.send({
-        message: { audio: true, video: true },
-        jsep: jsep,
+        message: {
+          request: "configure",
+          audio: useAudio,
+          video: true,
+        },
+        jsep,
       });
       dispatch(activeScreenSharingSuccess());
       dispatch(activeVideoRequest(info));
@@ -436,25 +435,32 @@ function activeScreenSharingAPI({ info, dispatch }) {
 
 function* activeScreenSharing(action) {
   try {
-    yield call(activeScreenSharingAPI, action.payload);
+    const { useAudio, useVideo } = yield select((state) => state.videoroom);
+    yield call(activeScreenSharingAPI, action.payload, useAudio, useVideo);
   } catch (err) {
     yield put(activeScreenSharingFailure());
   }
 }
 
-function inactiveScreenSharingAPI({ info, dispatch }) {
+function inactiveScreenSharingAPI({ info, dispatch }, useAudio, useVideo) {
   const { pluginHandle } = info;
   pluginHandle.createOffer({
     media: {
-      replaceVideo: true,
+      video: useVideo,
+      audio: useAudio,
+      replaceVideo: useVideo,
     },
     success: function (jsep) {
+      dispatch(inactiveVideoRequest(info));
       pluginHandle.send({
-        message: { audio: true, video: true },
+        message: {
+          request: "configure",
+          audio: useAudio,
+          video: useVideo,
+        },
         jsep: jsep,
       });
       dispatch(inactiveScreenSharingSuccess());
-      dispatch(activeVideoRequest(info));
     },
     error: function (error) {
       dispatch(inactiveScreenSharingFailure());
@@ -464,7 +470,8 @@ function inactiveScreenSharingAPI({ info, dispatch }) {
 
 function* inactiveScreenSharing(action) {
   try {
-    yield call(inactiveScreenSharingAPI, action.payload);
+    const { useAudio, useVideo } = yield select((state) => state.videoroom);
+    yield call(inactiveScreenSharingAPI, action.payload, useAudio, useVideo);
   } catch (err) {
     yield put(inactiveScreenSharingFailure());
   }
@@ -513,7 +520,6 @@ function* getRoomList(action) {
       getRoomListSuccess({ list: result.data.data }) // 결과 값 처리
     );
   } catch (err) {
-    console.log(err);
     yield put(getRoomListFailure());
   }
 }
@@ -534,7 +540,6 @@ function* destroyRoom() {
     yield call(destroyRoomAPI, room, accessToken);
     yield put(destroyRoomSuccess());
   } catch (err) {
-    console.log(err);
     yield put(destroyRoomFailure());
   }
 }

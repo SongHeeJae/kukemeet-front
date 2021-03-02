@@ -54,9 +54,8 @@ const MainVideo = () => {
   const videoRef = useRef();
 
   useEffect(() => {
-    if (!mainStream.stream) return;
     videoRef.current.srcObject = mainStream.stream;
-  }, [mainStream.stream]);
+  }, [mainStream.stream && mainStream.stream.getVideoTracks().length > 0]);
 
   const onClick = useCallback((e) => {
     e.preventDefault();

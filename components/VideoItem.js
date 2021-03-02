@@ -11,9 +11,10 @@ const VideoWrapper = styled.video`
 const VideoItem = ({ stream, display }) => {
   const dispatch = useDispatch();
   const videoRef = useRef();
+
   useEffect(() => {
     videoRef.current.srcObject = stream;
-  }, [stream]);
+  }, [stream && stream.getVideoTracks().length > 0]);
 
   const onClick = useCallback(() => {
     dispatch(changeMainStreamRequest({ stream, display }));
