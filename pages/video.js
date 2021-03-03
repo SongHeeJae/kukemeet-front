@@ -103,7 +103,7 @@ const attachJanus = (dispatch, janus) => {
   return new Promise((resolve, reject) => {
     const opaqueId = "videoroom-" + Janus.randomString(12);
     const info = { opaqueId };
-    const connected = false;
+    let connected = false;
     janus.attach({
       plugin: "janus.plugin.videoroom",
       opaqueId: opaqueId,
