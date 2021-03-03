@@ -99,10 +99,11 @@ const connectJanus = () => {
   });
 };
 
-const attachJanus = (dispatch, janus, useAudio, useVideo) => {
+const attachJanus = (dispatch, janus) => {
   return new Promise((resolve, reject) => {
     const opaqueId = "videoroom-" + Janus.randomString(12);
     const info = { opaqueId };
+    const connected = false;
     janus.attach({
       plugin: "janus.plugin.videoroom",
       opaqueId: opaqueId,
@@ -171,7 +172,8 @@ const attachJanus = (dispatch, janus, useAudio, useVideo) => {
         }
         if (jsep) {
           info.pluginHandle.handleRemoteJsep({ jsep: jsep });
-          if (useAudio === null && useVideo === null) {
+          if (!connected) {
+            connected = true;
             dispatch(
               setAudioVideoState({
                 useAudio: !!msg["audio_codec"],
@@ -202,13 +204,9 @@ const Video = () => {
   const info = useRef(null);
   const dispatch = useDispatch();
   const router = useRouter();
-  const {
-    connectJanusDone,
-    room,
-    joinRoomLoading,
-    useAudio,
-    useVideo,
-  } = useSelector((state) => state.videoroom);
+  const { connectJanusDone, room, joinRoomLoading } = useSelector(
+    (state) => state.videoroom
+  );
   const { id } = useSelector((state) => state.user);
   const [messageDialogOpen, setMessageDialogOpen] = useState(false);
   const [friendDialogOpen, setFriendDialogOpen] = useState(false);
@@ -221,7 +219,7 @@ const Video = () => {
     dispatch(connectJanusRequest());
     initJanus()
       .then(connectJanus)
-      .then((janus) => attachJanus(dispatch, janus, useAudio, useVideo))
+      .then((janus) => attachJanus(dispatch, janus))
       .then((result) => {
         info.current = result;
         dispatch(connectJanusSuccess());
