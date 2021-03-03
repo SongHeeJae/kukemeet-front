@@ -13,6 +13,7 @@ import {
   leavingRemoteFeedRequest,
   leaveRoomRequest,
   inactiveSpeakerDetectionRequest,
+  setAudioVideoState,
 } from "../reducers/videoroom";
 import { useRouter } from "next/router";
 import { Janus } from "janus-gateway";
@@ -98,7 +99,7 @@ const connectJanus = () => {
   });
 };
 
-const attachJanus = (dispatch, janus) => {
+const attachJanus = (dispatch, janus, useAudio, useVideo) => {
   return new Promise((resolve, reject) => {
     const opaqueId = "videoroom-" + Janus.randomString(12);
     const info = { opaqueId };
@@ -110,7 +111,9 @@ const attachJanus = (dispatch, janus) => {
         info.janus = janus;
         resolve({ janus, pluginHandle, opaqueId });
       },
-      error: (cause) => {},
+      error: (cause) => {
+        reject(cause);
+      },
       consentDialog: (on) => {
         Janus.debug("Consent dialog should be " + (on ? "on" : "off") + " now");
       },
@@ -168,6 +171,14 @@ const attachJanus = (dispatch, janus) => {
         }
         if (jsep) {
           info.pluginHandle.handleRemoteJsep({ jsep: jsep });
+          if (useAudio === null && useVideo === null) {
+            dispatch(
+              setAudioVideoState({
+                useAudio: !!msg["audio_codec"],
+                useVideo: !!msg["video_codec"],
+              })
+            );
+          }
         }
       },
       onlocalstream: (stream) => {
@@ -191,9 +202,13 @@ const Video = () => {
   const info = useRef(null);
   const dispatch = useDispatch();
   const router = useRouter();
-  const { connectJanusDone, room, joinRoomLoading, title } = useSelector(
-    (state) => state.videoroom
-  );
+  const {
+    connectJanusDone,
+    room,
+    joinRoomLoading,
+    useAudio,
+    useVideo,
+  } = useSelector((state) => state.videoroom);
   const { id } = useSelector((state) => state.user);
   const [messageDialogOpen, setMessageDialogOpen] = useState(false);
   const [friendDialogOpen, setFriendDialogOpen] = useState(false);
@@ -206,7 +221,7 @@ const Video = () => {
     dispatch(connectJanusRequest());
     initJanus()
       .then(connectJanus)
-      .then((janus) => attachJanus(dispatch, janus))
+      .then((janus) => attachJanus(dispatch, janus, useAudio, useVideo))
       .then((result) => {
         info.current = result;
         dispatch(connectJanusSuccess());

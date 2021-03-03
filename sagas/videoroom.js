@@ -109,7 +109,6 @@ function publishOwnFeedAPI(payload, useVideo, useAudio) {
       videoSend: useVideo,
     },
     success: function (jsep) {
-      dispatch(setAudioVideoState({ useVideo, useAudio }));
       pluginHandle.muteAudio();
       pluginHandle.muteVideo();
       const publish = {
