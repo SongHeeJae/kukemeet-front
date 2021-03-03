@@ -8,7 +8,7 @@ const VideoMeeting = ({ Component }) => {
     <>
       <Head>
         <meta charSet="utf-8" />
-        <title>Video Meeting</title>
+        <title>KUKE meet</title>
       </Head>
       <Component />
     </>
