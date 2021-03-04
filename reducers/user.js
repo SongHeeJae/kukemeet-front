@@ -53,6 +53,8 @@ export const initialState = {
   loadUsers: [],
   loadUsersLoading: false,
   loadUsersError: "",
+  deleteUserLoading: false,
+  deleteUserDone: false,
 };
 
 export const REGISTER_REQUEST = "REGISTER_REQUEST";
@@ -136,6 +138,10 @@ export const LOAD_USERS_REQUEST = "LOAD_USERS_REQUEST";
 export const LOAD_USERS_SUCCESS = "LOAD_USERS_SUCCESS";
 export const LOAD_USERS_FAILURE = "LOAD_USERS_FAILURE";
 export const CLEAR_LOAD_USERS_STATE = "CLEAR_LOAD_USERS_STATE";
+
+export const DELETE_USER_REQUEST = "DELETE_USER_REQUEST";
+export const DELETE_USER_SUCCESS = "DELETE_USER_SUCCESS";
+export const DELETE_USER_FAILURE = "DELETE_USER_FAILURE";
 
 export const HANDLE_ERROR = "HANDLE_ERROR";
 
@@ -414,6 +420,18 @@ export const handleError = (payload) => ({
   payload,
 });
 
+export const deleteUserRequest = () => ({
+  type: DELETE_USER_REQUEST,
+});
+
+export const deleteUserSuccess = () => ({
+  type: DELETE_USER_SUCCESS,
+});
+
+export const deleteUserFailure = () => ({
+  type: DELETE_USER_FAILURE,
+});
+
 const reducer = (state = initialState, action) =>
   produce(state, (draft) => {
     switch (action.type) {
@@ -686,6 +704,16 @@ const reducer = (state = initialState, action) =>
         draft.loadUsers = [];
         draft.loadUsersLoading = false;
         draft.loadUsersError = "";
+        break;
+      case DELETE_USER_REQUEST:
+        draft.deleteUserLoading = true;
+        break;
+      case DELETE_USER_SUCCESS:
+        draft.deleteUserLoading = false;
+        draft.deleteUserDone = true;
+        break;
+      case DELETE_USER_FAILURE:
+        draft.deleteUserLoading = false;
         break;
       default:
         break;

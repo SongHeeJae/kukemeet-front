@@ -61,6 +61,9 @@ import {
   REFRESH_TOKEN_BY_CLIENT_REQUEST,
   refreshTokenByClientRequest,
   REFRESH_TOKEN_SUCCESS,
+  DELETE_USER_REQUEST,
+  deleteUserSuccess,
+  deleteUserFailure,
 } from "../reducers/user";
 
 function registerAPI(data) {
@@ -403,6 +406,25 @@ function* loadUsers(action) {
   }
 }
 
+function deleteUserAPI(id, accessToken) {
+  return axios.delete(`/api/users/${id}`, {
+    headers: {
+      Authorization: accessToken,
+    },
+  });
+}
+
+function* deleteUser() {
+  try {
+    const { accessToken, id } = yield select((state) => state.user);
+    yield call(deleteUserAPI, id, accessToken);
+    yield put(deleteUserSuccess());
+  } catch (err) {
+    yield put(deleteUserFailure());
+    yield put(handleError({ result: err.response.data, task: action }));
+  }
+}
+
 function* errorHandling(action) {
   const { refreshTokenLoading } = yield select((state) => state.user);
   const { result, task } = action.payload;
@@ -481,6 +503,10 @@ function* watchLoadUsers() {
   yield takeLatest(LOAD_USERS_REQUEST, loadUsers);
 }
 
+function* watchDeleteUser() {
+  yield takeLatest(DELETE_USER_REQUEST, deleteUser);
+}
+
 function* watchHandleError() {
   yield takeEvery(HANDLE_ERROR, errorHandling);
 }
@@ -504,5 +530,6 @@ export default function* userSaga() {
     fork(watchDeleteFriend),
     fork(watchLoadUsers),
     fork(watchHandleError),
+    fork(watchDeleteUser),
   ]);
 }
