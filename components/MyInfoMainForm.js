@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
-import { TextField, Button, Collapse, IconButton } from "@material-ui/core";
+import { TextField, Button } from "@material-ui/core";
 import moment from "moment";
 import Router from "next/router";
 import {
@@ -11,8 +11,7 @@ import {
   updateUserInfoFailure,
 } from "../reducers/user";
 import useInput from "../hooks/useInput";
-import Alert from "@material-ui/lab/Alert";
-import CloseIcon from "@material-ui/icons/Close";
+import ErrorCollapse from "./ErrorCollapse";
 
 moment.locale("ko");
 
@@ -77,23 +76,7 @@ const MyInfoMainForm = () => {
 
   return (
     <MyInfoMainFormWrapper>
-      <Collapse in={updateUserInfoError.length > 0}>
-        <Alert
-          severity="error"
-          action={
-            <IconButton
-              aria-label="close"
-              color="inherit"
-              size="small"
-              onClick={onClickIconButton}
-            >
-              <CloseIcon fontSize="inherit" />
-            </IconButton>
-          }
-        >
-          {updateUserInfoError}
-        </Alert>
-      </Collapse>
+      <ErrorCollapse error={updateUserInfoError} onClick={onClickIconButton} />
       <h1>내 정보</h1>
       <TextField
         required

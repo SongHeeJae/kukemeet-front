@@ -3,11 +3,10 @@ import AppLayout from "./AppLayout";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import useInput from "../hooks/useInput";
-import CloseIcon from "@material-ui/icons/Close";
-import { Button, TextField, Collapse, IconButton } from "@material-ui/core";
+import { Button, TextField } from "@material-ui/core";
 import Router from "next/router";
 import { joinRoomRequest, clearJoinRoomState } from "../reducers/videoroom";
-import Alert from "@material-ui/lab/Alert";
+import ErrorCollapse from "./ErrorCollapse";
 
 const JoinRoomFormWrapper = styled.div`
   text-align: center;
@@ -49,23 +48,7 @@ const JoinRoomForm = ({ info, room }) => {
     <AppLayout>
       <JoinRoomFormWrapper>
         <h1>방 비밀번호를 입력해주세요.</h1>
-        <Collapse in={joinRoomError.length > 0}>
-          <Alert
-            severity="error"
-            action={
-              <IconButton
-                aria-label="close"
-                color="inherit"
-                size="small"
-                onClick={onClickErrorIconButton}
-              >
-                <CloseIcon fontSize="inherit" />
-              </IconButton>
-            }
-          >
-            {joinRoomError}
-          </Alert>
-        </Collapse>
+        <ErrorCollapse error={joinRoomError} onClick={onClickErrorIconButton} />
         <form onSubmit={onSubmit}>
           <TextField
             type="password"

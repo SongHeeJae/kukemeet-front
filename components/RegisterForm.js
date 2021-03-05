@@ -1,12 +1,11 @@
 import React, { useCallback, useEffect } from "react";
-import { Button, TextField, Collapse, IconButton } from "@material-ui/core";
+import { Button, TextField } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import Router from "next/router";
-import Alert from "@material-ui/lab/Alert";
 import useInput from "../hooks/useInput";
 import styled from "styled-components";
 import { registerRequest, clearRegisterState } from "../reducers/user";
-import CloseIcon from "@material-ui/icons/Close";
+import ErrorCollapse from "./ErrorCollapse";
 
 const RegisterFormWrapper = styled.div`
   text-align: center;
@@ -60,23 +59,7 @@ const RegisterForm = () => {
   return (
     <RegisterFormWrapper>
       <h1>회원 정보를 입력해주세요.</h1>
-      <Collapse in={registerError.length > 0}>
-        <Alert
-          severity="error"
-          action={
-            <IconButton
-              aria-label="close"
-              color="inherit"
-              size="small"
-              onClick={onClickErrorIconButton}
-            >
-              <CloseIcon fontSize="inherit" />
-            </IconButton>
-          }
-        >
-          {registerError}
-        </Alert>
-      </Collapse>
+      <ErrorCollapse error={registerError} onClick={onClickErrorIconButton} />
       <form onSubmit={onSubmit}>
         <TextField
           required

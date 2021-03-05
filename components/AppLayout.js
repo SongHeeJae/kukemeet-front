@@ -7,7 +7,7 @@ import Router from "next/router";
 import { logoutRequest } from "../reducers/user";
 import MessageDialog from "./MessageDialog";
 import FriendDialog from "./FriendDialog";
-const MenuWrapper = styled.div`
+const MenuWrapper = styled.nav`
   display: flex;
   .sign-menu {
     margin-left: auto;

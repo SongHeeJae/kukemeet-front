@@ -2,11 +2,16 @@ import React from "react";
 import AppLayout from "../components/AppLayout";
 import wrapper from "../store/configureStore";
 import { stayLoggedIn } from "../auth/auth";
+import Head from "next/head";
 
 const About = () => {
   return (
     <>
-      <AppLayout> 소개페이지입니다.</AppLayout>
+      <AppLayout>
+        <Head>
+          <title>About KUKE meet</title>
+        </Head>
+      </AppLayout>
     </>
   );
 };

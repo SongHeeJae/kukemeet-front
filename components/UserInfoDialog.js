@@ -3,16 +3,14 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  Collapse,
-  IconButton,
   Button,
   TextField,
 } from "@material-ui/core";
 import { useSelector, useDispatch } from "react-redux";
 import { addFriendRequest, clearAddFriendState } from "../reducers/user";
-import Alert from "@material-ui/lab/Alert";
-import CloseIcon from "@material-ui/icons/Close";
 import moment from "moment";
+import ErrorCollapse from "./ErrorCollapse";
+import SuccessCollapse from "./SuccessCollapse";
 
 moment.locale("ko");
 
@@ -51,40 +49,12 @@ const UserInfoDialog = (props) => {
 
   return (
     <Dialog open={open} onClose={onClose}>
-      <Collapse in={addFriendDone}>
-        <Alert
-          severity="success"
-          action={
-            <IconButton
-              aria-label="close"
-              color="inherit"
-              size="small"
-              onClick={onClickIconButton}
-            >
-              <CloseIcon fontSize="inherit" />
-            </IconButton>
-          }
-        >
-          친구로 등록되었습니다.
-        </Alert>
-      </Collapse>
-      <Collapse in={addFriendError.length > 0}>
-        <Alert
-          severity="error"
-          action={
-            <IconButton
-              aria-label="close"
-              color="inherit"
-              size="small"
-              onClick={onClickIconButton}
-            >
-              <CloseIcon fontSize="inherit" />
-            </IconButton>
-          }
-        >
-          {addFriendError}
-        </Alert>
-      </Collapse>
+      <SuccessCollapse
+        flag={addFriendDone}
+        onClick={onClickIconButton}
+        msg="친구로 등록되었습니다."
+      />
+      <ErrorCollapse error={addFriendError} onClick={onClickIconButton} />
       <DialogTitle>사용자 정보</DialogTitle>
       {loadUserLoading ? (
         <div>로딩중...</div>

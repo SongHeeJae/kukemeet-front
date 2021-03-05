@@ -3,16 +3,14 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  Collapse,
-  IconButton,
   Button,
   TextField,
 } from "@material-ui/core";
 import { useSelector, useDispatch } from "react-redux";
 import { sendMessageRequest, clearSendMessageState } from "../reducers/user";
-import Alert from "@material-ui/lab/Alert";
-import CloseIcon from "@material-ui/icons/Close";
 import useInput from "../hooks/useInput";
+import ErrorCollapse from "./ErrorCollapse";
+import SuccessCollapse from "./SuccessCollapse";
 
 const SendMessageDialog = (props) => {
   const { open, setOpen } = props;
@@ -51,40 +49,12 @@ const SendMessageDialog = (props) => {
 
   return (
     <Dialog open={open} onClose={onClose}>
-      <Collapse in={sendMessageDone}>
-        <Alert
-          severity="success"
-          action={
-            <IconButton
-              aria-label="close"
-              color="inherit"
-              size="small"
-              onClick={onClickIconButton}
-            >
-              <CloseIcon fontSize="inherit" />
-            </IconButton>
-          }
-        >
-          쪽지가 전송되었습니다.
-        </Alert>
-      </Collapse>
-      <Collapse in={sendMessageError.length > 0}>
-        <Alert
-          severity="error"
-          action={
-            <IconButton
-              aria-label="close"
-              color="inherit"
-              size="small"
-              onClick={onClickIconButton}
-            >
-              <CloseIcon fontSize="inherit" />
-            </IconButton>
-          }
-        >
-          쪽지 전송에 실패하였습니다.
-        </Alert>
-      </Collapse>
+      <SuccessCollapse
+        flag={sendMessageDone}
+        msg="쪽지가 전송되었습니다."
+        onClick={onClickIconButton}
+      />
+      <ErrorCollapse error={sendMessageError} onClick={onClickIconButton} />
       <DialogTitle>쪽지 보내기</DialogTitle>
       {loadUserLoading ? (
         <div>로딩중...</div>

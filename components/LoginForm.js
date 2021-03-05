@@ -1,12 +1,11 @@
 import React, { useEffect, useCallback } from "react";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
-import CloseIcon from "@material-ui/icons/Close";
-import { Button, TextField, Collapse, IconButton } from "@material-ui/core";
+import { Button, TextField } from "@material-ui/core";
 import Router from "next/router";
-import Alert from "@material-ui/lab/Alert";
 import useInput from "../hooks/useInput";
 import { clearLoginState, loginRequest } from "../reducers/user";
+import ErrorCollapse from "./ErrorCollapse";
 
 const LoginFormWrapper = styled.div`
   text-align: center;
@@ -42,23 +41,7 @@ const LoginForm = () => {
   return (
     <LoginFormWrapper>
       <h1>로그인 정보를 입력해주세요.</h1>
-      <Collapse in={loginError.length > 0}>
-        <Alert
-          severity="error"
-          action={
-            <IconButton
-              aria-label="close"
-              color="inherit"
-              size="small"
-              onClick={onClickErrorIconButton}
-            >
-              <CloseIcon fontSize="inherit" />
-            </IconButton>
-          }
-        >
-          {loginError}
-        </Alert>
-      </Collapse>
+      <ErrorCollapse error={loginError} onClick={onClickErrorIconButton} />
       <form onSubmit={onSubmit}>
         <TextField
           required

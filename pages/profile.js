@@ -5,6 +5,7 @@ import Router from "next/router";
 import wrapper from "../store/configureStore";
 import { stayLoggedIn } from "../auth/auth";
 import MyInfoForm from "../components/MyInfoForm";
+import Head from "next/head";
 
 const Profile = () => {
   const { id } = useSelector((state) => state.user);
@@ -16,6 +17,9 @@ const Profile = () => {
 
   return (
     <AppLayout>
+      <Head>
+        <title>내 정보</title>
+      </Head>
       <MyInfoForm />
     </AppLayout>
   );

@@ -1,16 +1,15 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
-import { TextField, Button, Collapse, IconButton } from "@material-ui/core";
-import Router from "next/router";
+import { TextField, Button } from "@material-ui/core";
 import {
   clearUpdateUserPasswordState,
   updateUserPasswordRequest,
   updateUserPasswordFailure,
 } from "../reducers/user";
 import useInput from "../hooks/useInput";
-import Alert from "@material-ui/lab/Alert";
-import CloseIcon from "@material-ui/icons/Close";
+import SuccessCollapse from "./SuccessCollapse";
+import ErrorCollapse from "./ErrorCollapse";
 
 const MyInfoMainFormWrapper = styled.div`
   text-align: center;
@@ -78,41 +77,15 @@ const MyInfoPasswordForm = () => {
 
   return (
     <MyInfoMainFormWrapper>
-      <Collapse in={updateUserPasswordDone}>
-        <Alert
-          severity="success"
-          action={
-            <IconButton
-              aria-label="close"
-              color="inherit"
-              size="small"
-              onClick={onClickIconButton}
-            >
-              <CloseIcon fontSize="inherit" />
-            </IconButton>
-          }
-        >
-          비밀번호가 변경되었습니다.
-        </Alert>
-      </Collapse>
-
-      <Collapse in={updateUserPasswordError.length > 0}>
-        <Alert
-          severity="error"
-          action={
-            <IconButton
-              aria-label="close"
-              color="inherit"
-              size="small"
-              onClick={onClickIconButton}
-            >
-              <CloseIcon fontSize="inherit" />
-            </IconButton>
-          }
-        >
-          {updateUserPasswordError}
-        </Alert>
-      </Collapse>
+      <SuccessCollapse
+        flag={updateUserPasswordDone}
+        onClick={onClickIconButton}
+        msg="비밀번호가 변경되었습니다."
+      />
+      <ErrorCollapse
+        error={updateUserPasswordError}
+        onClick={onClickIconButton}
+      />
       <h1>비밀번호 변경</h1>
       <TextField
         required

@@ -1,29 +1,18 @@
-import React, { useEffect, useCallback, useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   Dialog,
   DialogTitle,
-  DialogContent,
-  Collapse,
-  IconButton,
   Button,
-  TextField,
   Tabs,
   Tab,
   AppBar,
 } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
-import Alert from "@material-ui/lab/Alert";
-import CloseIcon from "@material-ui/icons/Close";
-import styled from "styled-components";
 import FriendListTabPanel from "./FriendListTabPanel";
 import FriendSearchTabPanel from "./FriendSearchTabPanel";
-import {
-  loadMyFriendsRequest,
-  clearMyFriendsState,
-  clearDeleteFriendState,
-  clearLoadUsersState,
-} from "../reducers/user";
+import { clearDeleteFriendState, clearLoadUsersState } from "../reducers/user";
 import UserInfoDialog from "./UserInfoDialog";
+import ErrorCollapse from "./ErrorCollapse";
 
 const FriendDialog = (props) => {
   const { open, setOpen } = props;
@@ -56,40 +45,15 @@ const FriendDialog = (props) => {
         open={userInfoDialogOpen}
         setOpen={setUserInfoDialogOpen}
       />
-      <Collapse in={deleteFriendError.length > 0}>
-        <Alert
-          severity="error"
-          action={
-            <IconButton
-              aria-label="close"
-              color="inherit"
-              size="small"
-              onClick={onClickDeleteFriendErrorIconButton}
-            >
-              <CloseIcon fontSize="inherit" />
-            </IconButton>
-          }
-        >
-          {deleteFriendError}
-        </Alert>
-      </Collapse>
-      <Collapse in={loadUsersError.length > 0}>
-        <Alert
-          severity="error"
-          action={
-            <IconButton
-              aria-label="close"
-              color="inherit"
-              size="small"
-              onClick={onClickLoadUsersErrorIconButton}
-            >
-              <CloseIcon fontSize="inherit" />
-            </IconButton>
-          }
-        >
-          {loadUsersError}
-        </Alert>
-      </Collapse>
+      <ErrorCollapse
+        error={deleteFriendError}
+        onClick={onClickDeleteFriendErrorIconButton}
+      />
+      <ErrorCollapse
+        error={loadUsersError}
+        onClick={onClickLoadUsersErrorIconButton}
+      />
+
       <DialogTitle>친구 관리</DialogTitle>
       <AppBar position="static">
         <Tabs value={value} onChange={onChange}>
