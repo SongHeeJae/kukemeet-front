@@ -55,6 +55,12 @@ export const initialState = {
   loadUsersError: "",
   deleteUserLoading: false,
   deleteUserDone: false,
+  updateUserInfoLoading: false,
+  updateUserInfoDone: false,
+  updateUserInfoError: "",
+  updateUserPasswordLoading: false,
+  updateuserPasswordDone: false,
+  updateUserPasswordError: "",
 };
 
 export const REGISTER_REQUEST = "REGISTER_REQUEST";
@@ -142,6 +148,17 @@ export const CLEAR_LOAD_USERS_STATE = "CLEAR_LOAD_USERS_STATE";
 export const DELETE_USER_REQUEST = "DELETE_USER_REQUEST";
 export const DELETE_USER_SUCCESS = "DELETE_USER_SUCCESS";
 export const DELETE_USER_FAILURE = "DELETE_USER_FAILURE";
+
+export const UPDATE_USER_INFO_REQUEST = "UPDATE_USER_INFO_REQUEST";
+export const UPDATE_USER_INFO_SUCCESS = "UPDATE_USER_INFO_SUCCESS";
+export const UPDATE_USER_INFO_FAILURE = "UPDATE_USER_INFO_FAILURE";
+export const CLEAR_UPDATE_USER_INFO_STATE = "CLEAR_UPDATE_USER_INFO_STATE";
+
+export const UPDATE_USER_PASSWORD_REQUEST = "UPDATE_USER_PASSWORD_REQUEST";
+export const UPDATE_USER_PASSWORD_SUCCESS = "UPDATE_USER_PASSWORD_SUCCESS";
+export const UPDATE_USER_PASSWORD_FAILURE = "UPDATE_USER_PASSWORD_FAILURE";
+export const CLEAR_UPDATE_USER_PASSWORD_STATE =
+  "CLEAR_UPDATE_USER_PASSWORD_STATE";
 
 export const HANDLE_ERROR = "HANDLE_ERROR";
 
@@ -432,6 +449,42 @@ export const deleteUserFailure = () => ({
   type: DELETE_USER_FAILURE,
 });
 
+export const updateUserInfoRequest = (payload) => ({
+  type: UPDATE_USER_INFO_REQUEST,
+  payload,
+});
+
+export const updateUserInfoSuccess = () => ({
+  type: UPDATE_USER_INFO_SUCCESS,
+});
+
+export const updateUserInfoFailure = (payload) => ({
+  type: UPDATE_USER_INFO_FAILURE,
+  payload,
+});
+
+export const clearUpdateUserInfoState = () => ({
+  type: CLEAR_UPDATE_USER_INFO_STATE,
+});
+
+export const updateUserPasswordRequest = (payload) => ({
+  type: UPDATE_USER_PASSWORD_REQUEST,
+  payload,
+});
+
+export const updateUserPasswordSuccess = () => ({
+  type: UPDATE_USER_PASSWORD_SUCCESS,
+});
+
+export const updateUserPasswordFailure = (payload) => ({
+  type: UPDATE_USER_PASSWORD_FAILURE,
+  payload,
+});
+
+export const clearUpdateUserPasswordState = () => ({
+  type: CLEAR_UPDATE_USER_PASSWORD_STATE,
+});
+
 const reducer = (state = initialState, action) =>
   produce(state, (draft) => {
     switch (action.type) {
@@ -714,6 +767,38 @@ const reducer = (state = initialState, action) =>
         break;
       case DELETE_USER_FAILURE:
         draft.deleteUserLoading = false;
+        break;
+      case UPDATE_USER_INFO_REQUEST:
+        draft.updateUserInfoLoading = true;
+        break;
+      case UPDATE_USER_INFO_SUCCESS:
+        draft.updateUserInfoDone = true;
+        draft.updateUserInfoLoading = false;
+        break;
+      case UPDATE_USER_INFO_FAILURE:
+        draft.updateUserInfoLoading = false;
+        draft.updateUserInfoError = action.payload.msg;
+        break;
+      case CLEAR_UPDATE_USER_INFO_STATE:
+        draft.updateUserInfoLoading = false;
+        draft.updateUserInfoDone = false;
+        draft.updateUserInfoError = "";
+        break;
+      case UPDATE_USER_PASSWORD_REQUEST:
+        draft.updateUserPasswordLoading = true;
+        break;
+      case UPDATE_USER_PASSWORD_SUCCESS:
+        draft.updateUserPasswordDone = true;
+        draft.updateUserPasswordLoading = false;
+        break;
+      case UPDATE_USER_PASSWORD_FAILURE:
+        draft.updateUserPasswordLoading = false;
+        draft.updateUserPasswordError = action.payload.msg;
+        break;
+      case CLEAR_UPDATE_USER_PASSWORD_STATE:
+        draft.updateUserPasswordLoading = false;
+        draft.updateUserPasswordDone = false;
+        draft.updateUserPasswordError = "";
         break;
       default:
         break;

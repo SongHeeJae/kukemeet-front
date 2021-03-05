@@ -64,6 +64,12 @@ import {
   DELETE_USER_REQUEST,
   deleteUserSuccess,
   deleteUserFailure,
+  UPDATE_USER_INFO_REQUEST,
+  updateUserInfoSuccess,
+  updateUserInfoFailure,
+  UPDATE_USER_PASSWORD_REQUEST,
+  updateUserPasswordSuccess,
+  updateUserPasswordFailure,
 } from "../reducers/user";
 
 function registerAPI(data) {
@@ -425,6 +431,44 @@ function* deleteUser() {
   }
 }
 
+function updateUserInfoAPI(id, accessToken, data) {
+  return axios.put(`/api/users/${id}`, data, {
+    headers: {
+      Authorization: accessToken,
+    },
+  });
+}
+
+function* updateUserInfo(action) {
+  try {
+    const { accessToken, id } = yield select((state) => state.user);
+    yield call(updateUserInfoAPI, id, accessToken, action.payload);
+    yield put(updateUserInfoSuccess());
+  } catch (err) {
+    yield put(updateUserInfoFailure({ msg: err.response.data.msg }));
+    yield put(handleError({ result: err.response.data, task: action }));
+  }
+}
+
+function updateUserPasswordAPI(id, accessToken, data) {
+  return axios.put(`/api/users/${id}`, data, {
+    headers: {
+      Authorization: accessToken,
+    },
+  });
+}
+
+function* updateUserPassword(action) {
+  try {
+    const { accessToken, id } = yield select((state) => state.user);
+    yield call(updateUserPasswordAPI, id, accessToken, action.payload);
+    yield put(updateUserPasswordSuccess());
+  } catch (err) {
+    yield put(updateUserPasswordFailure({ msg: err.response.data.msg }));
+    yield put(handleError({ result: err.response.data, task: action }));
+  }
+}
+
 function* errorHandling(action) {
   const { refreshTokenLoading } = yield select((state) => state.user);
   const { result, task } = action.payload;
@@ -507,6 +551,14 @@ function* watchDeleteUser() {
   yield takeLatest(DELETE_USER_REQUEST, deleteUser);
 }
 
+function* watchUpdateUserInfo() {
+  yield takeLatest(UPDATE_USER_INFO_REQUEST, updateUserInfo);
+}
+
+function* watchUpdateUserPassword() {
+  yield takeLatest(UPDATE_USER_PASSWORD_REQUEST, updateUserPassword);
+}
+
 function* watchHandleError() {
   yield takeEvery(HANDLE_ERROR, errorHandling);
 }
@@ -531,5 +583,7 @@ export default function* userSaga() {
     fork(watchLoadUsers),
     fork(watchHandleError),
     fork(watchDeleteUser),
+    fork(watchUpdateUserInfo),
+    fork(watchUpdateUserPassword),
   ]);
 }
