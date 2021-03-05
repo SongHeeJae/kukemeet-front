@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, memo } from "react";
 import { Button } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import { destroyRoomRequest } from "../reducers/videoroom";
@@ -17,4 +17,4 @@ const DestroyRoomButton = () => {
   );
 };
 
-export default DestroyRoomButton;
+export default memo(DestroyRoomButton);

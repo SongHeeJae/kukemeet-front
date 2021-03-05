@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, memo } from "react";
 import { IconButton, Popover, Typography, Snackbar } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import InfoIcon from "@material-ui/icons/Info";
@@ -76,4 +76,4 @@ const RoomInfoButton = () => {
   );
 };
 
-export default RoomInfoButton;
+export default memo(RoomInfoButton);

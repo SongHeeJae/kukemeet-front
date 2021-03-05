@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useCallback } from "react";
+import React, { useEffect, useRef, useCallback, memo } from "react";
 import { useSelector } from "react-redux";
 import { createGlobalStyle } from "styled-components";
 import styled from "styled-components";

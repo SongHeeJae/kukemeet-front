@@ -1,28 +1,15 @@
-import React, { useEffect, useRef, useCallback } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React, { useEffect, useRef, useCallback, memo } from "react";
+import styled from "styled-components";
 import {
   clearReceivedMessagesState,
   clearSentMessagesState,
   loadReceivedMessagesRequest,
   loadSentMessagesRequest,
-  deleteReceivedMessageRequest,
-  deleteSentMessageRequest,
   clearDeleteReceivedMessageState,
   clearDeleteSentMessageState,
 } from "../reducers/user";
-import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Typography,
-  Button,
-  Divider,
-} from "@material-ui/core";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import styled from "styled-components";
-import moment from "moment";
-
-moment.locale("ko");
+import { useSelector, useDispatch } from "react-redux";
+import MessageList from "./MessageList";
 
 const MessageListWrapper = styled.div`
   height: 400px;
@@ -33,15 +20,14 @@ const MessageListWrapper = styled.div`
 const MessageListTabPanel = ({ type, value, index }) => {
   const dispatch = useDispatch();
   const wrapperRef = useRef();
-  const { messages, hasNext, loadMessagesLoading } = useSelector((state) => {
+
+  const { hasNext, loadMessagesLoading } = useSelector((state) => {
     return type === "received"
       ? {
-          messages: state.user.receivedMessages,
           hasNext: state.user.loadReceivedMessagesHasNext,
           loadMessagesLoading: state.user.loadReceivedMessagesLoading,
         }
       : {
-          messages: state.user.sentMessages,
           hasNext: state.user.loadSentMessagesHasNext,
           loadMessagesLoading: state.user.loadSentMessagesLoading,
         };
@@ -95,38 +81,11 @@ const MessageListTabPanel = ({ type, value, index }) => {
     []
   );
 
-  const onClickDeleteMessage = useCallback((id) => {
-    dispatch(
-      type === "received"
-        ? deleteReceivedMessageRequest({ id })
-        : deleteSentMessageRequest({ id })
-    );
-  }, []);
-
   return (
     <MessageListWrapper ref={wrapperRef}>
-      {messages.map((m) => (
-        <Accordion key={m.id}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography>
-              {m.user.nickname}({m.user.username}) -
-              {moment(m.createdAt).fromNow()}
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Typography>{m.msg}</Typography>
-          </AccordionDetails>
-          <Typography align="center">
-            {moment(m.createdAt).format("YYYY-MM-DD hh:mm:ss")}
-          </Typography>
-          <Divider />
-          <Button color="secondary" onClick={() => onClickDeleteMessage(m.id)}>
-            삭제
-          </Button>
-        </Accordion>
-      ))}
+      <MessageList type={type} />
     </MessageListWrapper>
   );
 };
 
-export default MessageListTabPanel;
+export default memo(MessageListTabPanel);

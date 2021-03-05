@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { memo } from "react";
 import { useSelector } from "react-redux";
 import VideoItem from "./VideoItem";
 import { GridList, GridListTile, GridListTileBar } from "@material-ui/core";
@@ -62,4 +62,4 @@ const VideoList = () => {
   );
 };
 
-export default VideoList;
+export default memo(VideoList);

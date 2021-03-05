@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, memo } from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 
@@ -25,4 +25,4 @@ const MyVideo = () => {
   );
 };
 
-export default MyVideo;
+export default memo(MyVideo);

@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, memo } from "react";
 import { IconButton } from "@material-ui/core";
 import ChatBubbleIcon from "@material-ui/icons/ChatBubble";
 
@@ -14,4 +14,4 @@ const ChattingButton = ({ setOpen }) => {
   );
 };
 
-export default ChattingButton;
+export default memo(ChattingButton);

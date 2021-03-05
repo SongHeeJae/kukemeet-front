@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, memo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Button, ButtonGroup } from "@material-ui/core";
 import {
@@ -74,4 +74,4 @@ const VideoOption = ({ info }) => {
   );
 };
 
-export default VideoOption;
+export default memo(VideoOption);

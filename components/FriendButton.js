@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, memo } from "react";
 import { IconButton } from "@material-ui/core";
 import PeopleIcon from "@material-ui/icons/People";
 const FriendButton = ({ setOpen }) => {
@@ -13,4 +13,4 @@ const FriendButton = ({ setOpen }) => {
   );
 };
 
-export default FriendButton;
+export default memo(FriendButton);

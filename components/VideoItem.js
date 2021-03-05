@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useCallback } from "react";
+import React, { useRef, useEffect, useCallback, memo } from "react";
 import styled from "styled-components";
 import { useDispatch } from "react-redux";
 import { changeMainStreamRequest } from "../reducers/videoroom";
@@ -22,4 +22,7 @@ const VideoItem = ({ stream, display }) => {
   return <VideoWrapper ref={videoRef} autoPlay playsInline onClick={onClick} />;
 };
 
-export default VideoItem;
+export default memo(
+  VideoItem,
+  (prevProps, nextProps) => prevProps.stream === nextProps.stream
+);

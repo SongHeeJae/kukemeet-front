@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useCallback, useState } from "react";
+import React, { useEffect, useRef, useCallback, useState, memo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { TextField, Button } from "@material-ui/core";
 import styled from "styled-components";
@@ -86,4 +86,4 @@ const SendMessageTabPanel = ({ value, index }) => {
   );
 };
 
-export default SendMessageTabPanel;
+export default memo(SendMessageTabPanel);
