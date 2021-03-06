@@ -19,6 +19,7 @@ const Question = () => {
           <meta property="og:title" content="KUKE meet - 문의" />
           <meta name="twitter:title" content="KUKE meet - 문의" />
           <meta name="author" content="쿠케캬캬" />
+          <meta name="description" content={content} />
         </Head>
         <h1>문의</h1>
 

@@ -23,6 +23,7 @@ const About = () => {
           <meta property="og:title" content="KUKE meet - 소개" />
           <meta name="twitter:title" content="KUKE meet - 소개" />
           <meta name="author" content="쿠케캬캬" />
+          <meta name="description" content={content} />
         </Head>
         <h1>KUKE meet</h1>
 

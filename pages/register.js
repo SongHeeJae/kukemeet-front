@@ -7,6 +7,8 @@ import Router from "next/router";
 import wrapper from "../store/configureStore";
 import { stayLoggedIn } from "../auth/auth";
 
+const content = "KUKE meet 회원가입을 해주세요.";
+
 const Register = () => {
   const { id } = useSelector((state) => state.user);
 
@@ -19,10 +21,8 @@ const Register = () => {
       <AppLayout>
         <Head>
           <title>KUKE meet - 회원가입</title>
-          <meta
-            property="og:description"
-            content="KUKE meet 회원가입을 해주세요."
-          />
+          <meta property="og:description" content={content} />
+          <meta name="description" content={content} />
           <meta property="og:title" content="KUKE meet - 회원가입" />
           <meta name="twitter:title" content="KUKE meet - 회원가입" />
         </Head>

@@ -42,26 +42,11 @@ export default class MyDocument extends Document {
             content="a24785a6c2531472d00dee6481f978e5a7071701"
           />
           <meta
-            name="description"
-            content="무료 온라인 화상 회의 웹 서비스 KUKE meet 입니다."
-          />
-          <meta
             property="og:image"
             content="https://kukemeet.com/favicon.ico"
           />
           <link rel="shortcut icon" href="https://kukemeet.com/favicon.ico" />
-          <meta
-            property="og:description"
-            content="무료 온라인 화상 회의 웹 서비스 KUKE meet 입니다."
-          />
-          <meta
-            property="og:title"
-            content="무료 온라인 화상 회의 웹 서비스 KUKE meet"
-          />
-          <meta
-            name="twitter:title"
-            content="무료 온라인 화상 회의 웹 서비스 KUKE meet"
-          />
+
           <meta charSet="utf-8" />
         </Head>
         <body>
