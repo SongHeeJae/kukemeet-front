@@ -19,7 +19,13 @@ const Login = () => {
     <>
       <AppLayout>
         <Head>
-          <title>로그인</title>
+          <title>KUKE meet - 로그인</title>
+          <meta
+            property="og:description"
+            content="KUKE meet 로그인을 해주세요."
+          />
+          <meta property="og:title" content="KUKE meet - 로그인" />
+          <meta name="twitter:title" content="KUKE meet - 로그인" />
         </Head>
         <LoginForm />
       </AppLayout>
