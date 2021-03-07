@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Button, TextField } from "@material-ui/core";
 import Router from "next/router";
 import useInput from "../hooks/useInput";
-import { clearLoginState, loginRequest } from "../reducers/user";
+import { clearLoginState, loginFailure, loginRequest } from "../reducers/user";
 import ErrorCollapse from "./ErrorCollapse";
 
 const LoginFormWrapper = styled.div`
@@ -31,9 +31,28 @@ const LoginForm = () => {
     dispatch(clearLoginState());
   }, []);
 
+  const validatePassword = useCallback(() => {
+    if (
+      password.match(
+        /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/
+      )
+    ) {
+      return true;
+    } else {
+      dispatch(
+        loginFailure({
+          msg:
+            "비밀번호는 최소 8자리이면서 1개 이상의 알파벳, 숫자, 특수문자를 포함해야합니다.",
+        })
+      );
+      return false;
+    }
+  }, [password]);
+
   const onSubmit = useCallback(
     (e) => {
       e.preventDefault();
+      if (!validatePassword()) return;
       dispatch(loginRequest({ uid, password }));
     },
     [uid, password]

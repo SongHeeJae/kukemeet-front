@@ -4,7 +4,11 @@ import { useDispatch, useSelector } from "react-redux";
 import Router from "next/router";
 import useInput from "../hooks/useInput";
 import styled from "styled-components";
-import { registerRequest, clearRegisterState } from "../reducers/user";
+import {
+  registerRequest,
+  clearRegisterState,
+  registerFailure,
+} from "../reducers/user";
 import ErrorCollapse from "./ErrorCollapse";
 
 const RegisterFormWrapper = styled.div`
@@ -31,6 +35,50 @@ const RegisterForm = () => {
     dispatch(clearRegisterState());
   }, [registerDone]);
 
+  const validateUsername = useCallback(() => {
+    if (username.length > 1 && username.match(/^[A-Za-z가-힣]+$/)) {
+      return true;
+    } else {
+      dispatch(
+        registerFailure({
+          msg: "이름은 2글자 이상의 영문 또는 한글로 입력해주세요.",
+        })
+      );
+      return false;
+    }
+  }, [username]);
+
+  const validateNickname = useCallback(() => {
+    if (nickname.length > 1 && nickname.match(/^[A-Za-z가-힣]+$/)) {
+      return true;
+    } else {
+      dispatch(
+        registerFailure({
+          msg: "닉네임은 2글자 이상의 영문 또는 한글로 입력해주세요.",
+        })
+      );
+      return false;
+    }
+  }, [nickname]);
+
+  const validatePassword = useCallback(() => {
+    if (
+      password.match(
+        /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/
+      )
+    ) {
+      return true;
+    } else {
+      dispatch(
+        registerFailure({
+          msg:
+            "비밀번호는 최소 8자리이면서 1개 이상의 알파벳, 숫자, 특수문자를 포함해야합니다.",
+        })
+      );
+      return false;
+    }
+  }, [password]);
+
   const validatePasswordConfirm = useCallback(() => {
     if (passwordConfirm && password !== passwordConfirm) return false;
     else return true;
@@ -43,7 +91,13 @@ const RegisterForm = () => {
   const onSubmit = useCallback(
     (e) => {
       e.preventDefault();
-      if (!validatePasswordConfirm()) return;
+      if (
+        !validatePassword() ||
+        !validatePasswordConfirm() ||
+        !validateUsername() ||
+        !validateNickname()
+      )
+        return;
       dispatch(
         registerRequest({
           uid,
