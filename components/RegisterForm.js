@@ -39,11 +39,6 @@ const RegisterForm = () => {
     if (username.length > 1 && username.match(/^[A-Za-z가-힣]+$/)) {
       return true;
     } else {
-      dispatch(
-        registerFailure({
-          msg: "이름은 2글자 이상의 영문 또는 한글로 입력해주세요.",
-        })
-      );
       return false;
     }
   }, [username]);
@@ -52,11 +47,6 @@ const RegisterForm = () => {
     if (nickname.length > 1 && nickname.match(/^[A-Za-z가-힣]+$/)) {
       return true;
     } else {
-      dispatch(
-        registerFailure({
-          msg: "닉네임은 2글자 이상의 영문 또는 한글로 입력해주세요.",
-        })
-      );
       return false;
     }
   }, [nickname]);
@@ -69,12 +59,6 @@ const RegisterForm = () => {
     ) {
       return true;
     } else {
-      dispatch(
-        registerFailure({
-          msg:
-            "비밀번호는 최소 8자리이면서 1개 이상의 알파벳, 숫자, 특수문자를 포함해야합니다.",
-        })
-      );
       return false;
     }
   }, [password]);
@@ -91,13 +75,32 @@ const RegisterForm = () => {
   const onSubmit = useCallback(
     (e) => {
       e.preventDefault();
-      if (
-        !validatePassword() ||
-        !validatePasswordConfirm() ||
-        !validateUsername() ||
-        !validateNickname()
-      )
-        return;
+      if (!validatePassword())
+        return dispatch(
+          registerFailure({
+            msg:
+              "비밀번호는 최소 8자리이면서 1개 이상의 알파벳, 숫자, 특수문자를 포함해야합니다.",
+          })
+        );
+      if (!validatePasswordConfirm())
+        return dispatch(
+          registerFailure({
+            msg: "비밀번호와 비밀번호 확인을 일치시켜주세요.",
+          })
+        );
+      if (!validateUsername())
+        return dispatch(
+          registerFailure({
+            msg: "이름은 2글자 이상의 영문 또는 한글로 입력해주세요.",
+          })
+        );
+      if (!validateNickname())
+        return dispatch(
+          registerFailure({
+            msg: "닉네임은 2글자 이상의 영문 또는 한글로 입력해주세요.",
+          })
+        );
+
       dispatch(
         registerRequest({
           uid,

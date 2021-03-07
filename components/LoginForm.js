@@ -39,12 +39,6 @@ const LoginForm = () => {
     ) {
       return true;
     } else {
-      dispatch(
-        loginFailure({
-          msg:
-            "비밀번호는 최소 8자리이면서 1개 이상의 알파벳, 숫자, 특수문자를 포함해야합니다.",
-        })
-      );
       return false;
     }
   }, [password]);
@@ -52,7 +46,13 @@ const LoginForm = () => {
   const onSubmit = useCallback(
     (e) => {
       e.preventDefault();
-      if (!validatePassword()) return;
+      if (!validatePassword())
+        return dispatch(
+          loginFailure({
+            msg:
+              "비밀번호는 최소 8자리이면서 1개 이상의 알파벳, 숫자, 특수문자를 포함해야합니다.",
+          })
+        );
       dispatch(loginRequest({ uid, password }));
     },
     [uid, password]
