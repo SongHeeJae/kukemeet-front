@@ -27,6 +27,7 @@ export const initialState = {
   destroyRoomDone: false,
   leaveRoomLoading: false,
   leaveRoomDone: true,
+  useRoomError: "",
   mainStream: { stream: null, display: null },
 };
 
@@ -123,6 +124,9 @@ export const DESTROY_ROOM_FAILURE = "DESTROY_ROOM_FAILURE";
 export const LEAVE_ROOM_REQUEST = "LEAVE_ROOM_REQUEST";
 export const LEAVE_ROOM_SUCCESS = "LEAVE_ROOM_SUCCESS";
 export const LEAVE_ROOM_FAILURE = "LEAVE_ROOM_FAILURE";
+
+export const USE_ROOM_FAILURE = "USE_ROOM_FAILURE";
+export const CLEAR_USE_ROOM_STATE = "CLEAR_USE_ROOM_STATE";
 
 export const connectJanusRequest = () => ({
   type: CONNECT_JANUS_REQUEST,
@@ -402,6 +406,15 @@ export const setAudioVideoState = (payload) => ({
   payload,
 });
 
+export const useRoomFailure = (payload) => ({
+  type: USE_ROOM_FAILURE,
+  payload,
+});
+
+export const clearUseRoomState = () => ({
+  type: CLEAR_USE_ROOM_STATE,
+});
+
 const reducer = (state = initialState, action) =>
   produce(state, (draft) => {
     switch (action.type) {
@@ -592,6 +605,12 @@ const reducer = (state = initialState, action) =>
       case SET_AUDIO_VIDEO_STATE:
         draft.useAudio = action.payload.useAudio;
         draft.useVideo = action.payload.useVideo;
+        break;
+      case USE_ROOM_FAILURE:
+        draft.useRoomError = action.payload.msg;
+        break;
+      case CLEAR_USE_ROOM_STATE:
+        draft.useRoomError = "";
         break;
       default:
         break;

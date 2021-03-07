@@ -3,6 +3,9 @@ import { Button, TextField } from "@material-ui/core";
 import Router from "next/router";
 import styled from "styled-components";
 import useInput from "../hooks/useInput";
+import ErrorCollapse from "./ErrorCollapse";
+import { useSelector, useDispatch } from "react-redux";
+import { clearUseRoomState, useRoomFailure } from "../reducers/videoroom";
 
 const RoomConfigDivWrapper = styled.div`
   text-align: center;
@@ -12,15 +15,24 @@ const RoomConfigDivWrapper = styled.div`
 `;
 
 const RoomConfig = () => {
+  const { id } = useSelector((state) => state.user);
+  const { useRoomError } = useSelector((state) => state.videoroom);
+  const dispatch = useDispatch();
   const [roomNumber, onChangeRoomNumber] = useInput("");
 
+  const NotLoggedInFailure = useCallback(() => {
+    dispatch(useRoomFailure({ msg: "로그인 후 이용할 수 있습니다." }));
+  }, []);
+
   const onClickCreateRoom = useCallback(() => {
+    if (!id) return NotLoggedInFailure();
     Router.push("/video");
   }, []);
 
   const onSubmitJoinRoom = useCallback(
     (e) => {
       e.preventDefault();
+      if (!id) return NotLoggedInFailure();
       Router.push({
         pathname: "/video",
         query: { room: roomNumber },
@@ -29,8 +41,13 @@ const RoomConfig = () => {
     [roomNumber]
   );
 
+  const onClickErrorIconButton = useCallback(() => {
+    dispatch(clearUseRoomState());
+  }, []);
+
   return (
     <RoomConfigDivWrapper>
+      <ErrorCollapse error={useRoomError} onClick={onClickErrorIconButton} />
       <div className="room-config-div">
         <Button onClick={onClickCreateRoom}>방 생성</Button>
       </div>
