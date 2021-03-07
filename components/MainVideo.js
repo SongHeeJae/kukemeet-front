@@ -51,11 +51,13 @@ video::-webkit-media-controls-volume-slider {
 
 const MainVideo = () => {
   const { mainStream } = useSelector((state) => state.videoroom);
+  const { stream } = mainStream;
   const videoRef = useRef();
 
   useEffect(() => {
-    videoRef.current.srcObject = mainStream.stream;
-  }, [mainStream.stream && mainStream.stream.getVideoTracks().length > 0]);
+    videoRef.current.srcObject =
+      stream && stream.getVideoTracks().length > 0 ? stream : null;
+  }, [stream]);
 
   const onClick = useCallback((e) => {
     e.preventDefault();
