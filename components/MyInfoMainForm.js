@@ -54,6 +54,22 @@ const MyInfoMainForm = () => {
     Router.replace("/");
   }, [deleteUserDone]);
 
+  const validateUsername = useCallback(() => {
+    if (uname.length > 1 && uname.match(/^[A-Za-z가-힣]+$/)) {
+      return true;
+    } else {
+      return false;
+    }
+  }, [uname]);
+
+  const validateNickname = useCallback(() => {
+    if (nname.length > 1 && nname.match(/^[A-Za-z가-힣]+$/)) {
+      return true;
+    } else {
+      return false;
+    }
+  }, [nname]);
+
   const onClickIconButton = useCallback(() => {
     dispatch(clearUpdateUserInfoState());
   }, []);
@@ -63,6 +79,18 @@ const MyInfoMainForm = () => {
       if (!uname || !nname)
         return dispatch(
           updateUserInfoFailure({ msg: "회원 정보를 입력해주세요." })
+        );
+      if (!validateUsername())
+        return dispatch(
+          updateUserInfoFailure({
+            msg: "이름은 2글자 이상의 영문 또는 한글로 입력해주세요.",
+          })
+        );
+      if (!validateNickname())
+        return dispatch(
+          updateUserInfoFailure({
+            msg: "닉네임은 2글자 이상의 영문 또는 한글로 입력해주세요.",
+          })
         );
       dispatch(updateUserInfoRequest({ username: uname, nickname: nname }));
     } else {

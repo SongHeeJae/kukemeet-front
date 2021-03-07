@@ -48,14 +48,37 @@ const MyInfoPasswordForm = () => {
     setNextPasswordConfirm("");
   }, [updateUserPasswordDone]);
 
-  const validatePasswordConfirm = useCallback(() => {
+  const validatePassword = useCallback(() => {
+    if (
+      currentPassword.match(
+        /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/
+      ) &&
+      nextPassword.match(
+        /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/
+      )
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  }, [currentPassword, nextPassword]);
+
+  const validateNextPasswordConfirm = useCallback(() => {
     if (nextPasswordConfirm && nextPassword !== nextPasswordConfirm)
       return false;
     else return true;
   }, [nextPassword, nextPasswordConfirm]);
 
   const onClickUpdateUserpassword = useCallback(() => {
-    if (!validatePasswordConfirm())
+    if (!validatePassword())
+      return dispatch(
+        updateUserPasswordFailure({
+          msg:
+            "비밀번호는 최소 8자리이면서 1개 이상의 알파벳, 숫자, 특수문자를 포함해야합니다.",
+        })
+      );
+
+    if (!validateNextPasswordConfirm())
       return dispatch(
         updateUserPasswordFailure({ msg: "비밀번호를 일치시켜주세요." })
       );
@@ -116,7 +139,7 @@ const MyInfoPasswordForm = () => {
         variant="outlined"
         className="my-info-password-field"
         helperText={
-          !validatePasswordConfirm() && "비밀번호가 일치하지않습니다."
+          !validateNextPasswordConfirm() && "비밀번호가 일치하지않습니다."
         }
       />
       <br />
