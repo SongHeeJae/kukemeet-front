@@ -28,6 +28,28 @@ export const initialState = {
   leaveRoomLoading: false,
   leaveRoomDone: true,
   useRoomError: "",
+  sendFileLoading: false,
+  sendFileDone: false,
+  sendFileError: "",
+  receiveFiles: [
+    /*
+      {
+        display: '쿠케캬캬'
+        data: 'data'
+        filename: 'filename'
+        loading: true -> false,
+        transaction : '', 트랜잭션은 완수되면 제거
+      }
+    */
+  ],
+  sendFiles: [
+    /*
+    {
+      data : 'data',
+      filename: 'filename',
+    }
+    */
+  ],
   mainStream: { stream: null, display: null },
 };
 
@@ -124,6 +146,15 @@ export const DESTROY_ROOM_FAILURE = "DESTROY_ROOM_FAILURE";
 export const LEAVE_ROOM_REQUEST = "LEAVE_ROOM_REQUEST";
 export const LEAVE_ROOM_SUCCESS = "LEAVE_ROOM_SUCCESS";
 export const LEAVE_ROOM_FAILURE = "LEAVE_ROOM_FAILURE";
+
+export const SEND_FILE_REQUEST = "SEND_FILE_REQUEST";
+export const SEND_FILE_SUCCESS = "SEND_FILE_SUCCESS";
+export const SEND_FILE_FAILURE = "SEND_FILE_FAILURE";
+export const CLEAR_SEND_FILE_STATE = "CLEAR_SEND_FILE_STATE";
+
+export const RECEIVE_FILE_REQUEST = "RECEIVE_FILE_REQUEST";
+export const RECEIVE_FILE_SUCCESS = "RECEIVE_FILE_SUCCESS";
+export const RECEIVE_FILE_FAILURE = "RECEIVE_FILE_FAILURE";
 
 export const USE_ROOM_FAILURE = "USE_ROOM_FAILURE";
 export const CLEAR_USE_ROOM_STATE = "CLEAR_USE_ROOM_STATE";
@@ -406,6 +437,39 @@ export const setAudioVideoState = (payload) => ({
   payload,
 });
 
+export const sendFileRequest = (payload) => ({
+  type: SEND_FILE_REQUEST,
+  payload,
+});
+
+export const sendFileSuccess = (payload) => ({
+  type: SEND_FILE_SUCCESS,
+  payload,
+});
+
+export const sendFileFailure = (payload) => ({
+  type: SEND_FILE_FAILURE,
+  payload,
+});
+
+export const clearSendFileState = () => ({
+  type: CLEAR_SEND_FILE_STATE,
+});
+
+export const receiveFileRequest = (payload) => ({
+  type: RECEIVE_FILE_REQUEST,
+  payload,
+});
+
+export const receiveFileSuccess = (payload) => ({
+  type: RECEIVE_FILE_SUCCESS,
+  payload,
+});
+
+export const receiveFileFailure = () => ({
+  type: RECEIVE_FILE_FAILURE,
+});
+
 export const useRoomFailure = (payload) => ({
   type: USE_ROOM_FAILURE,
   payload,
@@ -611,6 +675,45 @@ const reducer = (state = initialState, action) =>
         break;
       case CLEAR_USE_ROOM_STATE:
         draft.useRoomError = "";
+        break;
+      case SEND_FILE_REQUEST:
+        draft.sendFileLoading = true;
+        break;
+      case SEND_FILE_SUCCESS:
+        draft.sendFileLoading = false;
+        draft.sendFileDone = true;
+        draft.sendFiles.push({
+          data: action.payload.data,
+          filename: action.payload.filename,
+        });
+        break;
+      case SEND_FILE_FAILURE:
+        draft.sendFileLoading = false;
+        draft.sendFileError = action.payload.msg;
+        break;
+      case CLEAR_SEND_FILE_STATE:
+        draft.sendFileLoading = false;
+        draft.sendFileDone = false;
+        draft.sendFileError = "";
+        break;
+      case RECEIVE_FILE_REQUEST:
+        draft.receiveFiles.push({
+          display: action.payload.display,
+          loading: true,
+          filename: action.payload.filename,
+          data: "",
+          transaction: action.payload.transaction,
+        });
+        break;
+      case RECEIVE_FILE_SUCCESS:
+        const file = draft.receiveFiles.find(
+          (f) => f.transaction === action.payload.transaction
+        );
+        file.loading = false;
+        file.data = action.payload.data;
+        file.transaction = "";
+        break;
+      case RECEIVE_FILE_FAILURE:
         break;
       default:
         break;

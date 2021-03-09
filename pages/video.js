@@ -37,6 +37,8 @@ import UserListButton from "../components/UserListButton";
 import ChattingButton from "../components/ChattingButton";
 import styled from "styled-components";
 import RoomInfoButton from "../components/RoomInfoButton";
+import FileDialog from "../components/FileDialog";
+import FileDialogOpenButton from "../components/FileDialogOpenButton";
 
 const LeftButtonsWrapper = styled.div`
   float: left;
@@ -212,6 +214,7 @@ const Video = () => {
   const [friendDialogOpen, setFriendDialogOpen] = useState(false);
   const [userListDialogOpen, setUserListDialogOpen] = useState(false);
   const [chattingDialogOpen, setChattingDialogOpen] = useState(false);
+  const [fileDialogOpen, setFileDialogOpen] = useState(false);
 
   useEffect(() => {
     if (!id) return Router.push("/");
@@ -290,12 +293,18 @@ const Video = () => {
         open={chattingDialogOpen}
         setOpen={setChattingDialogOpen}
       />
+      <FileDialog
+        info={info}
+        open={fileDialogOpen}
+        setOpen={setFileDialogOpen}
+      />
       <MessageDialog open={messageDialogOpen} setOpen={setMessageDialogOpen} />
       <FriendDialog open={friendDialogOpen} setOpen={setFriendDialogOpen} />
       <LeftButtonsWrapper>
         <RoomInfoButton />
         <UserListButton setOpen={setUserListDialogOpen} />
         <ChattingButton setOpen={setChattingDialogOpen} />
+        <FileDialogOpenButton setOpen={setFileDialogOpen} />
       </LeftButtonsWrapper>
       <RightButtonsWrapper>
         <MessageButton setOpen={setMessageDialogOpen} />
