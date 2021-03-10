@@ -1,17 +1,17 @@
-import React from "react";
+import React, { memo } from "react";
 import { useSelector } from "react-redux";
+import { List } from "@material-ui/core";
+import ReceiveFileListItem from "./ReceiveFileListItem";
 
 const ReceiveFileList = () => {
   const { receiveFiles } = useSelector((state) => state.videoroom);
   return (
-    <div>
-      {receiveFiles.map((f, i) => (
-        <a href={f.data} key={i} download={f.filename}>
-          {f.filename}
-        </a>
+    <List>
+      {receiveFiles.map((f) => (
+        <ReceiveFileListItem key={f.transaction} file={f} />
       ))}
-    </div>
+    </List>
   );
 };
 
-export default ReceiveFileList;
+export default memo(ReceiveFileList);

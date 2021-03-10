@@ -4,14 +4,23 @@ import AttachFileIcon from "@material-ui/icons/AttachFile";
 import SendIcon from "@material-ui/icons/Send";
 import { sendFileRequest } from "../reducers/videoroom";
 import { useSelector, useDispatch } from "react-redux";
+import { generateRandomString } from "../utils/utils";
 
 const FileTransferForm = ({ info }) => {
   const dispatch = useDispatch();
   const [selectedFile, setSelectedFile] = useState(null);
+  const { nickname } = useSelector((state) => state.user);
+  const { room } = useSelector((state) => state.videoroom);
 
   const onClickFileTransfer = useCallback(() => {
     if (!selectedFile) return;
-    dispatch(sendFileRequest({ info: info.current, file: selectedFile }));
+    dispatch(
+      sendFileRequest({
+        info: info.current,
+        file: selectedFile,
+        transaction: `${room}${nickname}${generateRandomString(12)}`,
+      })
+    );
   }, [selectedFile]);
 
   const onChangeFile = useCallback((e) => {

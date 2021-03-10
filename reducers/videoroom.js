@@ -28,9 +28,6 @@ export const initialState = {
   leaveRoomLoading: false,
   leaveRoomDone: true,
   useRoomError: "",
-  sendFileLoading: false,
-  sendFileDone: false,
-  sendFileError: "",
   receiveFiles: [
     /*
       {
@@ -38,7 +35,8 @@ export const initialState = {
         data: 'data'
         filename: 'filename'
         loading: true -> false,
-        transaction : '', 트랜잭션은 완수되면 제거
+        done: false -> true,
+        transaction : '',
       }
     */
   ],
@@ -47,6 +45,9 @@ export const initialState = {
     {
       data : 'data',
       filename: 'filename',
+      loading: false,
+      done : false -> true
+      transaction: ''
     }
     */
   ],
@@ -150,7 +151,6 @@ export const LEAVE_ROOM_FAILURE = "LEAVE_ROOM_FAILURE";
 export const SEND_FILE_REQUEST = "SEND_FILE_REQUEST";
 export const SEND_FILE_SUCCESS = "SEND_FILE_SUCCESS";
 export const SEND_FILE_FAILURE = "SEND_FILE_FAILURE";
-export const CLEAR_SEND_FILE_STATE = "CLEAR_SEND_FILE_STATE";
 
 export const RECEIVE_FILE_REQUEST = "RECEIVE_FILE_REQUEST";
 export const RECEIVE_FILE_SUCCESS = "RECEIVE_FILE_SUCCESS";
@@ -452,10 +452,6 @@ export const sendFileFailure = (payload) => ({
   payload,
 });
 
-export const clearSendFileState = () => ({
-  type: CLEAR_SEND_FILE_STATE,
-});
-
 export const receiveFileRequest = (payload) => ({
   type: RECEIVE_FILE_REQUEST,
   payload,
@@ -677,25 +673,30 @@ const reducer = (state = initialState, action) =>
         draft.useRoomError = "";
         break;
       case SEND_FILE_REQUEST:
-        draft.sendFileLoading = true;
-        break;
-      case SEND_FILE_SUCCESS:
-        draft.sendFileLoading = false;
-        draft.sendFileDone = true;
         draft.sendFiles.push({
-          data: action.payload.data,
-          filename: action.payload.filename,
+          loading: true,
+          filename: action.payload.file.name,
+          data: "",
+          transaction: action.payload.transaction,
+          done: false,
         });
         break;
-      case SEND_FILE_FAILURE:
-        draft.sendFileLoading = false;
-        draft.sendFileError = action.payload.msg;
+      case SEND_FILE_SUCCESS: {
+        const sendFile = draft.sendFiles.find(
+          (f) => f.transaction === action.payload.transaction
+        );
+        sendFile.loading = false;
+        sendFile.data = action.payload.data;
+        sendFile.done = true;
         break;
-      case CLEAR_SEND_FILE_STATE:
-        draft.sendFileLoading = false;
-        draft.sendFileDone = false;
-        draft.sendFileError = "";
+      }
+      case SEND_FILE_FAILURE: {
+        const sendFile = draft.sendFiles.find(
+          (f) => f.transaction === action.payload.transaction
+        );
+        sendFile.loading = false;
         break;
+      }
       case RECEIVE_FILE_REQUEST:
         draft.receiveFiles.push({
           display: action.payload.display,
@@ -703,18 +704,25 @@ const reducer = (state = initialState, action) =>
           filename: action.payload.filename,
           data: "",
           transaction: action.payload.transaction,
+          done: false,
         });
         break;
-      case RECEIVE_FILE_SUCCESS:
-        const file = draft.receiveFiles.find(
+      case RECEIVE_FILE_SUCCESS: {
+        const receiveFile = draft.receiveFiles.find(
           (f) => f.transaction === action.payload.transaction
         );
-        file.loading = false;
-        file.data = action.payload.data;
-        file.transaction = "";
+        receiveFile.loading = false;
+        receiveFile.data = action.payload.data;
+        receiveFile.done = true;
         break;
-      case RECEIVE_FILE_FAILURE:
+      }
+      case RECEIVE_FILE_FAILURE: {
+        const receiveFile = draft.receiveFiles.find(
+          (f) => f.transaction === action.payload.transaction
+        );
+        receiveFile.loading = false;
         break;
+      }
       default:
         break;
     }

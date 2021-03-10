@@ -592,29 +592,17 @@ function connectFileStomp(transaction) {
   return new Promise((resolve, reject) => {
     const stompClient = Stomp.over(() => new SockJS(fileWebSocketUrl));
     // stompClient.webSocketFactory = () => new SockJS(fileWebSocketUrl);
-    stompClient.configure({
-      maxWebSocketChunkSize: 50 * 1024 * 1024,
-    });
     stompClient.reconnectDelay = 0; // 재연결 안함
     stompClient.maxWebSocketChunkSize = 50 * 1024 * 1024;
-    stompClient.splitLargeFrames = true;
-    stompClient.heartbeatIncoming = 0;
-    stompClient.heartbeatOutgoing = 0;
     stompClient.onConnect = (frame) => {
       resolve(stompClient);
     };
-    stompClient.debug = (str) => console.log("디버깅", str, new Date());
-    stompClient.onStompError = (error) => {
-      console.log("에러발생", error);
-    };
-    stompClient.onWebSocketError = (error) => {
-      console.log("소켓에러발생", error);
-    };
+    // stompClient.debug = (str) => console.log(str, new Date());
     stompClient.activate();
   });
 }
 
-async function setUpForSendingFile(info, file, room, nickname, transaction) {
+async function setUpForSendingFile(info, file, nickname, transaction) {
   const { pluginHandle } = info;
 
   const message = {
@@ -633,52 +621,50 @@ async function setUpForSendingFile(info, file, room, nickname, transaction) {
   });
 }
 
-function sendFileAPI(file, transaction) {
-  const chunkLength = 8 * 1024;
-  const onReadAsDataURL = async (event) => {
-    let text = event.target.result;
-    const stompClient = await connectFileStomp(transaction);
-    while (text.length > 0) {
-      const fileChunk = {};
-      if (text.length > chunkLength) {
-        fileChunk.data = text.slice(0, chunkLength); // getting chunk using predefined chunk length
-      } else {
-        fileChunk.data = text;
-        fileChunk.last = true;
+async function sendFileAPI(file, transaction) {
+  return await new Promise((resolve, reject) => {
+    const chunkLength = 8 * 1024;
+    const onReadAsDataURL = async (event) => {
+      let text = event.target.result;
+      const stompClient = await connectFileStomp(transaction);
+      while (text.length > 0) {
+        const fileChunk = {};
+        if (text.length > chunkLength) {
+          fileChunk.data = text.slice(0, chunkLength); // getting chunk using predefined chunk length
+        } else {
+          fileChunk.data = text;
+          fileChunk.last = true;
+        }
+
+        stompClient.publish({
+          destination: `/pub/${transaction}`,
+          body: JSON.stringify(fileChunk),
+          skipContentLengthHeader: true,
+        });
+
+        text = text.slice(fileChunk.data.length);
       }
+      stompClient.forceDisconnect();
+      resolve({ data: text, transaction });
+    };
 
-      // await sleep(2000);
-      console.log("전송중", stompClient);
-      stompClient.publish({
-        destination: `/pub/${transaction}`,
-        body: JSON.stringify(fileChunk),
-        skipContentLengthHeader: true,
-      });
-
-      text = text.slice(fileChunk.data.length);
-    }
-    console.log("전송끝남");
-  };
-
-  const fileReader = new FileReader();
-  fileReader.readAsDataURL(file);
-  fileReader.addEventListener("load", onReadAsDataURL);
+    const fileReader = new FileReader();
+    fileReader.readAsDataURL(file);
+    fileReader.addEventListener("load", onReadAsDataURL);
+  });
 }
 
 function* sendFile(action) {
   try {
-    const { info, file } = action.payload;
+    const { info, file, transaction } = action.payload;
     const { nickname } = yield select((state) => state.user);
-    const { room } = yield select((state) => state.videoroom);
-    const transaction = `${room}${nickname}${generateRandomString(12)}`;
-    yield call(setUpForSendingFile, info, file, room, nickname, transaction);
+    yield call(setUpForSendingFile, info, file, nickname, transaction);
     yield delay(3000);
-    yield sendFileAPI(file, transaction);
-    // console.log("전송끝남");
-    // yield put(sendFileSuccess({ data: "", filename: "" }));
+    const result = yield sendFileAPI(file, transaction);
+    yield put(sendFileSuccess(result));
   } catch (err) {
     console.log(err);
-    yield put(sendFileFailure({ msg: "파일 전송에 실패하였습니다." }));
+    yield put(sendFileFailure({ transaction }));
   }
 }
 
@@ -686,10 +672,12 @@ async function receiveFileAPI(transaction) {
   let dataArray = [];
   const stompClient = await connectFileStomp(transaction);
   return await new Promise((resolve, reject) => {
-    stompClient.subscribe(`/sub/${transaction}`, (msg) => {
+    const subscription = stompClient.subscribe(`/sub/${transaction}`, (msg) => {
       const { data, last } = JSON.parse(msg.body);
       dataArray.push(data);
       if (last === true) {
+        subscription.unsubscribe();
+        stompClient.forceDisconnect();
         resolve(dataArray.join(""));
       }
     });
