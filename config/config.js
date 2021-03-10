@@ -8,5 +8,5 @@ export const backServerUrl =
     : "http://localhost:8080/";
 export const fileWebSocketUrl =
   process.env.NODE_ENV === "production"
-    ? "https://api.kukemeet.com/file/file-stomp"
+    ? "https://api.kukemeet.com/file-stomp"
     : "http://localhost:8090/file-stomp";
