@@ -9,8 +9,6 @@ import { generateRandomString } from "../utils/utils";
 const FileTransferForm = ({ info }) => {
   const dispatch = useDispatch();
   const [selectedFile, setSelectedFile] = useState(null);
-  const { nickname } = useSelector((state) => state.user);
-  const { room } = useSelector((state) => state.videoroom);
 
   const onClickFileTransfer = useCallback(() => {
     if (!selectedFile) return;
@@ -18,7 +16,7 @@ const FileTransferForm = ({ info }) => {
       sendFileRequest({
         info: info.current,
         file: selectedFile,
-        transaction: `${room}${nickname}${generateRandomString(12)}`,
+        transaction: generateRandomString(12),
       })
     );
   }, [selectedFile]);

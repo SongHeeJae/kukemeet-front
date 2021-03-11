@@ -32,18 +32,15 @@ export const initialState = {
     /*
       {
         display: '쿠케캬캬'
-        data: 'data'
+        dataUrl: 'dataUrl'
         filename: 'filename'
-        loading: true -> false,
-        done: false -> true,
-        transaction : '',
       }
     */
   ],
   sendFiles: [
     /*
     {
-      data : 'data',
+      dataUrl : 'dataUrl',
       filename: 'filename',
       loading: false,
       done : false -> true
@@ -152,9 +149,7 @@ export const SEND_FILE_REQUEST = "SEND_FILE_REQUEST";
 export const SEND_FILE_SUCCESS = "SEND_FILE_SUCCESS";
 export const SEND_FILE_FAILURE = "SEND_FILE_FAILURE";
 
-export const RECEIVE_FILE_REQUEST = "RECEIVE_FILE_REQUEST";
-export const RECEIVE_FILE_SUCCESS = "RECEIVE_FILE_SUCCESS";
-export const RECEIVE_FILE_FAILURE = "RECEIVE_FILE_FAILURE";
+export const ADD_RECEIVE_FILE = "ADD_RECEIVE_FILE";
 
 export const USE_ROOM_FAILURE = "USE_ROOM_FAILURE";
 export const CLEAR_USE_ROOM_STATE = "CLEAR_USE_ROOM_STATE";
@@ -452,18 +447,9 @@ export const sendFileFailure = (payload) => ({
   payload,
 });
 
-export const receiveFileRequest = (payload) => ({
-  type: RECEIVE_FILE_REQUEST,
+export const addReceiveFile = (payload) => ({
+  type: ADD_RECEIVE_FILE,
   payload,
-});
-
-export const receiveFileSuccess = (payload) => ({
-  type: RECEIVE_FILE_SUCCESS,
-  payload,
-});
-
-export const receiveFileFailure = () => ({
-  type: RECEIVE_FILE_FAILURE,
 });
 
 export const useRoomFailure = (payload) => ({
@@ -676,7 +662,7 @@ const reducer = (state = initialState, action) =>
         draft.sendFiles.push({
           loading: true,
           filename: action.payload.file.name,
-          data: "",
+          dataUrl: "",
           transaction: action.payload.transaction,
           done: false,
         });
@@ -686,7 +672,7 @@ const reducer = (state = initialState, action) =>
           (f) => f.transaction === action.payload.transaction
         );
         sendFile.loading = false;
-        sendFile.data = action.payload.data;
+        sendFile.dataUrl = action.payload.dataUrl;
         sendFile.done = true;
         break;
       }
@@ -697,32 +683,13 @@ const reducer = (state = initialState, action) =>
         sendFile.loading = false;
         break;
       }
-      case RECEIVE_FILE_REQUEST:
+      case ADD_RECEIVE_FILE:
         draft.receiveFiles.push({
           display: action.payload.display,
-          loading: true,
           filename: action.payload.filename,
-          data: "",
-          transaction: action.payload.transaction,
-          done: false,
+          dataUrl: action.payload.dataUrl,
         });
         break;
-      case RECEIVE_FILE_SUCCESS: {
-        const receiveFile = draft.receiveFiles.find(
-          (f) => f.transaction === action.payload.transaction
-        );
-        receiveFile.loading = false;
-        receiveFile.data = action.payload.data;
-        receiveFile.done = true;
-        break;
-      }
-      case RECEIVE_FILE_FAILURE: {
-        const receiveFile = draft.receiveFiles.find(
-          (f) => f.transaction === action.payload.transaction
-        );
-        receiveFile.loading = false;
-        break;
-      }
       default:
         break;
     }

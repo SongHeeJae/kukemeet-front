@@ -10,7 +10,7 @@ import SaveIcon from "@material-ui/icons/Save";
 import BlockIcon from "@material-ui/icons/Block";
 
 const SendFileItem = ({ file }) => {
-  const { loading, done, data, filename } = file;
+  const { loading, done, dataUrl, filename } = file;
   return (
     <ListItem variant="contained" color="primary">
       <ListItemText primary={filename} />
@@ -18,7 +18,12 @@ const SendFileItem = ({ file }) => {
         {loading ? (
           <CircularProgress />
         ) : done ? (
-          <IconButton component="a" href={data} download={filename}>
+          <IconButton
+            component="a"
+            href={dataUrl}
+            download={filename}
+            target="_blank"
+          >
             <SaveIcon />
           </IconButton>
         ) : (

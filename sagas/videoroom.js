@@ -69,22 +69,15 @@ import {
   leaveRoomSuccess,
   leaveRoomFailure,
   LEAVE_ROOM_REQUEST,
-  publishOwnFeedRequest,
   addRemoteFeedStream,
   sendFileSuccess,
   sendFileFailure,
   SEND_FILE_REQUEST,
-  receiveFileRequest,
-  RECEIVE_FILE_REQUEST,
-  receiveFileSuccess,
-  receiveFileFailure,
+  addReceiveFile,
 } from "../reducers/videoroom";
 import { handleError } from "../reducers/user";
 import axios from "axios";
-import { generateRandomString, sleep } from "../utils/utils";
-import { fileWebSocketUrl } from "../config/config";
-import SockJS from "sockjs-client";
-import { Stomp } from "@stomp/stompjs";
+import { generateRandomString } from "../utils/utils";
 
 function joinRoomAPI({ info, room, nickname, pin }) {
   const { pluginHandle } = info;
@@ -242,12 +235,12 @@ async function subscribeRemoteFeedAPI(
               text: json["text"],
             })
           );
-        } else if (what === "ready_file") {
+        } else if (what === "receive_file") {
           dispatch(
-            receiveFileRequest({
+            addReceiveFile({
               display: json["display"],
               filename: json["filename"],
-              transaction: json["transaction"],
+              dataUrl: json["dataUrl"],
             })
           );
         }
@@ -588,27 +581,92 @@ function* leaveRoom(action) {
   }
 }
 
-function connectFileStomp() {
-  return new Promise((resolve, reject) => {
-    const stompClient = Stomp.over(() => new SockJS(fileWebSocketUrl));
-    stompClient.reconnectDelay = 0; // 재연결 안함
-    stompClient.maxWebSocketChunkSize = 50 * 1024 * 1024;
-    stompClient.onConnect = (frame) => {
-      resolve(stompClient);
-    };
-    stompClient.debug = (str) => {}; // 디버깅 메세지 출력 X
-    stompClient.activate();
+// function connectFileStomp() {
+//   return new Promise((resolve, reject) => {
+//     const stompClient = Stomp.over(() => new SockJS(fileWebSocketUrl));
+//     stompClient.reconnectDelay = 0; // 재연결 안함
+//     stompClient.maxWebSocketChunkSize = 50 * 1024 * 1024;
+//     stompClient.onConnect = (frame) => {
+//       resolve(stompClient);
+//     };
+//     stompClient.debug = (str) => {}; // 디버깅 메세지 출력 X
+//     stompClient.activate();
+//   });
+// }
+
+// async function setUpForSendingFile(info, file, nickname, transaction) {
+//   const { pluginHandle } = info;
+
+//   const message = {
+//     textroom: "ready_file",
+//     transaction,
+//     display: nickname,
+//     filename: file.name,
+//   };
+//   return await new Promise((resolve) => {
+//     pluginHandle.data({
+//       text: JSON.stringify(message),
+//       success: () => {
+//         resolve();
+//       },
+//     });
+//   });
+// }
+
+// async function sendFileAPI(file, transaction) {
+//   return await new Promise((resolve, reject) => {
+//     const chunkLength = 8 * 1024;
+//     const onReadAsDataURL = async (event) => {
+//       let text = event.target.result;
+//       const stompClient = await connectFileStomp(transaction);
+//       while (text.length > 0) {
+//         const fileChunk = {};
+//         if (text.length > chunkLength) {
+//           fileChunk.data = text.slice(0, chunkLength); // getting chunk using predefined chunk length
+//         } else {
+//           fileChunk.data = text;
+//           fileChunk.last = true;
+//         }
+
+//         stompClient.publish({
+//           destination: `/pub/${transaction}`,
+//           body: JSON.stringify(fileChunk),
+//           skipContentLengthHeader: true,
+//         });
+
+//         text = text.slice(fileChunk.data.length);
+//       }
+//       stompClient.forceDisconnect();
+//       resolve({ data: text, transaction });
+//     };
+
+//     const fileReader = new FileReader();
+//     fileReader.readAsDataURL(file);
+//     fileReader.addEventListener("load", onReadAsDataURL);
+//   });
+// }
+
+function uploadFileAPI(file, accessToken, room, transaction) {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("transaction", transaction);
+  formData.append("room", room);
+  return axios.post("/api/files", formData, {
+    headers: {
+      Authorization: accessToken,
+      "Content-Type": "multipart/form-data",
+    },
   });
 }
 
-async function setUpForSendingFile(info, file, nickname, transaction) {
+async function letOtherPeersKnowUploadFile(info, nickname, dataUrl, filename) {
   const { pluginHandle } = info;
 
   const message = {
-    textroom: "ready_file",
-    transaction,
+    textroom: "receive_file",
+    dataUrl,
     display: nickname,
-    filename: file.name,
+    filename,
   };
   return await new Promise((resolve) => {
     pluginHandle.data({
@@ -620,77 +678,19 @@ async function setUpForSendingFile(info, file, nickname, transaction) {
   });
 }
 
-async function sendFileAPI(file, transaction) {
-  return await new Promise((resolve, reject) => {
-    const chunkLength = 8 * 1024;
-    const onReadAsDataURL = async (event) => {
-      let text = event.target.result;
-      const stompClient = await connectFileStomp(transaction);
-      while (text.length > 0) {
-        const fileChunk = {};
-        if (text.length > chunkLength) {
-          fileChunk.data = text.slice(0, chunkLength); // getting chunk using predefined chunk length
-        } else {
-          fileChunk.data = text;
-          fileChunk.last = true;
-        }
-
-        stompClient.publish({
-          destination: `/pub/${transaction}`,
-          body: JSON.stringify(fileChunk),
-          skipContentLengthHeader: true,
-        });
-
-        text = text.slice(fileChunk.data.length);
-      }
-      stompClient.forceDisconnect();
-      resolve({ data: text, transaction });
-    };
-
-    const fileReader = new FileReader();
-    fileReader.readAsDataURL(file);
-    fileReader.addEventListener("load", onReadAsDataURL);
-  });
-}
-
 function* sendFile(action) {
   try {
     const { info, file, transaction } = action.payload;
-    const { nickname } = yield select((state) => state.user);
-    yield call(setUpForSendingFile, info, file, nickname, transaction);
-    yield delay(3000);
-    const result = yield sendFileAPI(file, transaction);
-    yield put(sendFileSuccess(result));
+    const { room } = yield select((state) => state.videoroom);
+    const { nickname, accessToken } = yield select((state) => state.user);
+    const result = yield uploadFileAPI(file, accessToken, room, transaction);
+    const { dataUrl } = result.data.data;
+    yield letOtherPeersKnowUploadFile(info, nickname, dataUrl, file.name);
+    yield put(sendFileSuccess({ transaction, dataUrl }));
   } catch (err) {
     console.log(err);
-    yield put(sendFileFailure({ transaction }));
-  }
-}
-
-async function receiveFileAPI(transaction) {
-  let receiveData = "";
-  const stompClient = await connectFileStomp(transaction);
-  return await new Promise((resolve, reject) => {
-    const subscription = stompClient.subscribe(`/sub/${transaction}`, (msg) => {
-      const { data, last } = JSON.parse(msg.body);
-      receiveData += data;
-      if (last === true) {
-        subscription.unsubscribe();
-        stompClient.forceDisconnect();
-        resolve(receiveData);
-      }
-    });
-  });
-}
-
-function* receiveFile(action) {
-  try {
-    const { transaction } = action.payload;
-    const data = yield call(receiveFileAPI, transaction);
-    yield put(receiveFileSuccess({ transaction, data })); // transaction으로 찾아서 저장
-  } catch (err) {
-    console.log(err);
-    yield put(receiveFileFailure());
+    yield put(sendFileFailure({ msg: err.response.data.msg }));
+    yield put(handleError({ result: err.response.data, task: action }));
   }
 }
 
@@ -770,10 +770,6 @@ function* watchSendFile() {
   yield takeEvery(SEND_FILE_REQUEST, sendFile);
 }
 
-function* watchReceiveFile() {
-  yield takeEvery(RECEIVE_FILE_REQUEST, receiveFile);
-}
-
 export default function* videoroomSaga() {
   yield all([
     fork(watchJoinRoom),
@@ -795,6 +791,5 @@ export default function* videoroomSaga() {
     fork(watchDestroyRoom),
     fork(watchLeaveRoom),
     fork(watchSendFile),
-    fork(watchReceiveFile),
   ]);
 }

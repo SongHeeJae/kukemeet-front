@@ -8,7 +8,7 @@ const ReceiveFileList = () => {
   return (
     <List>
       {receiveFiles.map((f) => (
-        <ReceiveFileListItem key={f.transaction} file={f} />
+        <ReceiveFileListItem key={f.dataUrl} file={f} />
       ))}
     </List>
   );

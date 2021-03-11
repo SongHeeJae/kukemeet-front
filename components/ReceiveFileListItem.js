@@ -1,32 +1,36 @@
-import React, { memo } from "react";
+import React, { memo, useCallback } from "react";
 import {
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
   IconButton,
   CircularProgress,
-  Typography,
 } from "@material-ui/core";
 import SaveIcon from "@material-ui/icons/Save";
-import BlockIcon from "@material-ui/icons/Block";
+import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
 
 const ReceiveFileItem = ({ file }) => {
-  const { loading, done, data, filename, display } = file;
+  const { dataUrl, filename, display } = file;
+
+  const onClickDeleteFile = useCallback(() => {
+    console.log("삭제함", filename);
+  }, []);
+
   return (
     <ListItem variant="contained" color="primary">
       <ListItemText primary={`${display}-${filename}`} />
       <ListItemSecondaryAction>
-        {loading ? (
-          <CircularProgress />
-        ) : done ? (
-          <IconButton component="a" href={data} download={filename}>
-            <SaveIcon />
-          </IconButton>
-        ) : (
-          <IconButton>
-            <BlockIcon />
-          </IconButton>
-        )}
+        <IconButton
+          component="a"
+          href={dataUrl}
+          download={filename}
+          target="_blank"
+        >
+          <SaveIcon />
+        </IconButton>
+        {/* <IconButton onClick={() => onClickDeleteFile()}>
+          <RemoveCircleOutlineIcon />
+        </IconButton> */}
       </ListItemSecondaryAction>
     </ListItem>
   );
