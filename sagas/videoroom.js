@@ -588,16 +588,15 @@ function* leaveRoom(action) {
   }
 }
 
-function connectFileStomp(transaction) {
+function connectFileStomp() {
   return new Promise((resolve, reject) => {
     const stompClient = Stomp.over(() => new SockJS(fileWebSocketUrl));
-    // stompClient.webSocketFactory = () => new SockJS(fileWebSocketUrl);
     stompClient.reconnectDelay = 0; // 재연결 안함
     stompClient.maxWebSocketChunkSize = 50 * 1024 * 1024;
     stompClient.onConnect = (frame) => {
       resolve(stompClient);
     };
-    // stompClient.debug = (str) => console.log(str, new Date());
+    stompClient.debug = (str) => {}; // 디버깅 메세지 출력 X
     stompClient.activate();
   });
 }
@@ -669,16 +668,16 @@ function* sendFile(action) {
 }
 
 async function receiveFileAPI(transaction) {
-  let dataArray = [];
+  let receiveData = "";
   const stompClient = await connectFileStomp(transaction);
   return await new Promise((resolve, reject) => {
     const subscription = stompClient.subscribe(`/sub/${transaction}`, (msg) => {
       const { data, last } = JSON.parse(msg.body);
-      dataArray.push(data);
+      receiveData += data;
       if (last === true) {
         subscription.unsubscribe();
         stompClient.forceDisconnect();
-        resolve(dataArray.join(""));
+        resolve(receiveData);
       }
     });
   });
