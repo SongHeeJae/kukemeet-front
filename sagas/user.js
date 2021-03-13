@@ -450,8 +450,8 @@ function* updateUserInfo(action) {
   }
 }
 
-function updateUserPasswordAPI(id, accessToken, data) {
-  return axios.put(`/api/users/${id}`, data, {
+function updateUserPasswordAPI(accessToken, data) {
+  return axios.put(`/api/sign/change-password`, data, {
     headers: {
       Authorization: accessToken,
     },
@@ -460,8 +460,8 @@ function updateUserPasswordAPI(id, accessToken, data) {
 
 function* updateUserPassword(action) {
   try {
-    const { accessToken, id } = yield select((state) => state.user);
-    yield call(updateUserPasswordAPI, id, accessToken, action.payload);
+    const { accessToken } = yield select((state) => state.user);
+    yield call(updateUserPasswordAPI, accessToken, action.payload);
     yield put(updateUserPasswordSuccess());
   } catch (err) {
     yield put(updateUserPasswordFailure({ msg: err.response.data.msg }));

@@ -455,6 +455,7 @@ function* activeScreenSharing(action) {
 
 function inactiveScreenSharingAPI({ info, dispatch }, useAudio, useVideo) {
   const { pluginHandle } = info;
+
   pluginHandle.createOffer({
     media: {
       video: useVideo,
@@ -462,7 +463,6 @@ function inactiveScreenSharingAPI({ info, dispatch }, useAudio, useVideo) {
       replaceVideo: useVideo,
     },
     success: function (jsep) {
-      dispatch(inactiveVideoRequest(info));
       pluginHandle.send({
         message: {
           request: "configure",
@@ -471,6 +471,7 @@ function inactiveScreenSharingAPI({ info, dispatch }, useAudio, useVideo) {
         },
         jsep: jsep,
       });
+      pluginHandle.muteVideo();
       dispatch(inactiveScreenSharingSuccess());
     },
     error: function (error) {
@@ -689,7 +690,12 @@ function* sendFile(action) {
     yield put(sendFileSuccess({ transaction, dataUrl }));
   } catch (err) {
     console.log(err);
-    yield put(sendFileFailure({ msg: err.response.data.msg }));
+    yield put(
+      sendFileFailure({
+        msg: err.response.data.msg,
+        transaction: action.payload.transaction,
+      })
+    );
     yield put(handleError({ result: err.response.data, task: action }));
   }
 }
