@@ -61,6 +61,11 @@ export const initialState = {
   updateUserPasswordLoading: false,
   updateuserPasswordDone: false,
   updateUserPasswordError: "",
+  sendCodeEmailLoading: false,
+  sendCodeEmailError: "",
+  changeForgottenPasswordLoading: false,
+  changeForgottenPasswordError: "",
+  changeForgottenPasswordDone: false,
 };
 
 export const REGISTER_REQUEST = "REGISTER_REQUEST";
@@ -159,6 +164,20 @@ export const UPDATE_USER_PASSWORD_SUCCESS = "UPDATE_USER_PASSWORD_SUCCESS";
 export const UPDATE_USER_PASSWORD_FAILURE = "UPDATE_USER_PASSWORD_FAILURE";
 export const CLEAR_UPDATE_USER_PASSWORD_STATE =
   "CLEAR_UPDATE_USER_PASSWORD_STATE";
+
+export const SEND_CODE_EMAIL_REQUEST = "SEND_CODE_EMAIL_REQUEST";
+export const SEND_CODE_EMAIL_SUCCESS = "SEND_CODE_EMAIL_SUCCESS";
+export const SEND_CODE_EMAIL_FAILURE = "SEND_CODE_EMAIL_FAILURE";
+export const CLEAR_SEND_CODE_EMAIL_STATE = "CLEAR_SEND_CODE_EMAIL_STATE";
+
+export const CHANGE_FORGOTTEN_PASSWORD_REQUEST =
+  "CHANGE_FORGOTTEN_PASSWORD_REQUEST";
+export const CHANGE_FORGOTTEN_PASSWORD_SUCCESS =
+  "CHANGE_FORGOTTEN_PASSWORD_SUCCESS";
+export const CHANGE_FORGOTTEN_PASSWORD_FAILURE =
+  "CHANGE_FORGOTTEN_PASSWORD_FAILURE";
+export const CLEAR_CHANGE_FORGOTTEN_PASSWORD_STATE =
+  "CLEAR_CHANGE_FORGOTTEN_PASSWORD_STATE";
 
 export const HANDLE_ERROR = "HANDLE_ERROR";
 
@@ -485,6 +504,42 @@ export const clearUpdateUserPasswordState = () => ({
   type: CLEAR_UPDATE_USER_PASSWORD_STATE,
 });
 
+export const sendCodeEmailRequest = (payload) => ({
+  type: SEND_CODE_EMAIL_REQUEST,
+  payload,
+});
+
+export const sendCodeEmailSuccess = () => ({
+  type: SEND_CODE_EMAIL_SUCCESS,
+});
+
+export const sendCodeEmailFailure = (payload) => ({
+  type: SEND_CODE_EMAIL_FAILURE,
+  payload,
+});
+
+export const clearSendCodeEmailState = () => ({
+  type: CLEAR_SEND_CODE_EMAIL_STATE,
+});
+
+export const changeForgottenPasswordRequest = (payload) => ({
+  type: CHANGE_FORGOTTEN_PASSWORD_REQUEST,
+  payload,
+});
+
+export const changeForgottenPasswordSuccess = () => ({
+  type: CHANGE_FORGOTTEN_PASSWORD_SUCCESS,
+});
+
+export const changeForgottenPasswordFailure = (payload) => ({
+  type: CHANGE_FORGOTTEN_PASSWORD_FAILURE,
+  payload,
+});
+
+export const clearChangeForgottenPasswordState = () => ({
+  type: CLEAR_CHANGE_FORGOTTEN_PASSWORD_STATE,
+});
+
 const reducer = (state = initialState, action) =>
   produce(state, (draft) => {
     switch (action.type) {
@@ -799,6 +854,36 @@ const reducer = (state = initialState, action) =>
         draft.updateUserPasswordLoading = false;
         draft.updateUserPasswordDone = false;
         draft.updateUserPasswordError = "";
+        break;
+      case SEND_CODE_EMAIL_REQUEST:
+        draft.sendCodeEmailLoading = true;
+        break;
+      case SEND_CODE_EMAIL_SUCCESS:
+        draft.sendCodeEmailLoading = false;
+        break;
+      case SEND_CODE_EMAIL_FAILURE:
+        draft.sendCodeEmailLoading = false;
+        draft.sendCodeEmailError = action.payload.msg;
+        break;
+      case CLEAR_SEND_CODE_EMAIL_STATE:
+        draft.sendCodeEmailLoading = false;
+        draft.sendCodeEmailError = "";
+        break;
+      case CHANGE_FORGOTTEN_PASSWORD_REQUEST:
+        draft.changeForgottenPasswordLoading = true;
+        break;
+      case CHANGE_FORGOTTEN_PASSWORD_SUCCESS:
+        draft.changeForgottenPasswordLoading = false;
+        draft.changeForgottenPasswordDone = true;
+        break;
+      case CHANGE_FORGOTTEN_PASSWORD_FAILURE:
+        draft.changeForgottenPasswordLoading = false;
+        draft.changeForgottenPasswordError = action.payload.msg;
+        break;
+      case CLEAR_CHANGE_FORGOTTEN_PASSWORD_STATE:
+        draft.changeForgottenPasswordLoading = false;
+        draft.changeForgottenPasswordError = "";
+        draft.changeForgottenPasswordDone = false;
         break;
       default:
         break;

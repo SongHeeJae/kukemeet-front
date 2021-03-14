@@ -70,6 +70,12 @@ import {
   UPDATE_USER_PASSWORD_REQUEST,
   updateUserPasswordSuccess,
   updateUserPasswordFailure,
+  sendCodeEmailFailure,
+  sendCodeEmailSuccess,
+  SEND_CODE_EMAIL_REQUEST,
+  CHANGE_FORGOTTEN_PASSWORD_REQUEST,
+  changeForgottenPasswordSuccess,
+  changeForgottenPasswordFailure,
 } from "../reducers/user";
 
 function registerAPI(data) {
@@ -469,6 +475,32 @@ function* updateUserPassword(action) {
   }
 }
 
+function sendCodeEmailAPI(data) {
+  return axios.post(`/api/sign/send-code-email-for-forgotten-password`, data);
+}
+
+function* sendCodeEmail(action) {
+  try {
+    yield call(sendCodeEmailAPI, action.payload);
+    yield put(sendCodeEmailSuccess());
+  } catch (err) {
+    yield put(sendCodeEmailFailure({ msg: err.response.data.msg }));
+  }
+}
+
+function changeForgottenPasswordAPI(data) {
+  return axios.put(`/api/sign/change-forgotten-password`, data);
+}
+
+function* changeForgottenPassword(action) {
+  try {
+    yield call(changeForgottenPasswordAPI, action.payload);
+    yield put(changeForgottenPasswordSuccess());
+  } catch (err) {
+    yield put(changeForgottenPasswordFailure({ msg: err.response.data.msg }));
+  }
+}
+
 function* errorHandling(action) {
   const { refreshTokenLoading } = yield select((state) => state.user);
   const { result, task } = action.payload;
@@ -559,6 +591,14 @@ function* watchUpdateUserPassword() {
   yield takeLatest(UPDATE_USER_PASSWORD_REQUEST, updateUserPassword);
 }
 
+function* watchSendCodeEmail() {
+  yield takeLatest(SEND_CODE_EMAIL_REQUEST, sendCodeEmail);
+}
+
+function* watchChangeForgottenPassword() {
+  yield takeLatest(CHANGE_FORGOTTEN_PASSWORD_REQUEST, changeForgottenPassword);
+}
+
 function* watchHandleError() {
   yield takeEvery(HANDLE_ERROR, errorHandling);
 }
@@ -585,5 +625,7 @@ export default function* userSaga() {
     fork(watchDeleteUser),
     fork(watchUpdateUserInfo),
     fork(watchUpdateUserPassword),
+    fork(watchSendCodeEmail),
+    fork(watchChangeForgottenPassword),
   ]);
 }
