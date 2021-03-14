@@ -1,8 +1,8 @@
 import React, { useCallback } from "react";
 import styled from "styled-components";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import useInput from "../hooks/useInput";
-import { Button, TextField } from "@material-ui/core";
+import { Button, TextField, CircularProgress } from "@material-ui/core";
 import Router from "next/router";
 import AppLayout from "./AppLayout";
 import { createRoomRequest } from "../reducers/videoroom";
@@ -16,6 +16,7 @@ const CreateRoomFormWrapper = styled.div`
 
 const CreateRoomForm = ({ info }) => {
   const dispatch = useDispatch();
+  const { createRoomLoading } = useSelector((state) => state.videoroom);
   const [title, onChangeTitle] = useInput("");
   const [pin, onChangePin] = useInput("");
 
@@ -57,7 +58,12 @@ const CreateRoomForm = ({ info }) => {
           />
           <br />
 
-          <Button type="submit">방 생성</Button>
+          {createRoomLoading ? (
+            <CircularProgress />
+          ) : (
+            <Button type="submit">방 생성</Button>
+          )}
+          <br />
           <Button onClick={onClickCancel}>취소</Button>
         </form>
       </CreateRoomFormWrapper>

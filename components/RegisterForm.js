@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from "react";
-import { Button, TextField } from "@material-ui/core";
+import { Button, TextField, CircularProgress } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import Router from "next/router";
 import useInput from "../hooks/useInput";
@@ -170,7 +170,11 @@ const RegisterForm = () => {
           className="register-text-field"
         />
         <br />
-        <Button type="submit">회원가입</Button>
+        {registerLoading ? (
+          <CircularProgress />
+        ) : (
+          <Button type="submit">회원가입</Button>
+        )}
       </form>
     </RegisterFormWrapper>
   );

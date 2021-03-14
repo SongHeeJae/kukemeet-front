@@ -39,6 +39,15 @@ import styled from "styled-components";
 import RoomInfoButton from "../components/RoomInfoButton";
 import FileDialog from "../components/FileDialog";
 import FileDialogOpenButton from "../components/FileDialogOpenButton";
+import { CircularProgress } from "@material-ui/core";
+
+const CircularProgressWrapper = styled.div`
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+`;
 
 const LeftButtonsWrapper = styled.div`
   float: left;
@@ -241,13 +250,13 @@ const Video = () => {
     };
   }, []);
 
-  if (!connectJanusDone) {
-    // janus 연결중
-    return <div>연결중입니다..</div>;
-  }
-
-  if (joinRoomLoading) {
-    return <div>입장 대기중..</div>;
+  if (!connectJanusDone || joinRoomLoading) {
+    // janus 연결중, 입장 대기중
+    return (
+      <CircularProgressWrapper>
+        <CircularProgress size="10rem" />;
+      </CircularProgressWrapper>
+    );
   }
 
   if (!router.query.room) {

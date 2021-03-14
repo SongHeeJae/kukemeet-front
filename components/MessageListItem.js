@@ -44,7 +44,11 @@ const MessageListItem = ({ type, item }) => {
           {moment(item.createdAt).format("YYYY-MM-DD hh:mm:ss")}
         </Typography>
         <Divider />
-        <Button color="secondary" onClick={() => onClickDeleteMessage(item.id)}>
+        <Button
+          color="secondary"
+          onClick={() => onClickDeleteMessage(item.id)}
+          fullWidth
+        >
           삭제
         </Button>
       </Accordion>

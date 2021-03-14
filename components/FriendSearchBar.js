@@ -6,6 +6,7 @@ import {
   InputBase,
   Paper,
   Menu,
+  CircularProgress,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import MenuIcon from "@material-ui/icons/Menu";
@@ -91,9 +92,13 @@ const FriendSearchBar = () => {
           value={searchText}
           onChange={onChangeSearchText}
         />
-        <IconButton className={classes.iconButton} type="submit">
-          <SearchIcon />
-        </IconButton>
+        {loadUsersLoading ? (
+          <CircularProgress />
+        ) : (
+          <IconButton className={classes.iconButton} type="submit">
+            <SearchIcon />
+          </IconButton>
+        )}
       </Paper>
     </>
   );

@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, memo } from "react";
 import styled from "styled-components";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   loadMyFriendsRequest,
   clearMyFriendsState,
   clearDeleteFriendState,
 } from "../reducers/user";
 import FriendList from "./FriendList";
+import { CircularProgress } from "@material-ui/core";
 
 const FriendListWrapper = styled.div`
   height: 400px;
@@ -17,6 +18,7 @@ const FriendListWrapper = styled.div`
 const FriendListTabPanel = ({ value, index, setUserInfoDialogOpen }) => {
   const wrapperRef = useRef();
   const dispatch = useDispatch();
+  const { loadMyFriendsLoading } = useSelector((state) => state.user);
 
   useEffect(() => {
     dispatch(loadMyFriendsRequest());
@@ -32,7 +34,11 @@ const FriendListTabPanel = ({ value, index, setUserInfoDialogOpen }) => {
 
   return (
     <FriendListWrapper ref={wrapperRef}>
-      <FriendList setOpen={setUserInfoDialogOpen} />
+      {loadMyFriendsLoading ? (
+        <CircularProgress />
+      ) : (
+        <FriendList setOpen={setUserInfoDialogOpen} />
+      )}
     </FriendListWrapper>
   );
 };

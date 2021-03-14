@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useCallback, useState, memo } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { TextField, Button } from "@material-ui/core";
+import { TextField, Button, CircularProgress } from "@material-ui/core";
 import styled from "styled-components";
-import { Autocomplete, AutoComplete } from "@material-ui/lab";
+import { Autocomplete } from "@material-ui/lab";
 import {
   clearMyFriendsState,
   clearSendMessageState,
@@ -23,7 +23,7 @@ const SendMessageWrapper = styled.div`
 const SendMessageTabPanel = ({ value, index }) => {
   const dispatch = useDispatch();
   const wrapperRef = useRef();
-  const { myFriends } = useSelector((state) => state.user);
+  const { myFriends, sendMessageLoading } = useSelector((state) => state.user);
   const [message, onChangeMessage, setMessage] = useInput("");
   const [receiver, setReceiver] = useState(null);
 
@@ -79,9 +79,13 @@ const SendMessageTabPanel = ({ value, index }) => {
         onChange={onChangeMessage}
         variant="outlined"
       />
-      <Button fullWidth={true} onClick={onClickSendMessage}>
-        전송
-      </Button>
+      {sendMessageLoading ? (
+        <CircularProgress />
+      ) : (
+        <Button fullWidth={true} onClick={onClickSendMessage}>
+          전송
+        </Button>
+      )}
     </SendMessageWrapper>
   );
 };
