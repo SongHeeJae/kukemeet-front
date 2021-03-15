@@ -22,6 +22,8 @@ echo "kukemeet-${START_CONTAINER} up"
 
 sudo docker-compose -p kukemeet-${START_CONTAINER} -f docker-compose.${START_CONTAINER}.yml up -d --build
 
+sleep 5
+
 echo "next start!"
 echo "change nginx server port"
 
