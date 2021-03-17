@@ -7,6 +7,7 @@ import Link from "next/link";
 import useInput from "../hooks/useInput";
 import { clearLoginState, loginFailure, loginRequest } from "../reducers/user";
 import ErrorCollapse from "./ErrorCollapse";
+import KakaoLoginButton from "./KakaoLoginButton";
 
 const LoginFormWrapper = styled.div`
   text-align: center;
@@ -88,7 +89,8 @@ const LoginForm = () => {
         ) : (
           <Button type="submit">로그인</Button>
         )}
-
+        <br />
+        <KakaoLoginButton />
         <br />
         <Link href="/forgot-password">
           <Button>비밀번호를 잃어버렸어요</Button>

@@ -106,17 +106,22 @@ const MyInfoMainForm = () => {
     <MyInfoMainFormWrapper>
       <ErrorCollapse error={updateUserInfoError} onClick={onClickIconButton} />
       <h1>내 정보</h1>
-      <TextField
-        required
-        label="이메일"
-        InputProps={{
-          readOnly: true,
-        }}
-        value={uid}
-        variant="outlined"
-        className="my-info-main-field"
-      />
-      <br />
+      {uid[0] !== "{" && (
+        <>
+          <TextField
+            required
+            label="이메일"
+            InputProps={{
+              readOnly: true,
+            }}
+            value={uid}
+            variant="outlined"
+            className="my-info-main-field"
+          />
+          <br />
+        </>
+      )}
+
       <TextField
         required
         label="이름"

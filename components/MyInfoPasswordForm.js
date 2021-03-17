@@ -20,7 +20,7 @@ const MyInfoMainFormWrapper = styled.div`
 
 const MyInfoPasswordForm = () => {
   const dispatch = useDispatch();
-  const { updateUserPasswordDone, updateUserPasswordError } = useSelector(
+  const { updateUserPasswordDone, updateUserPasswordError, uid } = useSelector(
     (state) => state.user
   );
   const [
@@ -97,6 +97,8 @@ const MyInfoPasswordForm = () => {
   const onClickIconButton = useCallback(() => {
     dispatch(clearUpdateUserPasswordState());
   }, []);
+
+  if (uid[0] == "{") return <></>;
 
   return (
     <MyInfoMainFormWrapper>

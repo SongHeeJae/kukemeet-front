@@ -1,4 +1,5 @@
 User-agent: *
 Disallow: /video*/
 Disallow: /profile/
+Disallow: /register-provider/
 Allow: /

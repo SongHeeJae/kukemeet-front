@@ -179,6 +179,14 @@ export const CHANGE_FORGOTTEN_PASSWORD_FAILURE =
 export const CLEAR_CHANGE_FORGOTTEN_PASSWORD_STATE =
   "CLEAR_CHANGE_FORGOTTEN_PASSWORD_STATE";
 
+export const LOGIN_BY_PROVIDER_REQUEST = "LOGIN_BY_PROVIDER_REQUEST";
+export const LOGIN_BY_PROVIDER_SUCCESS = "LOGIN_BY_PROVIDER_SUCCESS";
+export const LOGIN_BY_PROVIDER_FAILURE = "LOGIN_BY_PROVIDER_FAILURE";
+
+export const REGISTER_BY_PROVIDER_REQUEST = "REGISTER_BY_PROVIDER_REQUEST";
+export const REGISTER_BY_PROVIDER_SUCCESS = "REGISTER_BY_PROVIDER_SUCCESS";
+export const REGISTER_BY_PROVIDER_FAILURE = "REGISTER_BY_PROVIDER_FAILURE";
+
 export const HANDLE_ERROR = "HANDLE_ERROR";
 
 export const registerRequest = (payload) => ({
@@ -540,6 +548,36 @@ export const clearChangeForgottenPasswordState = () => ({
   type: CLEAR_CHANGE_FORGOTTEN_PASSWORD_STATE,
 });
 
+export const loginByProviderRequest = (payload) => ({
+  type: LOGIN_BY_PROVIDER_REQUEST,
+  payload,
+});
+
+export const loginByProviderSuccess = (payload) => ({
+  type: LOGIN_BY_PROVIDER_SUCCESS,
+  payload,
+});
+
+export const loginByProviderFailure = (payload) => ({
+  type: LOGIN_BY_PROVIDER_FAILURE,
+  payload,
+});
+
+export const registerByProviderRequest = (payload) => ({
+  type: REGISTER_BY_PROVIDER_REQUEST,
+  payload,
+});
+
+export const registerByProviderSuccess = (payload) => ({
+  type: REGISTER_BY_PROVIDER_SUCCESS,
+  payload,
+});
+
+export const registerByProviderFailure = (payload) => ({
+  type: REGISTER_BY_PROVIDER_FAILURE,
+  payload,
+});
+
 const reducer = (state = initialState, action) =>
   produce(state, (draft) => {
     switch (action.type) {
@@ -884,6 +922,44 @@ const reducer = (state = initialState, action) =>
         draft.changeForgottenPasswordLoading = false;
         draft.changeForgottenPasswordError = "";
         draft.changeForgottenPasswordDone = false;
+        break;
+      case LOGIN_BY_PROVIDER_REQUEST:
+        draft.loginLoading = true;
+        break;
+      case LOGIN_BY_PROVIDER_SUCCESS:
+        draft.loginLoading = false;
+        draft.loginDone = true;
+        draft.id = action.payload.info.id;
+        draft.uid = action.payload.info.uid;
+        draft.username = action.payload.info.username;
+        draft.nickname = action.payload.info.nickname;
+        draft.createdAt = action.payload.info.createdAt;
+        draft.modifiedAt = action.payload.info.modifiedAt;
+        draft.accessToken = action.payload.accessToken;
+        draft.refreshToken = action.payload.refreshToken;
+        break;
+      case LOGIN_BY_PROVIDER_FAILURE:
+        draft.loginLoading = false;
+        draft.loginError = action.payload.msg;
+        break;
+      case REGISTER_BY_PROVIDER_REQUEST:
+        draft.registerLoading = true;
+        break;
+      case REGISTER_BY_PROVIDER_SUCCESS:
+        draft.registerLoading = false;
+        draft.registerDone = true;
+        draft.id = action.payload.info.id;
+        draft.uid = action.payload.info.uid;
+        draft.username = action.payload.info.username;
+        draft.nickname = action.payload.info.nickname;
+        draft.createdAt = action.payload.info.createdAt;
+        draft.modifiedAt = action.payload.info.modifiedAt;
+        draft.accessToken = action.payload.accessToken;
+        draft.refreshToken = action.payload.refreshToken;
+        break;
+      case REGISTER_BY_PROVIDER_FAILURE:
+        draft.registerLoading = false;
+        draft.registerError = action.payload.msg;
         break;
       default:
         break;

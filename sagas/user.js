@@ -76,6 +76,12 @@ import {
   CHANGE_FORGOTTEN_PASSWORD_REQUEST,
   changeForgottenPasswordSuccess,
   changeForgottenPasswordFailure,
+  LOGIN_BY_PROVIDER_REQUEST,
+  REGISTER_BY_PROVIDER_REQUEST,
+  loginByProviderSuccess,
+  loginByProviderFailure,
+  registerByProviderSuccess,
+  registerByProviderFailure,
 } from "../reducers/user";
 
 function registerAPI(data) {
@@ -501,6 +507,34 @@ function* changeForgottenPassword(action) {
   }
 }
 
+function loginByProviderAPI(data) {
+  return axios.post(`/api/sign/login-by-provider`, data);
+}
+
+function* loginByProvider(action) {
+  try {
+    const result = yield call(loginByProviderAPI, action.payload);
+    const { accessToken, refreshToken, info } = result.data.data;
+    yield put(loginByProviderSuccess({ accessToken, refreshToken, info }));
+  } catch (err) {
+    yield put(loginByProviderFailure({ msg: err.response.data.code }));
+  }
+}
+
+function registerByProviderAPI(data) {
+  return axios.post(`/api/sign/register-by-provider`, data);
+}
+
+function* registerByProvider(action) {
+  try {
+    const result = yield call(registerByProviderAPI, action.payload);
+    const { accessToken, refreshToken, info } = result.data.data;
+    yield put(registerByProviderSuccess({ accessToken, refreshToken, info }));
+  } catch (err) {
+    yield put(registerByProviderFailure({ msg: err.response.data.msg }));
+  }
+}
+
 function* errorHandling(action) {
   const { refreshTokenLoading } = yield select((state) => state.user);
   const { result, task } = action.payload;
@@ -599,6 +633,14 @@ function* watchChangeForgottenPassword() {
   yield takeLatest(CHANGE_FORGOTTEN_PASSWORD_REQUEST, changeForgottenPassword);
 }
 
+function* watchLoginByProvider() {
+  yield takeLatest(LOGIN_BY_PROVIDER_REQUEST, loginByProvider);
+}
+
+function* watchRegisterByProvider() {
+  yield takeLatest(REGISTER_BY_PROVIDER_REQUEST, registerByProvider);
+}
+
 function* watchHandleError() {
   yield takeEvery(HANDLE_ERROR, errorHandling);
 }
@@ -627,5 +669,7 @@ export default function* userSaga() {
     fork(watchUpdateUserPassword),
     fork(watchSendCodeEmail),
     fork(watchChangeForgottenPassword),
+    fork(watchLoginByProvider),
+    fork(watchRegisterByProvider),
   ]);
 }
