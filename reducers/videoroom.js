@@ -13,6 +13,7 @@ export const initialState = {
   activeSpeakerDetection: false,
   activeScreenSharing: false,
   chatData: [],
+  newChatData: false,
   connectJanusLoading: false,
   connectJanusDone: false,
   joinRoomLoading: false,
@@ -83,6 +84,7 @@ export const SEND_CHAT_SUCCESS = "SEND_CHAT_SUCCESS";
 export const SEND_CHAT_FAILURE = "SEND_CHAT_FAILURE";
 
 export const RECEIVE_CHAT_MESSAGE = "RECEIVE_CHAT_MESSAGE";
+export const CLEAR_NEW_CHAT_DATA_STATE = "CLEAR_NEW_CHAT_DATA_STATE";
 
 export const ACTIVE_AUDIO_REQUEST = "ACTIVE_AUDIO_REQUEST";
 export const ACTIVE_AUDIO_SUCCESS = "ACTIVE_AUDIO_SUCCESS";
@@ -263,6 +265,10 @@ export const sendChatFailure = () => ({
 export const receiveChatMessage = (payload) => ({
   type: RECEIVE_CHAT_MESSAGE,
   payload,
+});
+
+export const clearNewChatDataState = () => ({
+  type: CLEAR_NEW_CHAT_DATA_STATE,
 });
 
 export const activeAudioRequest = (payload) => ({
@@ -543,10 +549,15 @@ const reducer = (state = initialState, action) =>
       case SEND_CHAT_FAILURE:
         break;
       case RECEIVE_CHAT_MESSAGE:
+        draft.newChatData = true;
         draft.chatData.push({
           display: action.payload.display,
           text: action.payload.text,
         });
+        break;
+      case CLEAR_NEW_CHAT_DATA_STATE:
+        draft.newChatData = false;
+        break;
       case ACTIVE_AUDIO_REQUEST:
         break;
       case ACTIVE_AUDIO_SUCCESS:

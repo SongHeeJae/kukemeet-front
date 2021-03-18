@@ -13,7 +13,7 @@ import {
 } from "@material-ui/core";
 import useInput from "../hooks/useInput";
 import { useSelector, useDispatch } from "react-redux";
-import { sendChatRequest } from "../reducers/videoroom";
+import { clearNewChatDataState, sendChatRequest } from "../reducers/videoroom";
 import SendIcon from "@material-ui/icons/Send";
 import { makeStyles } from "@material-ui/core/styles";
 import CloseIcon from "@material-ui/icons/Close";
@@ -78,6 +78,7 @@ const ChattingDialog = ({ info, open, setOpen }) => {
   );
 
   const onClose = useCallback(() => {
+    dispatch(clearNewChatDataState());
     setOpen(false);
   }, []);
 
