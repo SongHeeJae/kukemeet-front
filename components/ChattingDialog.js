@@ -1,9 +1,8 @@
-import React, { useCallback, forwardRef } from "react";
+import React, { useCallback, forwardRef, useRef } from "react";
 import styled from "styled-components";
 import {
   InputBase,
   Dialog,
-  DialogTitle,
   Paper,
   IconButton,
   AppBar,
@@ -55,11 +54,13 @@ const ChatDivWrapper = styled.div`
 const ChattingDialog = ({ info, open, setOpen }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const inputBaseRef = useRef();
   const [text, onChangeText, setText] = useInput("");
   const { openDataChannelDone, chatData } = useSelector(
     (state) => state.videoroom
   );
   const { username, nickname } = useSelector((state) => state.user);
+
   const onSubmit = useCallback(
     (e) => {
       e.preventDefault();
@@ -117,6 +118,7 @@ const ChattingDialog = ({ info, open, setOpen }) => {
           className={classes.input}
           placeholder="텍스트를 입력해주세요"
           value={text}
+          autoFocus
           onChange={onChangeText}
           disabled={!openDataChannelDone}
         />
