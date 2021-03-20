@@ -27,15 +27,7 @@ const MyVideo = () => {
     <div>로딩중..</div>;
   }
   return (
-    <>
-      <VideoWrapper
-        ref={videoRef}
-        autoPlay
-        playsInline
-        muted
-        onClick={onClick}
-      />
-    </>
+    <VideoWrapper ref={videoRef} autoPlay playsInline muted onClick={onClick} />
   );
 };
 
