@@ -17,7 +17,4 @@ const ChattingButton = ({ setOpen }) => {
   );
 };
 
-export default memo(
-  ChattingButton,
-  (prevProps, nextProps) => prevProps.open === nextProps.open
-);
+export default memo(ChattingButton);

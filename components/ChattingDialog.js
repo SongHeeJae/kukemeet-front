@@ -1,4 +1,4 @@
-import React, { useCallback, forwardRef, useRef } from "react";
+import React, { useCallback, forwardRef, useRef, useEffect } from "react";
 import styled from "styled-components";
 import {
   InputBase,
@@ -16,6 +16,7 @@ import { clearNewChatDataState, sendChatRequest } from "../reducers/videoroom";
 import SendIcon from "@material-ui/icons/Send";
 import { makeStyles } from "@material-ui/core/styles";
 import CloseIcon from "@material-ui/icons/Close";
+import ChattingText from "./ChattingText";
 
 const Transition = forwardRef((props, ref) => {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -45,20 +46,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ChatDivWrapper = styled.div`
-  height: 100%;
-  width: 100%;
-  overflow: auto;
-`;
-
 const ChattingDialog = ({ info, open, setOpen }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const inputBaseRef = useRef();
+
   const [text, onChangeText, setText] = useInput("");
-  const { openDataChannelDone, chatData } = useSelector(
-    (state) => state.videoroom
-  );
+  const { openDataChannelDone } = useSelector((state) => state.videoroom);
   const { username, nickname } = useSelector((state) => state.user);
 
   const onSubmit = useCallback(
@@ -105,13 +98,7 @@ const ChattingDialog = ({ info, open, setOpen }) => {
           </Typography>
         </Toolbar>
       </AppBar>
-      <ChatDivWrapper>
-        {chatData.map((v, i) => (
-          <Typography key={i}>
-            {v.display} : {v.text}
-          </Typography>
-        ))}
-      </ChatDivWrapper>
+      <ChattingText />
 
       <Paper component="form" className={classes.root} onSubmit={onSubmit}>
         <InputBase
