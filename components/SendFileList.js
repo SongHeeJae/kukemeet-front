@@ -7,7 +7,7 @@ const SendFileList = () => {
   return (
     <List>
       {sendFiles.map((f) => (
-        <SendFileListItem key={f.dataUrl} file={f} />
+        <SendFileListItem key={f.transaction} file={f} />
       ))}
     </List>
   );

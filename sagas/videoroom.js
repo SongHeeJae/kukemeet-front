@@ -80,6 +80,7 @@ import {
 } from "../reducers/videoroom";
 import { handleError } from "../reducers/user";
 import axios from "axios";
+import { generateRandomString } from "../utils/utils";
 
 function getRoomServerAPI({ room }) {
   return axios.get(`/api/rooms/db/${room}`);
@@ -712,7 +713,19 @@ function* sendFile(action) {
         transaction: action.payload.transaction,
       })
     );
-    yield put(handleError({ result: err.response.data, task: action }));
+
+    yield put(
+      handleError({
+        result: err.response.data,
+        task: {
+          ...action,
+          payload: {
+            ...action.payload,
+            transaction: generateRandomString(12),
+          },
+        },
+      })
+    );
   }
 }
 
