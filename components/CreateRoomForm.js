@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import useInput from "../hooks/useInput";
@@ -14,18 +14,17 @@ const CreateRoomFormWrapper = styled.div`
   }
 `;
 
-const CreateRoomForm = ({ info }) => {
+const CreateRoomForm = () => {
   const dispatch = useDispatch();
-  const { createRoomLoading } = useSelector((state) => state.videoroom);
+  const { createRoomLoading, room } = useSelector((state) => state.videoroom);
   const [title, onChangeTitle] = useInput("");
-  const [pin, onChangePin] = useInput("");
 
   const onSubmit = useCallback(
     (e) => {
       e.preventDefault();
-      dispatch(createRoomRequest({ info: info.current, title, pin }));
+      dispatch(createRoomRequest({ title }));
     },
-    [info, title, pin]
+    [title]
   );
 
   const onClickCancel = useCallback(() => {
@@ -43,16 +42,6 @@ const CreateRoomForm = ({ info }) => {
             label="방 제목"
             value={title}
             onChange={onChangeTitle}
-            variant="outlined"
-            className="create-room-text-field"
-          />
-          <br />
-          <TextField
-            type="password"
-            required
-            label="방 비밀번호"
-            value={pin}
-            onChange={onChangePin}
             variant="outlined"
             className="create-room-text-field"
           />

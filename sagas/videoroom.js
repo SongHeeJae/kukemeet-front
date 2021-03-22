@@ -74,10 +74,26 @@ import {
   sendFileFailure,
   SEND_FILE_REQUEST,
   addReceiveFile,
+  getRoomServerSuccess,
+  getRoomServerFailure,
+  GET_ROOM_SERVER_REQUEST,
 } from "../reducers/videoroom";
 import { handleError } from "../reducers/user";
 import axios from "axios";
-import { generateRandomString } from "../utils/utils";
+
+function getRoomServerAPI({ room }) {
+  return axios.get(`/api/rooms/db/${room}`);
+}
+
+function* getRoomServer(action) {
+  try {
+    const result = yield call(getRoomServerAPI, action.payload);
+    const { server } = result.data.data;
+    yield put(getRoomServerSuccess({ server }));
+  } catch (err) {
+    yield put(getRoomServerFailure({ msg: err.response.data.msg }));
+  }
+}
 
 function joinRoomAPI({ info, room, nickname, pin }) {
   const { pluginHandle } = info;
@@ -489,10 +505,10 @@ function* inactiveScreenSharing(action) {
   }
 }
 
-async function createRoomAPI(title, pin, accessToken) {
+async function createRoomAPI(title, accessToken) {
   return axios.post(
     "/api/rooms",
-    { title, pin },
+    { title },
     {
       headers: {
         Authorization: accessToken,
@@ -503,16 +519,16 @@ async function createRoomAPI(title, pin, accessToken) {
 
 function* createRoom(action) {
   try {
-    const { accessToken, nickname } = yield select((state) => state.user);
-    const { info, title, pin } = action.payload;
-    const result = yield call(createRoomAPI, title, pin, accessToken);
-    yield put(createRoomSuccess());
+    const { accessToken } = yield select((state) => state.user);
+    const { title } = action.payload;
+    const result = yield call(createRoomAPI, title, accessToken);
+    const { pin, number, server } = result.data.data;
     yield put(
-      joinRoomRequest({
-        info: info,
-        room: result.data.data.room,
-        nickname,
-        pin: action.payload.pin,
+      createRoomSuccess({
+        pin,
+        number,
+        server,
+        title,
       })
     );
   } catch (err) {
@@ -700,6 +716,10 @@ function* sendFile(action) {
   }
 }
 
+function* watchGetRoomServer() {
+  yield takeLatest(GET_ROOM_SERVER_REQUEST, getRoomServer);
+}
+
 function* watchJoinRoom() {
   yield takeLatest(JOIN_ROOM_REQUEST, joinRoom);
 }
@@ -778,6 +798,7 @@ function* watchSendFile() {
 
 export default function* videoroomSaga() {
   yield all([
+    fork(watchGetRoomServer),
     fork(watchJoinRoom),
     fork(watchPublishOwnFeed),
     fork(watchSubscribeRemoteFeed),

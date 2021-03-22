@@ -4,6 +4,7 @@ export const initialState = {
   room: "",
   title: "",
   pin: "",
+  server: "",
   useAudio: null,
   useVideo: null,
   myFeed: {},
@@ -14,6 +15,8 @@ export const initialState = {
   activeScreenSharing: false,
   chatData: [],
   newChatData: false,
+  getRoomServerLoading: false, // 지금 방이 생성된 서버 도메인 요청
+  getRoomServerError: "",
   connectJanusLoading: false,
   connectJanusDone: false,
   joinRoomLoading: false,
@@ -51,6 +54,10 @@ export const initialState = {
   ],
   mainStream: { stream: null, display: null },
 };
+
+export const GET_ROOM_SERVER_REQUEST = "GET_ROOM_SERVER_REQUEST";
+export const GET_ROOM_SERVER_SUCCESS = "GET_ROOM_SERVER_SUCCESS";
+export const GET_ROOM_SERVER_FAILURE = "GET_ROOM_SERVER_FAILURE";
 
 export const CONNECT_JANUS_REQUEST = "CONNECT_JANUS_REQUEST";
 export const CONNECT_JANUS_SUCCESS = "CONNECT_JANUS_SUCCESS";
@@ -155,6 +162,21 @@ export const ADD_RECEIVE_FILE = "ADD_RECEIVE_FILE";
 
 export const USE_ROOM_FAILURE = "USE_ROOM_FAILURE";
 export const CLEAR_USE_ROOM_STATE = "CLEAR_USE_ROOM_STATE";
+
+export const getRoomServerRequest = (payload) => ({
+  type: GET_ROOM_SERVER_REQUEST,
+  payload,
+});
+
+export const getRoomServerSuccess = (payload) => ({
+  type: GET_ROOM_SERVER_SUCCESS,
+  payload,
+});
+
+export const getRoomServerFailure = (payload) => ({
+  type: GET_ROOM_SERVER_FAILURE,
+  payload,
+});
 
 export const connectJanusRequest = () => ({
   type: CONNECT_JANUS_REQUEST,
@@ -470,6 +492,17 @@ export const clearUseRoomState = () => ({
 const reducer = (state = initialState, action) =>
   produce(state, (draft) => {
     switch (action.type) {
+      case GET_ROOM_SERVER_REQUEST:
+        draft.getRoomServerLoading = true;
+        break;
+      case GET_ROOM_SERVER_SUCCESS:
+        draft.getRoomServerLoading = false;
+        draft.server = action.payload.server;
+        break;
+      case GET_ROOM_SERVER_FAILURE:
+        draft.getRoomServerLoading = false;
+        draft.getRoomServerError = action.payload.msg;
+        break;
       case CONNECT_JANUS_REQUEST:
         draft.connectJanusLoading = true;
         break;
@@ -620,6 +653,10 @@ const reducer = (state = initialState, action) =>
       case CREATE_ROOM_SUCCESS:
         draft.createRoomLoading = false;
         draft.createRoomDone = true;
+        draft.room = action.payload.number;
+        draft.server = action.payload.server;
+        draft.pin = action.payload.pin;
+        draft.title = action.payload.title;
         break;
       case CREATE_ROOM_FAILURE:
         draft.createRoomLoading = false;

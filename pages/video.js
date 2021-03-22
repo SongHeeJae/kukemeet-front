@@ -14,6 +14,8 @@ import {
   leaveRoomRequest,
   inactiveSpeakerDetectionRequest,
   setAudioVideoState,
+  getRoomServerRequest,
+  joinRoomRequest,
 } from "../reducers/videoroom";
 import { useRouter } from "next/router";
 import { Janus } from "janus-gateway";
@@ -22,11 +24,9 @@ import UserListDialog from "../components/UserListDialog";
 import ChattingDialog from "../components/ChattingDialog";
 import MainVideo from "../components/MainVideo";
 import VideoOption from "../components/VideoOption";
-import { mediaServerUrl } from "../config/config";
 import wrapper from "../store/configureStore";
 import { stayLoggedIn } from "../auth/auth";
 import Router from "next/router";
-import CreateRoomForm from "../components/CreateRoomForm";
 import JoinRoomForm from "../components/JoinRoomForm";
 import ExitRoomButton from "../components/ExitRoomButton";
 import FriendDialog from "../components/FriendDialog";
@@ -40,6 +40,8 @@ import RoomInfoButton from "../components/RoomInfoButton";
 import FileDialog from "../components/FileDialog";
 import FileDialogOpenButton from "../components/FileDialogOpenButton";
 import { CircularProgress } from "@material-ui/core";
+import CreateRoomForm from "../components/CreateRoomForm";
+import RoomNotFoundForm from "../components/RoomNotFoundForm";
 
 const CircularProgressWrapper = styled.div`
   text-align: center;
@@ -93,10 +95,10 @@ const initJanus = () => {
   });
 };
 
-const connectJanus = () => {
+const connectJanus = (server) => {
   return new Promise((resolve, reject) => {
     let janus = new Janus({
-      server: mediaServerUrl,
+      server: `${server}/janus`,
       success: () => {
         resolve(janus);
       },
@@ -215,10 +217,15 @@ const Video = () => {
   const info = useRef(null);
   const dispatch = useDispatch();
   const router = useRouter();
-  const { connectJanusDone, room, joinRoomLoading } = useSelector(
-    (state) => state.videoroom
-  );
-  const { id } = useSelector((state) => state.user);
+  const {
+    connectJanusDone,
+    room,
+    joinRoomLoading,
+    server,
+    pin,
+    getRoomServerError,
+  } = useSelector((state) => state.videoroom);
+  const { id, nickname } = useSelector((state) => state.user);
   const [messageDialogOpen, setMessageDialogOpen] = useState(false);
   const [friendDialogOpen, setFriendDialogOpen] = useState(false);
   const [userListDialogOpen, setUserListDialogOpen] = useState(false);
@@ -226,21 +233,35 @@ const Video = () => {
   const [fileDialogOpen, setFileDialogOpen] = useState(false);
 
   useEffect(() => {
+    if (!router.query.room) return; // 방 생성하는 경우 스킵
+    dispatch(getRoomServerRequest({ room: router.query.room }));
+  }, []);
+
+  useEffect(() => {
     if (!id) return Router.push("/");
+    if (!server) return;
 
     dispatch(connectJanusRequest());
     initJanus()
-      .then(connectJanus)
+      .then(() => connectJanus(server))
       .then((janus) => attachJanus(dispatch, janus))
       .then((result) => {
         info.current = result;
         dispatch(connectJanusSuccess());
+        if (!room) return; // 방 생성한 경우 즉시 연결 시도
+        dispatch(
+          joinRoomRequest({
+            info: info.current,
+            room,
+            nickname,
+            pin,
+          })
+        );
       })
       .catch((err) => {
         console.log(err);
         dispatch(connectJanusFailure());
       });
-
     return () => {
       const { janus } = info.current;
       dispatch(inactiveSpeakerDetectionRequest());
@@ -248,7 +269,18 @@ const Video = () => {
         dispatch(leaveRoomRequest({ info: info.current }));
       }
     };
-  }, []);
+  }, [server]);
+
+  if (getRoomServerError) {
+    return <RoomNotFoundForm />;
+  }
+
+  if (!router.query.room) {
+    if (!server) {
+      // 방 생성으로 넘어와서 아직 방 생성 안한 경우
+      return <CreateRoomForm />;
+    }
+  }
 
   if (!connectJanusDone || joinRoomLoading) {
     // janus 연결중, 입장 대기중
@@ -259,36 +291,9 @@ const Video = () => {
     );
   }
 
-  if (!router.query.room) {
-    // 쿼리 없이 들어왔으면 방 생성 처리
-    if (!room) {
-      // 방이 아직 생성 안됨
-      return (
-        <>
-          <CreateRoomForm info={info} />
-        </>
-      );
-    }
-  } else {
-    // 방을 입력하고 들어왔음
-    if (!room) {
-      // 아직 입장이 안됨 비밀번호 입력하면 입장 시도
-      return (
-        <>
-          <JoinRoomForm info={info} room={router.query.room} />
-        </>
-      );
-    }
-  }
-
   if (!room) {
-    // 방이 없음
-    if (!router.query.room) {
-      // 쿼리에도 없으면 방 생성 처리
-    } else {
-      // 쿼리에 있어서 입장요청했는데도 방이 없으면
-      return <div>생성된 방이 없습니다.</div>;
-    }
+    // 아직 입장이 안됨 비밀번호 입력하면 입장 시도
+    return <JoinRoomForm info={info} room={router.query.room} />;
   }
 
   return (
@@ -312,7 +317,10 @@ const Video = () => {
       <LeftButtonsWrapper>
         <RoomInfoButton />
         <UserListButton setOpen={setUserListDialogOpen} />
-        <ChattingButton setOpen={setChattingDialogOpen} />
+        <ChattingButton
+          setOpen={setChattingDialogOpen}
+          open={chattingDialogOpen}
+        />
         <FileDialogOpenButton setOpen={setFileDialogOpen} />
       </LeftButtonsWrapper>
       <RightButtonsWrapper>

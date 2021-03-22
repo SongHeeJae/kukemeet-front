@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const RoomInfoButton = () => {
-  const { title, room } = useSelector((state) => state.videoroom);
+  const { title, room, pin } = useSelector((state) => state.videoroom);
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -58,8 +58,16 @@ const RoomInfoButton = () => {
         }}
       >
         <Typography className={classes.typography}>
-          {room}
+          ID : {room}
           <CopyToClipboardWrapper text={room} onCopy={onCopy}>
+            <IconButton>
+              <FileCopyIcon />
+            </IconButton>
+          </CopyToClipboardWrapper>
+        </Typography>
+        <Typography className={classes.typography}>
+          PW : {pin}
+          <CopyToClipboardWrapper text={pin} onCopy={onCopy}>
             <IconButton>
               <FileCopyIcon />
             </IconButton>
