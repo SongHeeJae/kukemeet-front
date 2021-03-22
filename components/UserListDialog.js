@@ -26,7 +26,7 @@ import styled from "styled-components";
 import CloseIcon from "@material-ui/icons/Close";
 
 const Transition = forwardRef((props, ref) => {
-  return <Slide direction="up" ref={ref} {...props} />;
+  return <Slide direction="left" ref={ref} {...props} />;
 });
 
 const UserListWrapper = styled.div`
@@ -44,6 +44,11 @@ const useStyles = makeStyles((theme) => ({
     flex: 1,
   },
 }));
+
+const DialogWrapper = styled(Dialog)`
+  width: 70%;
+  margin-left: 30%;
+`;
 
 const UserListDialog = (props) => {
   const { open, setOpen } = props;
@@ -72,7 +77,7 @@ const UserListDialog = (props) => {
   }, []);
 
   return (
-    <Dialog
+    <DialogWrapper
       open={open}
       onClose={onClose}
       fullScreen
@@ -143,7 +148,7 @@ const UserListDialog = (props) => {
           ))}
         </List>
       </UserListWrapper>
-    </Dialog>
+    </DialogWrapper>
   );
 };
 

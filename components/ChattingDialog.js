@@ -19,7 +19,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import ChattingText from "./ChattingText";
 
 const Transition = forwardRef((props, ref) => {
-  return <Slide direction="up" ref={ref} {...props} />;
+  return <Slide direction="left" ref={ref} {...props} />;
 });
 
 const useStyles = makeStyles((theme) => ({
@@ -45,6 +45,11 @@ const useStyles = makeStyles((theme) => ({
     flex: 1,
   },
 }));
+
+const DialogWrapper = styled(Dialog)`
+  width: 70%;
+  margin-left: 30%;
+`;
 
 const ChattingDialog = ({ info, open, setOpen }) => {
   const classes = useStyles();
@@ -77,7 +82,7 @@ const ChattingDialog = ({ info, open, setOpen }) => {
   }, []);
 
   return (
-    <Dialog
+    <DialogWrapper
       open={open}
       onClose={onClose}
       fullScreen
@@ -113,7 +118,7 @@ const ChattingDialog = ({ info, open, setOpen }) => {
           <SendIcon />
         </IconButton>
       </Paper>
-    </Dialog>
+    </DialogWrapper>
   );
 };
 
