@@ -547,7 +547,7 @@ function activeRecordingAPI(stream, { dispatch }) {
 function* activeRecording(action) {
   try {
     const { mainStream } = yield select((state) => state.videoroom);
-    const { stream } = mainStream;
+    const { stream, display } = mainStream;
     const mediaRecorder = yield call(
       activeRecordingAPI,
       stream,
@@ -556,6 +556,7 @@ function* activeRecording(action) {
     yield put(
       activeRecordingSuccess({
         mediaRecorder,
+        display,
       })
     );
   } catch (err) {

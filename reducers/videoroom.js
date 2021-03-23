@@ -15,6 +15,7 @@ export const initialState = {
   activeScreenSharing: false,
   activeRecording: false,
   mediaRecorder: null,
+  recordingTarget: null,
   chatData: [],
   newChatData: false,
   getRoomServerLoading: false, // 지금 방이 생성된 서버 도메인 요청
@@ -688,6 +689,7 @@ const reducer = (state = initialState, action) =>
       case ACTIVE_RECORDING_SUCCESS:
         draft.activeRecording = true;
         draft.mediaRecorder = action.payload.mediaRecorder;
+        draft.recordingTarget = action.payload.display;
         break;
       case ACTIVE_RECORDING_FAILURE:
         draft.activeRecording = false;
@@ -698,6 +700,7 @@ const reducer = (state = initialState, action) =>
       case INACTIVE_RECORDING_FAILURE:
         draft.activeRecording = false;
         draft.mediaRecorder = null;
+        draft.recordingTarget = null;
         break;
       case CREATE_ROOM_REQUEST:
         draft.createRoomLoading = true;
