@@ -77,10 +77,17 @@ import {
   getRoomServerSuccess,
   getRoomServerFailure,
   GET_ROOM_SERVER_REQUEST,
+  ACTIVE_RECORDING_REQUEST,
+  INACTIVE_RECORDING_REQUEST,
+  activeRecordingFailure,
+  activeRecordingSuccess,
+  inactiveRecordingSuccess,
+  inactiveRecordingFailure,
 } from "../reducers/videoroom";
 import { handleError } from "../reducers/user";
 import axios from "axios";
 import { generateRandomString } from "../utils/utils";
+import moment from "moment";
 
 function getRoomServerAPI({ room }) {
   return axios.get(`/api/rooms/db/${room}`);
@@ -506,6 +513,71 @@ function* inactiveScreenSharing(action) {
   }
 }
 
+function activeRecordingAPI(stream, { dispatch }) {
+  const download = (recordedChunks) => {
+    const blob = new Blob([recordedChunks], {
+      type: "video/mp4",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `KUKE meet - ${moment().format("YYYY-MM-DD HH-mm-ss")}`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
+  const handleDataAvailable = (e) => {
+    if (e.data.size > 0) {
+      download(e.data);
+    }
+  };
+
+  const handleStop = (dispatch) => {
+    dispatch(inactiveRecordingSuccess());
+  };
+
+  const options = { mimeType: "video/webm; codecs=vp9" };
+  const mediaRecorder = new MediaRecorder(stream, options);
+  mediaRecorder.ondataavailable = handleDataAvailable;
+  mediaRecorder.onstop = () => handleStop(dispatch);
+  mediaRecorder.start();
+  return mediaRecorder;
+}
+
+function* activeRecording(action) {
+  try {
+    const { mainStream } = yield select((state) => state.videoroom);
+    const { stream } = mainStream;
+    const mediaRecorder = yield call(
+      activeRecordingAPI,
+      stream,
+      action.payload
+    );
+    yield put(
+      activeRecordingSuccess({
+        mediaRecorder,
+      })
+    );
+  } catch (err) {
+    console.log(err);
+    yield put(activeRecordingFailure());
+  }
+}
+
+function inactiveRecordingAPI(mediaRecorder) {
+  mediaRecorder.stop();
+}
+
+function* inactiveRecording() {
+  try {
+    const { mediaRecorder } = yield select((state) => state.videoroom);
+    yield call(inactiveRecordingAPI, mediaRecorder);
+  } catch (err) {
+    console.log(err);
+    yield put(inactiveRecordingFailure());
+  }
+}
+
 async function createRoomAPI(title, accessToken) {
   return axios.post(
     "/api/rooms",
@@ -789,6 +861,14 @@ function* watchInactiveScreenSharing() {
   yield takeEvery(INACTIVE_SCREEN_SHARING_REQUEST, inactiveScreenSharing);
 }
 
+function* watchActiveRecording() {
+  yield takeEvery(ACTIVE_RECORDING_REQUEST, activeRecording);
+}
+
+function* watchInactiveRecording() {
+  yield takeEvery(INACTIVE_RECORDING_REQUEST, inactiveRecording);
+}
+
 function* watchCreateRoom() {
   yield takeLatest(CREATE_ROOM_REQUEST, createRoom);
 }
@@ -826,6 +906,8 @@ export default function* videoroomSaga() {
     fork(watchInactiveSpeakerDetection),
     fork(watchActiveScreenSharing),
     fork(watchInactiveScreenSharing),
+    fork(watchActiveRecording),
+    fork(watchInactiveRecording),
     fork(watchCreateRoom),
     fork(watchGetRoomList),
     fork(watchDestroyRoom),

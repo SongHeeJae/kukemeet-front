@@ -13,6 +13,8 @@ export const initialState = {
   activeAudio: null,
   activeSpeakerDetection: false,
   activeScreenSharing: false,
+  activeRecording: false,
+  mediaRecorder: null,
   chatData: [],
   newChatData: false,
   getRoomServerLoading: false, // 지금 방이 생성된 서버 도메인 요청
@@ -135,6 +137,14 @@ export const INACTIVE_SCREEN_SHARING_SUCCESS =
   "INACTIVE_SCREEN_SHARING_SUCCESS";
 export const INACTIVE_SCREEN_SHARING_FAILURE =
   "INACTIVE_SCREEN_SHARING_FAILURE";
+
+export const ACTIVE_RECORDING_REQUEST = "ACTIVE_RECORDING_REQUEST";
+export const ACTIVE_RECORDING_SUCCESS = "ACTIVE_RECORDING_SUCCESS";
+export const ACTIVE_RECORDING_FAILURE = "ACTIVE_RECORDING_FAILURE";
+
+export const INACTIVE_RECORDING_REQUEST = "INACTIVE_RECORDING_REQUEST";
+export const INACTIVE_RECORDING_SUCCESS = "INACTIVE_RECORDING_SUCCESS";
+export const INACTIVE_RECORDING_FAILURE = "INACTIVE_RECORDING_FAILURE";
 
 export const CREATE_ROOM_REQUEST = "CREATE_ROOM_REQUEST";
 export const CREATE_ROOM_SUCCESS = "CREATE_ROOM_SUCCESS";
@@ -397,6 +407,32 @@ export const inactiveScreenSharingFailure = () => ({
   type: INACTIVE_SCREEN_SHARING_FAILURE,
 });
 
+export const activeRecordingRequest = (payload) => ({
+  type: ACTIVE_RECORDING_REQUEST,
+  payload,
+});
+
+export const activeRecordingSuccess = (payload) => ({
+  type: ACTIVE_RECORDING_SUCCESS,
+  payload,
+});
+
+export const activeRecordingFailure = () => ({
+  type: ACTIVE_RECORDING_FAILURE,
+});
+
+export const inactiveRecordingRequest = () => ({
+  type: INACTIVE_RECORDING_REQUEST,
+});
+
+export const inactiveRecordingSuccess = () => ({
+  type: INACTIVE_RECORDING_SUCCESS,
+});
+
+export const inactiveRecordingFailure = () => ({
+  type: INACTIVE_RECORDING_FAILURE,
+});
+
 export const createRoomRequest = (payload) => ({
   type: CREATE_ROOM_REQUEST,
   payload,
@@ -647,6 +683,22 @@ const reducer = (state = initialState, action) =>
         break;
       case INACTIVE_SCREEN_SHARING_FAILURE:
         break;
+      case ACTIVE_RECORDING_REQUEST:
+        break;
+      case ACTIVE_RECORDING_SUCCESS:
+        draft.activeRecording = true;
+        draft.mediaRecorder = action.payload.mediaRecorder;
+        break;
+      case ACTIVE_RECORDING_FAILURE:
+        draft.activeRecording = false;
+        break;
+      case INACTIVE_RECORDING_REQUEST:
+        break;
+      case INACTIVE_RECORDING_SUCCESS:
+      case INACTIVE_RECORDING_FAILURE:
+        draft.activeRecording = false;
+        draft.mediaRecorder = null;
+        break;
       case CREATE_ROOM_REQUEST:
         draft.createRoomLoading = true;
         break;
@@ -728,6 +780,7 @@ const reducer = (state = initialState, action) =>
         const sendFile = draft.sendFiles.find(
           (f) => f.transaction === action.payload.transaction
         );
+        console.log("");
         sendFile.loading = false;
         break;
       }

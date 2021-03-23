@@ -10,6 +10,8 @@ import {
   inactiveSpeakerDetectionRequest,
   activeScreenSharingRequest,
   inactiveScreenSharingRequest,
+  inactiveRecordingRequest,
+  activeRecordingRequest,
 } from "../reducers/videoroom";
 import MicIcon from "@material-ui/icons/Mic";
 import MicNoneIcon from "@material-ui/icons/MicNone";
@@ -19,6 +21,8 @@ import ScreenShareIcon from "@material-ui/icons/ScreenShare";
 import CancelPresentationIcon from "@material-ui/icons/CancelPresentation";
 import SpeakerPhoneIcon from "@material-ui/icons/SpeakerPhone";
 import SmartphoneIcon from "@material-ui/icons/Smartphone";
+import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
+import StopIcon from "@material-ui/icons/Stop";
 
 const VideoOption = ({ info }) => {
   const dispatch = useDispatch();
@@ -27,6 +31,8 @@ const VideoOption = ({ info }) => {
     activeVideo,
     activeSpeakerDetection,
     activeScreenSharing,
+    activeRecording,
+    openDataChannelDone,
   } = useSelector((state) => state.videoroom);
 
   const onClickActiveAudio = useCallback(() => {
@@ -46,29 +52,36 @@ const VideoOption = ({ info }) => {
       dispatch(inactiveScreenSharingRequest({ info: info.current, dispatch }));
     else dispatch(activeScreenSharingRequest({ info: info.current, dispatch }));
   }, [activeScreenSharing]);
+  const onClickRecording = useCallback(() => {
+    if (activeRecording) dispatch(inactiveRecordingRequest());
+    else dispatch(activeRecordingRequest({ dispatch }));
+  }, [activeRecording]);
   return (
     <ButtonGroup
       color="primary"
       aria-label="outlined primary button group"
       fullWidth
     >
-      <Button onClick={onClickActiveAudio} disabled={!!info.pluginHandle}>
+      <Button onClick={onClickActiveAudio} disabled={!openDataChannelDone}>
         {activeAudio ? <MicIcon /> : <MicNoneIcon />}
       </Button>
-      <Button onClick={onClickActiveVideo} disabled={!!info.pluginHandle}>
+      <Button onClick={onClickActiveVideo} disabled={!openDataChannelDone}>
         {activeVideo ? <VideocamIcon /> : <VideocamOffIcon />}
       </Button>
       <Button
         onClick={onClickActiveSpeakerDetection}
-        disabled={!!info.pluginHandle}
+        disabled={!openDataChannelDone}
       >
         {activeSpeakerDetection ? <SpeakerPhoneIcon /> : <SmartphoneIcon />}
       </Button>
       <Button
         onClick={onClickActiveScreenSharing}
-        disabled={!!info.pluginHandle}
+        disabled={!openDataChannelDone}
       >
         {activeScreenSharing ? <CancelPresentationIcon /> : <ScreenShareIcon />}
+      </Button>
+      <Button onClick={onClickRecording} disabled={!openDataChannelDone}>
+        {activeRecording ? <StopIcon /> : <FiberManualRecordIcon />}
       </Button>
     </ButtonGroup>
   );
