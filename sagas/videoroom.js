@@ -462,7 +462,7 @@ function activeScreenSharingAPI({ info, dispatch }, useAudio, useVideo) {
         jsep,
       });
       dispatch(activeScreenSharingSuccess());
-      dispatch(activeVideoRequest(info));
+      if (useVideo) dispatch(activeVideoRequest(info));
     },
     error: function (error) {
       dispatch(activeScreenSharingFailure());
@@ -498,7 +498,7 @@ function inactiveScreenSharingAPI({ info, dispatch }, useAudio, useVideo) {
         },
         jsep: jsep,
       });
-      pluginHandle.muteVideo();
+      dispatch(inactiveVideoRequest(info));
       dispatch(inactiveScreenSharingSuccess());
     },
     error: function (error) {
