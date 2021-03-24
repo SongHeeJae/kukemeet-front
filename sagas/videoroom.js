@@ -257,6 +257,7 @@ async function subscribeRemoteFeedAPI(
             receiveChatMessage({
               display: json["display"],
               text: json["text"],
+              time: moment().format("HH:mm"),
             })
           );
         } else if (what === "receive_file") {
@@ -337,7 +338,9 @@ function sendChatAPI(room, { dispatch, info, display, text }) {
   pluginHandle.data({
     text: JSON.stringify(message),
     success: () => {
-      dispatch(sendChatSuccess({ display, text }));
+      dispatch(
+        sendChatSuccess({ display, text, time: moment().format("HH:mm") })
+      );
     },
   });
 }

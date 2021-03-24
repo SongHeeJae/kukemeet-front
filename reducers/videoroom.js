@@ -16,7 +16,9 @@ export const initialState = {
   activeRecording: false,
   mediaRecorder: null,
   recordingTarget: null,
-  chatData: [],
+  chatData: [
+    // {text:'', display:'',time:''}
+  ],
   newChatData: false,
   getRoomServerLoading: false, // 지금 방이 생성된 서버 도메인 요청
   getRoomServerError: "",
@@ -614,6 +616,7 @@ const reducer = (state = initialState, action) =>
         draft.chatData.push({
           display: action.payload.display,
           text: action.payload.text,
+          time: action.payload.time,
         });
         break;
       case SEND_CHAT_FAILURE:
@@ -623,6 +626,7 @@ const reducer = (state = initialState, action) =>
         draft.chatData.push({
           display: action.payload.display,
           text: action.payload.text,
+          time: action.payload.time,
         });
         break;
       case CLEAR_NEW_CHAT_DATA_STATE:

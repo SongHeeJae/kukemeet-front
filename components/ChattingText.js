@@ -21,7 +21,7 @@ const ChattingText = () => {
     <ChatDivWrapper ref={chatDivRef}>
       {chatData.map((v, i) => (
         <Typography key={i}>
-          {v.display} : {v.text}
+          [{v.time}] {v.display} : {v.text}
         </Typography>
       ))}
     </ChatDivWrapper>
