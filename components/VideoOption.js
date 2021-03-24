@@ -33,6 +33,8 @@ const VideoOption = ({ info }) => {
     activeScreenSharing,
     activeRecording,
     openDataChannelDone,
+    useVideo,
+    useAudio,
   } = useSelector((state) => state.videoroom);
 
   const onClickActiveAudio = useCallback(() => {
@@ -62,10 +64,16 @@ const VideoOption = ({ info }) => {
       aria-label="outlined primary button group"
       fullWidth
     >
-      <Button onClick={onClickActiveAudio} disabled={!openDataChannelDone}>
+      <Button
+        onClick={onClickActiveAudio}
+        disabled={!openDataChannelDone || !useAudio}
+      >
         {activeAudio ? <MicIcon /> : <MicNoneIcon />}
       </Button>
-      <Button onClick={onClickActiveVideo} disabled={!openDataChannelDone}>
+      <Button
+        onClick={onClickActiveVideo}
+        disabled={!openDataChannelDone || !useVideo}
+      >
         {activeVideo ? <VideocamIcon /> : <VideocamOffIcon />}
       </Button>
       <Button
