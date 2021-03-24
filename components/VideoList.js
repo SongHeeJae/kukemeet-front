@@ -28,7 +28,7 @@ const VideoList = () => {
 
   const renderActionIcon = (display) => {
     return (
-      recordingTarget === display && <FiberManualRecordIcon color="primary" />
+      recordingTarget === display && <FiberManualRecordIcon color="secondary" />
     );
   };
 
