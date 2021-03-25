@@ -81,7 +81,7 @@ const subscribeRemoteFeed = (list, info, dispatch) => {
 const initJanus = () => {
   return new Promise((resolve, reject) => {
     Janus.init({
-      debug: "all",
+      debug: process.env.NODE_ENV === "development",
       callback: () => {
         resolve();
       },

@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, memo } from "react";
 import AppLayout from "./AppLayout";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
@@ -68,4 +68,4 @@ const JoinRoomForm = ({ info, room }) => {
   );
 };
 
-export default JoinRoomForm;
+export default memo(JoinRoomForm);

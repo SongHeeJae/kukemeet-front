@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, memo } from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import useInput from "../hooks/useInput";
@@ -60,4 +60,4 @@ const CreateRoomForm = () => {
   );
 };
 
-export default CreateRoomForm;
+export default memo(CreateRoomForm);

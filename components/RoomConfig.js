@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, memo } from "react";
 import { Button, TextField } from "@material-ui/core";
 import Router from "next/router";
 import styled from "styled-components";
@@ -67,4 +67,4 @@ const RoomConfig = () => {
   );
 };
 
-export default RoomConfig;
+export default memo(RoomConfig);

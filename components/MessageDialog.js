@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState } from "react";
+import React, { useEffect, useCallback, useState, memo } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -84,4 +84,7 @@ const MessageDialog = (props) => {
   );
 };
 
-export default MessageDialog;
+export default memo(
+  MessageDialog,
+  (prevProps, nextProps) => prevProps.open === nextProps.open
+);

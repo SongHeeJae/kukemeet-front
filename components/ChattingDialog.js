@@ -1,4 +1,4 @@
-import React, { useCallback, forwardRef, useRef, useEffect } from "react";
+import React, { useCallback, forwardRef, memo } from "react";
 import styled from "styled-components";
 import {
   InputBase,
@@ -122,4 +122,7 @@ const ChattingDialog = ({ info, open, setOpen }) => {
   );
 };
 
-export default ChattingDialog;
+export default memo(
+  ChattingDialog,
+  (prevProps, nextProps) => prevProps.open === nextProps.open
+);

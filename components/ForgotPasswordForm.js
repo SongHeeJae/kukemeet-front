@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, memo } from "react";
 import { TextField, Button, CircularProgress } from "@material-ui/core";
 import useInput from "../hooks/useInput";
 import styled from "styled-components";
@@ -175,4 +175,4 @@ const ForgotPasswordForm = () => {
   );
 };
 
-export default ForgotPasswordForm;
+export default memo(ForgotPasswordForm);

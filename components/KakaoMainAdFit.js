@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import styled from "styled-components";
 const KakaoMainAdFitWrapper = styled.div`
   text-align: center;
@@ -23,4 +23,4 @@ const KakaoMainAdFit = () => {
   );
 };
 
-export default KakaoMainAdFit;
+export default memo(KakaoMainAdFit);

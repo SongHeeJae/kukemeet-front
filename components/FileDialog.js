@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, memo } from "react";
 import { Dialog, DialogTitle, AppBar, Tabs, Tab } from "@material-ui/core";
 import ReceiveFileTabPanel from "./ReceiveFileTabPanel";
 import SendFileTabPanel from "./SendFileTabPanel";
@@ -28,4 +28,7 @@ const FileDialog = ({ info, setOpen, open }) => {
   );
 };
 
-export default FileDialog;
+export default memo(
+  FileDialog,
+  (prevProps, nextProps) => prevProps.open === nextProps.open
+);

@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect, useCallback, memo } from "react";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
 import { Button, TextField, CircularProgress } from "@material-ui/core";
@@ -100,4 +100,4 @@ const LoginForm = () => {
   );
 };
 
-export default LoginForm;
+export default memo(LoginForm);

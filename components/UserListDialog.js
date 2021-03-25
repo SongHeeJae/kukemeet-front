@@ -1,4 +1,4 @@
-import React, { useCallback, useState, forwardRef } from "react";
+import React, { useCallback, useState, forwardRef, memo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   ListItem,
@@ -152,4 +152,7 @@ const UserListDialog = (props) => {
   );
 };
 
-export default UserListDialog;
+export default memo(
+  UserListDialog,
+  (prevProps, nextProps) => prevProps.open === nextProps.open
+);

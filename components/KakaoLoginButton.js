@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { IconButton } from "@material-ui/core";
 import { kakaoClientId, kakaoRedirectUri } from "../config/config";
 
@@ -15,4 +15,4 @@ const KakaoLoginButton = () => {
   );
 };
 
-export default KakaoLoginButton;
+export default memo(KakaoLoginButton);

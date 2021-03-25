@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import Alert from "@material-ui/lab/Alert";
 import CloseIcon from "@material-ui/icons/Close";
 import { Collapse, IconButton } from "@material-ui/core";
@@ -25,4 +25,8 @@ const SuccessCollapse = ({ flag, onClick, msg }) => {
   );
 };
 
-export default SuccessCollapse;
+export default memo(
+  SuccessCollapse,
+  (prevProps, nextProps) =>
+    prevProps.flag === nextProps.flag && prevProps.msg === nextProps.msg
+);

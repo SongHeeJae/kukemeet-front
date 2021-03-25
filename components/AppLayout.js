@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, memo } from "react";
 import Link from "next/link";
 import styled from "styled-components";
 import { MenuList, MenuItem } from "@material-ui/core";
@@ -119,4 +119,4 @@ const AppLayout = ({ children }) => {
   );
 };
 
-export default AppLayout;
+export default memo(AppLayout);

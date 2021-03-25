@@ -78,4 +78,4 @@ const MainVideo = () => {
   );
 };
 
-export default MainVideo;
+export default memo(MainVideo);

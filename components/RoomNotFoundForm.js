@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, memo } from "react";
 import AppLayout from "./AppLayout";
 import styled from "styled-components";
 import { Button } from "@material-ui/core";
@@ -24,4 +24,4 @@ const RoomNotFoundForm = () => {
   );
 };
 
-export default RoomNotFoundForm;
+export default memo(RoomNotFoundForm);

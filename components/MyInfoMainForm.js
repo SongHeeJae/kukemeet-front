@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, memo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
 import { TextField, Button } from "@material-ui/core";
@@ -166,4 +166,4 @@ const MyInfoMainForm = () => {
   );
 };
 
-export default MyInfoMainForm;
+export default memo(MyInfoMainForm);

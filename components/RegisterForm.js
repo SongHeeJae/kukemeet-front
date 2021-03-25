@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, memo } from "react";
 import { Button, TextField, CircularProgress } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import Router from "next/router";
@@ -180,4 +180,4 @@ const RegisterForm = () => {
   );
 };
 
-export default RegisterForm;
+export default memo(RegisterForm);

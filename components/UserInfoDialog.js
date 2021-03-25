@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, memo } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -111,4 +111,7 @@ const UserInfoDialog = (props) => {
   );
 };
 
-export default UserInfoDialog;
+export default memo(
+  UserInfoDialog,
+  (prevProps, nextProps) => prevProps.open === nextProps.open
+);

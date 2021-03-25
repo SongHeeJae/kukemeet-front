@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, memo } from "react";
 import { TextField, IconButton } from "@material-ui/core";
 import AttachFileIcon from "@material-ui/icons/AttachFile";
 import SendIcon from "@material-ui/icons/Send";
@@ -52,4 +52,4 @@ const FileTransferForm = ({ info }) => {
   );
 };
 
-export default FileTransferForm;
+export default memo(FileTransferForm);

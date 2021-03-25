@@ -1,12 +1,17 @@
-import React, { useRef, useEffect } from "react";
-import { useSelector } from "react-redux";
-import { Typography } from "@material-ui/core";
+import React, { useRef, useEffect, memo } from "react";
+import ChattingTextItem from "./ChattingTextItem";
 import styled from "styled-components";
+import { useSelector } from "react-redux";
 
 const ChatDivWrapper = styled.div`
   height: 100%;
   width: 100%;
   overflow: auto;
+`;
+
+const Ul = styled.div`
+  list-style: none;
+  padding-left: 0px;
 `;
 
 const ChattingText = () => {
@@ -19,13 +24,18 @@ const ChattingText = () => {
 
   return (
     <ChatDivWrapper ref={chatDivRef}>
-      {chatData.map((v, i) => (
-        <Typography key={i}>
-          [{v.time}] {v.display} : {v.text}
-        </Typography>
-      ))}
+      <Ul>
+        {chatData.map((v, i) => (
+          <ChattingTextItem
+            key={i}
+            time={v.time}
+            display={v.display}
+            text={v.text}
+          />
+        ))}
+      </Ul>
     </ChatDivWrapper>
   );
 };
 
-export default ChattingText;
+export default memo(ChattingText);

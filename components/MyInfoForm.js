@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import MyInfoMainForm from "../components/MyInfoMainForm";
 import MyInfoPasswordForm from "../components/MyInfoPasswordForm";
 
@@ -11,4 +11,4 @@ const MyInfoForm = () => {
   );
 };
 
-export default MyInfoForm;
+export default memo(MyInfoForm);

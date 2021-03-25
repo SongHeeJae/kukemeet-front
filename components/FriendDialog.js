@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, memo } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -76,4 +76,7 @@ const FriendDialog = (props) => {
   );
 };
 
-export default FriendDialog;
+export default memo(
+  FriendDialog,
+  (prevProps, nextProps) => prevProps.open === nextProps.open
+);
