@@ -98,6 +98,8 @@ export const SEND_CHAT_FAILURE = "SEND_CHAT_FAILURE";
 export const RECEIVE_CHAT_MESSAGE = "RECEIVE_CHAT_MESSAGE";
 export const CLEAR_NEW_CHAT_DATA_STATE = "CLEAR_NEW_CHAT_DATA_STATE";
 
+export const CLEAR_CHAT_DATA = "CLEAR_CHAT_DATA";
+
 export const ACTIVE_AUDIO_REQUEST = "ACTIVE_AUDIO_REQUEST";
 export const ACTIVE_AUDIO_SUCCESS = "ACTIVE_AUDIO_SUCCESS";
 export const ACTIVE_AUDIO_FAILURE = "ACTIVE_AUDIO_FAILURE";
@@ -304,6 +306,10 @@ export const receiveChatMessage = (payload) => ({
 
 export const clearNewChatDataState = () => ({
   type: CLEAR_NEW_CHAT_DATA_STATE,
+});
+
+export const clearChatData = () => ({
+  type: CLEAR_CHAT_DATA,
 });
 
 export const activeAudioRequest = (payload) => ({
@@ -631,6 +637,9 @@ const reducer = (state = initialState, action) =>
         break;
       case CLEAR_NEW_CHAT_DATA_STATE:
         draft.newChatData = false;
+        break;
+      case CLEAR_CHAT_DATA:
+        draft.chatData = [];
         break;
       case ACTIVE_AUDIO_REQUEST:
         break;

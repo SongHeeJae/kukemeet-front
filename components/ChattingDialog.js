@@ -12,11 +12,16 @@ import {
 } from "@material-ui/core";
 import useInput from "../hooks/useInput";
 import { useSelector, useDispatch } from "react-redux";
-import { clearNewChatDataState, sendChatRequest } from "../reducers/videoroom";
+import {
+  clearChatData,
+  clearNewChatDataState,
+  sendChatRequest,
+} from "../reducers/videoroom";
 import SendIcon from "@material-ui/icons/Send";
 import { makeStyles } from "@material-ui/core/styles";
 import CloseIcon from "@material-ui/icons/Close";
 import ChattingText from "./ChattingText";
+import DeleteIcon from "@material-ui/icons/Delete";
 
 const Transition = forwardRef((props, ref) => {
   return <Slide direction="left" ref={ref} {...props} />;
@@ -76,6 +81,10 @@ const ChattingDialog = ({ info, open, setOpen }) => {
     [text]
   );
 
+  const onClickDeleteChatData = useCallback(() => {
+    dispatch(clearChatData());
+  }, []);
+
   const onClose = useCallback(() => {
     dispatch(clearNewChatDataState());
     setOpen(false);
@@ -101,6 +110,9 @@ const ChattingDialog = ({ info, open, setOpen }) => {
           <Typography variant="h6" className={classes.title}>
             채팅방
           </Typography>
+          <IconButton onClick={onClickDeleteChatData}>
+            <DeleteIcon />
+          </IconButton>
         </Toolbar>
       </AppBar>
       <ChattingText />
