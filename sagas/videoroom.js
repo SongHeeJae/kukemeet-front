@@ -243,6 +243,12 @@ async function subscribeRemoteFeedAPI(
             });
           }
         }
+        // remotePluginHandle.send({
+        //   message: {
+        //     request: "configure",
+        //     video: false,
+        //   },
+        // });
         dispatch(addRemoteFeedStream(addStream));
       },
       oncleanup: function () {
@@ -462,9 +468,10 @@ function activeScreenSharingAPI({ info, dispatch }, useAudio, useVideo) {
         jsep,
       });
       dispatch(activeScreenSharingSuccess());
-      if (useVideo) dispatch(activeVideoRequest(info));
+      if (useVideo) dispatch(activeVideoSuccess());
     },
     error: function (error) {
+      console.log(error);
       dispatch(activeScreenSharingFailure());
       dispatch(inactiveScreenSharingRequest({ info, dispatch }));
     },
@@ -476,6 +483,7 @@ function* activeScreenSharing(action) {
     const { useAudio, useVideo } = yield select((state) => state.videoroom);
     yield call(activeScreenSharingAPI, action.payload, useAudio, useVideo);
   } catch (err) {
+    console.log(err);
     yield put(activeScreenSharingFailure());
   }
 }
@@ -512,6 +520,7 @@ function* inactiveScreenSharing(action) {
     const { useAudio, useVideo } = yield select((state) => state.videoroom);
     yield call(inactiveScreenSharingAPI, action.payload, useAudio, useVideo);
   } catch (err) {
+    console.log(err);
     yield put(inactiveScreenSharingFailure());
   }
 }
