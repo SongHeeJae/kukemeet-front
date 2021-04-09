@@ -25,4 +25,5 @@ https://blog.naver.com/gmlwo308/222265465861 간단한 기능 설명은 위 링�
 
 
 구성도는 다음 그림과 같습니다.
-![bzxc](https://user-images.githubusercontent.com/52650983/113995981-b4724680-9891-11eb-8943-b0cae652f0a9.PNG)
+![구성도](https://user-images.githubusercontent.com/52650983/114162047-ae4c9a80-9963-11eb-802c-ed86c6b5cf9d.PNG)
+
