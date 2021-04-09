@@ -99,6 +99,7 @@ function* getRoomServer(action) {
     const { server } = result.data.data;
     yield put(getRoomServerSuccess({ server }));
   } catch (err) {
+    console.log(err);
     yield put(getRoomServerFailure({ msg: err.response.data.msg }));
   }
 }
@@ -120,6 +121,7 @@ function* joinRoom(action) {
   try {
     yield call(joinRoomAPI, action.payload);
   } catch (err) {
+    console.log(err);
     yield put(joinRoomFailure());
   }
 }
@@ -168,6 +170,7 @@ function* publishOwnFeed(action) {
   try {
     yield call(publishOwnFeedAPI, action.payload, true, true);
   } catch (err) {
+    console.log(err);
     yield put(publishOwnFeedFailure());
   }
 }
@@ -295,6 +298,7 @@ function* subscribeRemoteFeed(action) {
     );
     yield put(subscribeRemoteFeedSuccess());
   } catch (err) {
+    console.log(err);
     yield put(subscribeRemoteFeedFailure());
   }
 }
@@ -314,6 +318,7 @@ function* leavingRemoteFeed(action) {
     yield call(leavingRemoteAPI, remoteFeeds, action.payload.id);
     yield put(leavingRemoteFeedSuccess(action.payload));
   } catch (err) {
+    console.log(err);
     yield put(leavingRemoteFeedFailure());
   }
 }
@@ -329,6 +334,7 @@ function* changeMainStream(action) {
     yield call(changeMainStreamAPI, mainStream, action.payload);
     yield put(changeMainStreamSuccess(action.payload));
   } catch (err) {
+    console.log(err);
     yield put(changeMainStreamFailure());
   }
 }
@@ -356,6 +362,7 @@ function* sendChat(action) {
     const room = yield select((state) => state.room);
     yield call(sendChatAPI, room, action.payload);
   } catch (err) {
+    console.log(err);
     yield put(sendChatFailure());
   }
 }
@@ -369,6 +376,7 @@ function* activeAudio(action) {
     yield call(activeAudioAPI, action.payload);
     yield put(activeAudioSuccess());
   } catch (err) {
+    console.log(err);
     yield put(activeAudioFailure());
   }
 }
@@ -382,6 +390,7 @@ function* inactiveAudio(action) {
     yield call(inactiveAudioAPI, action.payload);
     yield put(inactiveAudioSuccess());
   } catch (err) {
+    console.log(err);
     yield put(inactiveAudioFailure());
   }
 }
@@ -395,6 +404,7 @@ function* activeVideo(action) {
     yield call(activeVideoAPI, action.payload);
     yield put(activeVideoSuccess());
   } catch (err) {
+    console.log(err);
     yield put(activeVideoFailure());
   }
 }
@@ -408,6 +418,7 @@ function* inactiveVideo(action) {
     yield call(inactiveVideoAPI, action.payload);
     yield put(inactiveVideoSuccess());
   } catch (err) {
+    console.log(err);
     yield put(inactiveVideoFailure());
   }
 }
@@ -429,6 +440,7 @@ function* activeSpeakerDetection(action) {
     yield call(activeSpeakerDetectionAPI, remoteFeeds, action.payload);
     yield put(activeSpeakerDetectionSuccess());
   } catch (err) {
+    console.log(err);
     yield put(activeSpeakerDetectionFailure());
   }
 }
@@ -446,6 +458,7 @@ function* inactiveSpeakerDetection() {
     yield call(inactiveSpeakerDetectionAPI, remoteFeeds);
     yield put(inactiveSpeakerDetectionSuccess());
   } catch (err) {
+    console.log(err);
     yield put(inactiveSpeakerDetectionFailure());
   }
 }
@@ -471,9 +484,9 @@ function activeScreenSharingAPI({ info, dispatch }, useAudio, useVideo) {
       if (useVideo) dispatch(activeVideoSuccess());
     },
     error: function (error) {
-      console.log(error);
       dispatch(activeScreenSharingFailure());
       dispatch(inactiveScreenSharingRequest({ info, dispatch }));
+      throw error;
     },
   });
 }
@@ -511,6 +524,7 @@ function inactiveScreenSharingAPI({ info, dispatch }, useAudio, useVideo) {
     },
     error: function (error) {
       dispatch(inactiveScreenSharingFailure());
+      throw error;
     },
   });
 }
@@ -618,6 +632,7 @@ function* createRoom(action) {
       })
     );
   } catch (err) {
+    console.log(err);
     yield put(createRoomFailure());
     yield put(handleError({ result: err.response.data, task: action }));
   }
@@ -654,6 +669,7 @@ function* destroyRoom() {
     yield call(destroyRoomAPI, room, accessToken);
     yield put(destroyRoomSuccess());
   } catch (err) {
+    console.log(err);
     yield put(destroyRoomFailure());
   }
 }
@@ -680,6 +696,7 @@ function* leaveRoom(action) {
     yield call(leaveRoomAPI, action.payload);
     yield put(leaveRoomSuccess());
   } catch (err) {
+    console.log(err);
     yield put(leaveRoomFailure());
   }
 }
